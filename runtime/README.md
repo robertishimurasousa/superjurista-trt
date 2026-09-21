@@ -36,6 +36,7 @@ runtime/
 │   ├── pje-task-discovery-contract.json
 │   └── README.md
 └── pipelines/
+    ├── execution-state.v1.schema.json
     ├── smoke.json
     └── trt12-first-instance.json
 ```
@@ -104,6 +105,33 @@ The digest and shared contract must be identical for Claude Code and Codex. The 
 closed on unknown dependencies, dependency cycles, duplicate artifacts, unknown gates,
 unsupported conditions, invalid retry policies, or runtime-specific fields inside the shared
 manifest.
+
+## Resume an interrupted pipeline safely
+
+`scripts/resumable_pipeline.py` implements the runtime-neutral checkpoint used by the resolved
+Claude Code and Codex plans. `new_execution_state()` creates the versioned state,
+`record_stage_acceptance()` records a stage only after its dependencies, declared outputs, retry
+ceiling, and current deterministic gate pass, and `plan_resume()` identifies the next stage.
+
+A checkpoint is reusable only when all of these still match:
+
+- pipeline contract digest;
+- authorized-source fingerprint;
+- dependency aggregate fingerprints;
+- every declared output SHA-256 digest;
+- the stage's current content gate.
+
+Changing any item makes the stage pending and prevents reuse of every dependent stage. The state
+is saved atomically under `execution-state.v1.schema.json` and deliberately omits runtime dispatch
+details, so the same accepted checkpoint can resume through Claude Code or Codex while each keeps
+its own adapter binding.
+
+```bash
+python3 -m unittest tests.test_resumable_pipeline -v
+```
+
+The module plans and checkpoints execution; it does not perform external actions, PJe writes,
+filing, signing, or publication.
 
 ## Validate the TRT12 tribunal profile
 
