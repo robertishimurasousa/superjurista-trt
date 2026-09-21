@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.24.0
+**Version:** 0.25.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 25/100 accepted points
+Track A — TRT12 first instance: 29/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               15.0%
+Program progress:               17.4%
 Track A candidate in review:    6/100 points
 ```
 
@@ -116,11 +116,11 @@ Track A contains exactly 100 points.
 | ARC — Architecture and contracts | 12 | 12 | `ACCEPTED` |
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
 | DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
-| JUR — Authoritative research | 15 | 7 | `IN_PROGRESS` |
+| JUR — Authoritative research | 15 | 11 | `IN_PROGRESS` |
 | PIP — End-to-end pipeline and gates | 15 | 0 | `PLANNED` |
 | VAL — Historical validation | 10 | 0 | `PLANNED` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **25** |  |
+| **Total** | **100** | **29** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -184,7 +184,7 @@ the labor pipeline or either complete runtime is ready.
 | JUR-01 | TST official-source adapter | 4 | `ACCEPTED` | Retrieves official result, status, reference, URL, and verbatim excerpt for the test queries | [`scripts/tst_official_adapter.py`](../../scripts/tst_official_adapter.py), `tests/test_tst_official_adapter.py`, and [`runtime/providers`](../../runtime/providers); 12 synthetic tests cover normalized search, exact-CNJ filtering, pagination, schema-valid corpus generation, verbatim custody, source and origin restrictions, response limits, and publication-date variants. A bounded live query on 2026-09-21 retrieved TST document `7a2d741d22e82084a45f85ba428fa103` from the official HTTPS backend and generated one valid source while preserving status `unknown` for human review |
 | JUR-02 | TRT12 jurisprudence adapter | 4 | `IN_REVIEW` | Covers the approved TRT12 source set and distinguishes PJe/current material from legacy coverage | [`scripts/trt12_official_adapter.py`](../../scripts/trt12_official_adapter.py), `tests/test_trt12_official_adapter.py`, and [`runtime/providers`](../../runtime/providers); 10 synthetic tests cover combined sentence/acórdão search, fixed TRT12 scope, zero-based pagination, collection-specific permanent URLs and detail retrieval, verbatim custody, current-PJe versus legacy coverage, schema-valid corpus generation, shared-interface conformance, session bootstrap, response limits, and fail-closed ambiguous records. The official TRT12 portal was verified to delegate current PJe research to Falcão for first- and second-instance documents from 2016 onward. Live source acceptance remains pending because Falcão activated its published network rate-limit window during the bounded integration probe |
 | JUR-03 | TRT12 precedent adapter | 3 | `ACCEPTED` | Captures IRDR/IAC/regional thesis status, scope, suspension, and official source | [`scripts/trt12_precedent_adapter.py`](../../scripts/trt12_precedent_adapter.py), `tests/test_trt12_precedent_adapter.py`, and [`runtime/providers`](../../runtime/providers); 11 network-free tests cover current, cancelled, pending, and stayed IRDR states, active second-instance suspension, bounded pagination, the official Google Visualization header shape, current and cancelled IUJ theses, explicit no-thesis IAC coverage without a fabricated precedent, shared-interface conformance, exact publication URL restrictions, response limits, and schema-valid corpus generation. Bounded live checks on 2026-09-21 retrieved IRDR Theme 34 as stayed with an active second-instance suspension, confirmed the official IAC no-thesis statement, and retrieved current IUJ Thesis 3 from the official TRT12 publications |
-| JUR-04 | Precedent consolidation and citation custody | 4 | `PLANNED` | Deduplication, hierarchy, status conflicts, and quotation custody pass deterministic fixtures | — |
+| JUR-04 | Precedent consolidation and citation custody | 4 | `ACCEPTED` | Deduplication, hierarchy, status conflicts, and quotation custody pass deterministic fixtures | [`scripts/consolidate_precedents.py`](../../scripts/consolidate_precedents.py), `tests/test_precedent_consolidation.py`, and [`runtime/providers`](../../runtime/providers); 11 deterministic tests cover hierarchy ordering, exact duplicate removal, conflicting repeated identifiers, equivalent-source canonicalization, alias custody, explicit status conflicts, unknown-status precedence, quotation custody, deterministic sidecar serialization, invalid input contracts, and schema-valid consolidated output. Every original source retains an official URL and SHA-256 excerpt digest in the sidecar report |
 
 ### 4.7 End-to-end pipeline and gates — 15 points
 
@@ -376,6 +376,7 @@ Next acceptance target:
 | 2026-09-21 | TST research uses its official public search and document endpoints with bounded HTTPS transport and verbatim custody | `JUR-01` accepted; exact CNJ queries use the structured official filter and unnormalized precedential status remains explicit |
 | 2026-09-21 | TRT12 current jurisprudence uses the official Falcão sentence and acórdão collections while legacy coverage remains explicit | `JUR-02` enters review with deterministic adapter evidence; acceptance waits for one bounded live sentence/acórdão custody check after the official rate-limit window expires |
 | 2026-09-21 | TRT12 regional precedents use the tribunal-linked IRDR tracker and official thesis page with fail-closed source parsing | `JUR-03` accepted; active suspension remains distinct from historical suspension, IAC absence is explicit without a fabricated precedent, and current/cancelled IUJ theses retain official custody |
+| 2026-09-21 | Precedent consolidation preserves provider custody and treats explicit status disagreement as data | `JUR-04` accepted; equivalent sources use deterministic hierarchy, discarded aliases remain auditable, and `unknown` never silently overrides an explicit status |
 
 ---
 
@@ -406,7 +407,7 @@ The recommended sequence after blueprint approval is:
 3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-6. Implement `JUR-04` to consolidate TST, TRT12 jurisprudence, IRDR, and regional theses with deterministic hierarchy, conflict handling, and citation custody.
+6. Integrate the accepted research adapters and consolidation contract into the resumable dual-runtime pipeline in `PIP-01` without activating external actions.
 7. Continue through the dependency order in the Track A tables.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case

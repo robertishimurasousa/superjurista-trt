@@ -134,6 +134,36 @@ status, suspension, IAC-coverage, and corpus suite with:
 python3 -m unittest tests.test_trt12_precedent_adapter -v
 ```
 
+## Consolidate official precedent corpora
+
+`scripts/consolidate_precedents.py` merges one or more schema-valid `precedent-corpus`
+artifacts without discarding provenance. Sources are ordered deterministically by legal-source
+type: binding, qualified, normative, summary, orientation, jurisprudence, and persuasive
+jurisprudence.
+
+Equivalent sources share the same origin, normalized reference, and holding. The highest-ranked
+record becomes canonical, while the sidecar report retains each duplicate source identifier,
+official URL, and SHA-256 digest of its exact verbatim excerpt. Repeated identifiers with changed
+content fail closed. An `unknown` status never overrides explicit evidence; two different explicit
+statuses produce `conflicting` plus a structured conflict entry for later human resolution.
+
+Both the legal question and holding must remain present in the verbatim excerpt. This custody gate
+prevents a normalized conclusion from surviving after its supporting quotation is lost.
+
+```bash
+python3 scripts/consolidate_precedents.py \
+  --input /tmp/tst-precedent-corpus.json \
+  --input /tmp/trt12-precedent-corpus.json \
+  --output /tmp/consolidated-precedent-corpus.json \
+  --report-output /tmp/consolidated-precedent-custody.json
+```
+
+Run the deterministic consolidation suite with:
+
+```bash
+python3 -m unittest tests.test_precedent_consolidation -v
+```
+
 ## Assess a sanitized session observation
 
 `pje-session-contract.json` defines provider-neutral states for session probes. A concrete
