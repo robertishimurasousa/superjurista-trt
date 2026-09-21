@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.26.0
+**Version:** 0.27.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 32/100 accepted points
+Track A — TRT12 first instance: 35/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               19.2%
+Program progress:               21.0%
 Track A candidate in review:    6/100 points
 ```
 
@@ -117,10 +117,10 @@ Track A contains exactly 100 points.
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
 | DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
 | JUR — Authoritative research | 15 | 11 | `IN_PROGRESS` |
-| PIP — End-to-end pipeline and gates | 15 | 3 | `IN_PROGRESS` |
+| PIP — End-to-end pipeline and gates | 15 | 6 | `IN_PROGRESS` |
 | VAL — Historical validation | 10 | 0 | `PLANNED` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **32** |  |
+| **Total** | **100** | **35** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -191,7 +191,7 @@ the labor pipeline or either complete runtime is ready.
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
 | PIP-01 | Resumable first-instance orchestrator for Claude Code and Codex | 3 | `ACCEPTED` | On both runtimes, an interrupted fixture resumes without rerunning accepted stages or trusting stale stages | [`scripts/resumable_pipeline.py`](../../scripts/resumable_pipeline.py), [`runtime/pipelines/execution-state.v1.schema.json`](../../runtime/pipelines/execution-state.v1.schema.json), `tests/test_resumable_pipeline.py`, and [`runtime`](../../runtime); 10 deterministic tests cover interrupted resume, cross-runtime checkpoint reuse with runtime-specific dispatch, output and dependency freshness, current-gate revalidation, source and contract invalidation, dependency order, bounded attempts, required outputs, atomic persistence, and schema-valid runtime-neutral state. No external action capability is present |
-| PIP-02 | Conditional claim tracks | 3 | `PLANNED` | Research, evidence, calculation, and procedural tracks run only when routed; abstention remains valid | — |
+| PIP-02 | Conditional claim tracks | 3 | `ACCEPTED` | Research, evidence, calculation, and procedural tracks run only when routed; abstention remains valid | [`scripts/build_conditional_work_plan.py`](../../scripts/build_conditional_work_plan.py), [`runtime/pipelines/conditional-work-plan.v1.schema.json`](../../runtime/pipelines/conditional-work-plan.v1.schema.json), and `tests/test_conditional_work_plan.py`; 11 deterministic tests cover exact per-claim track dispatch, zero-dispatch abstention, mixed routed/abstained fixtures, stable ordering and identifiers, route-status consistency, question and abstention boundaries, duplicate claims, invalid input contracts, schema-valid output, and fail-closed routed claims with missing work |
 | PIP-03 | Claim/reasoning/disposition congruence gates | 4 | `PLANNED` | Missing claims and orphan dispositions fail; acceptance fixture reaches 100% coverage | — |
 | PIP-04 | Citation, source, calculation, and final gates | 3 | `PLANNED` | Unsupported quotations and inconsistent criteria fail closed; source unavailability is explicit | — |
 | PIP-05 | Cross-runtime synthetic/sanitized end-to-end fixture | 2 | `PLANNED` | Claude Code and Codex each produce all required artifacts and a passing shared global gate from a clean workspace | — |
@@ -378,6 +378,7 @@ Next acceptance target:
 | 2026-09-21 | TRT12 regional precedents use the tribunal-linked IRDR tracker and official thesis page with fail-closed source parsing | `JUR-03` accepted; active suspension remains distinct from historical suspension, IAC absence is explicit without a fabricated precedent, and current/cancelled IUJ theses retain official custody |
 | 2026-09-21 | Precedent consolidation preserves provider custody and treats explicit status disagreement as data | `JUR-04` accepted; equivalent sources use deterministic hierarchy, discarded aliases remain auditable, and `unknown` never silently overrides an explicit status |
 | 2026-09-21 | Accepted stages are reusable only through a runtime-neutral checkpoint bound to current contracts, sources, dependencies, outputs, and gates | `PIP-01` accepted; Claude Code and Codex share resume evidence while retaining separate dispatch bindings, and stale stages invalidate their dependents |
+| 2026-09-21 | Conditional work is derived solely from accepted claim-level route flags | `PIP-02` accepted; disabled tracks never dispatch, abstention remains explicit and valid, and routed claims cannot silently lose all work items |
 
 ---
 
@@ -408,7 +409,7 @@ The recommended sequence after blueprint approval is:
 3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-6. Implement `PIP-02` so research, evidence, calculation, and procedural work executes only for explicitly routed claim tracks while abstention remains valid.
+6. Implement `PIP-03` claim/reasoning/disposition congruence gates and prove exact coverage on a deterministic acceptance fixture.
 7. Continue through the dependency order in the Track A tables.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case

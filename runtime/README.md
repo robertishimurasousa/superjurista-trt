@@ -36,6 +36,7 @@ runtime/
 │   ├── pje-task-discovery-contract.json
 │   └── README.md
 └── pipelines/
+    ├── conditional-work-plan.v1.schema.json
     ├── execution-state.v1.schema.json
     ├── smoke.json
     └── trt12-first-instance.json
@@ -132,6 +133,24 @@ python3 -m unittest tests.test_resumable_pipeline -v
 
 The module plans and checkpoints execution; it does not perform external actions, PJe writes,
 filing, signing, or publication.
+
+## Dispatch only routed claim tracks
+
+`scripts/build_conditional_work_plan.py` converts the accepted `issue-route` artifact into a
+versioned `conditional-work-plan`. Each enabled legal research, evidence analysis, calculation
+review, or procedural review flag becomes one stable claim-scoped work item. Disabled tracks do
+not appear in the dispatch sequence.
+
+An explicitly abstained claim remains in the plan with its reasons and produces no dispatch. A
+routed claim without work, a repeated track, mismatched questions, or a work identifier attached
+to another claim fails closed.
+
+```bash
+python3 -m unittest tests.test_conditional_work_plan -v
+```
+
+This layer controls which work may run. It does not decide a real claim's route and does not
+replace the human review and calibration required for `DOM-05`.
 
 ## Validate the TRT12 tribunal profile
 

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/conditional-work-plan.v1.schema.json",
+  "title": "Conditional claim work plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "route_status",
+          "work_items",
+          "abstention_reasons"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "pattern": "^CLM-[0-9]{3,}$"
+          },
+          "route_status": {
+            "type": "string",
+            "enum": [
+              "routed",
+              "abstained"
+            ]
+          },
+          "work_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "work_id",
+                "track",
+                "questions",
+                "route_reason"
+              ],
+              "properties": {
+                "work_id": {
+                  "type": "string",
+                  "pattern": "^WRK-CLM-[0-9]{3,}-(LEGAL|EVIDENCE|CALCULATION|PROCEDURAL)$"
+                },
+                "track": {
+                  "type": "string",
+                  "enum": [
+                    "legal_research",
+                    "evidence_analysis",
+                    "calculation_review",
+                    "procedural_review"
+                  ]
+                },
+                "questions": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "route_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "abstention_reasons": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
