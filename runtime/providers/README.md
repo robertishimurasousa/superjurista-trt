@@ -61,6 +61,42 @@ network:
 python3 -m unittest tests.test_tst_official_adapter -v
 ```
 
+## Query official TRT12 PJe jurisprudence
+
+`scripts/trt12_official_adapter.py` implements `legal_research` for the TRT12 source selected
+by the tribunal profile. The current TRT12 portal delegates first- and second-instance research
+to the official Falcão repository. The adapter therefore fixes the tribunal filter to `TRT12`,
+queries the `sentencas` and `acordaos` collections together, follows bounded zero-based pages,
+and retrieves the selected document again from the collection-specific detail endpoint before
+accepting its verbatim custody.
+
+Coverage is deliberately explicit. Falcão is the current PJe-backed source and the TRT12 portal
+states that it exposes documents from 2016 onward. Older physical and Provi collections described
+by historical service material are not exposed by the current portal, so this adapter records
+`current_pje` coverage and a legacy-coverage gap on every normalized source. Sentences receive the
+`trt12_first_instance` scope and acórdãos receive `trt12_second_instance`; neither is assigned a
+binding or current precedential status that the official response does not provide.
+
+The public application establishes a short-lived session and enforces a network rate limit. A
+rate-limit response fails closed and must be retried only after the official window expires.
+
+Generate a bounded public corpus outside the repository:
+
+```bash
+python3 scripts/trt12_official_adapter.py \
+  --query 'horas extras' \
+  --output /tmp/trt12-jurisprudence-corpus.json \
+  --tribunal-code TRT12 \
+  --limit 2 \
+  --page-size 5
+```
+
+Run the network-free contract and normalization suite:
+
+```bash
+python3 -m unittest tests.test_trt12_official_adapter -v
+```
+
 ## Assess a sanitized session observation
 
 `pje-session-contract.json` defines provider-neutral states for session probes. A concrete
