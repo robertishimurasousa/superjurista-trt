@@ -43,8 +43,8 @@ STF-STJ → **CJF unificada**.
 ## Instalação
 
 ```bash
-pip install -r requirements.txt
-claude mcp add -s user tnu-eproc -- python C:/Users/georg/.claude/mcp-servers/tnu-eproc/server.py
+python3 -m pip install -r requirements.txt
+claude mcp add -s user tnu-eproc -- python3 C:/Users/georg/.claude/mcp-servers/tnu-eproc/server.py
 ```
 
 ## Detalhes técnicos (engenharia reversa 10/07/2026)

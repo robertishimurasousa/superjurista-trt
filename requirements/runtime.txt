@@ -1,0 +1,5 @@
+-r pje.txt
+-r pdf.txt
+-r auth.txt
+# macOS system Python 3.9 uses LibreSSL; urllib3 2.x does not support that TLS runtime.
+urllib3>=1.26,<2

@@ -24,7 +24,7 @@ normalização (NFD sem acentos + casefold + espaços colapsados) de
 verificar_citacoes.py — reimplementada aqui porque os scripts são standalone.
 
 Uso:
-  python scripts/merge_fontes.py <workspace> [--id N]
+  python3 scripts/merge_fontes.py <workspace> [--id N]
 
 Exit codes:
   0 - merge concluído sem rejeições (ou nenhum parcial encontrado — arquivo NÃO

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "evidence_items": [
+    {
+      "evidence_id": "EVD-001",
+      "claim_ids": [
+        "CLM-001"
+      ],
+      "type": "time_record",
+      "source_document_id": "DOC-014",
+      "source_locator": "pages 3-8",
+      "proposition": "The time records contain uniform entries during the reviewed period.",
+      "relation": "supports_claim",
+      "limitations": [
+        "The fixture contains no witness testimony."
+      ],
+      "analysis_status": "pending",
+      "conflicts_with_evidence_ids": []
+    }
+  ],
+  "uncovered_claim_ids": []
+}

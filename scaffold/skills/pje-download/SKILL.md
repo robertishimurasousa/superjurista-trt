@@ -8,33 +8,67 @@ allowed-tools: Bash, Read, Write
 
 # PJE Download
 
+> **Legacy boundary:** the scripts below implement the original TRF5 workflow and are retained
+> as reuse evidence. They are not the TRT12 adapter. TRT12 task and process listing must bind
+> reviewed provider evidence to `scripts/pje_task_discovery.py`; do not reuse TRF5 endpoints,
+> task names, pagination behavior, or payload fields as TRT12 facts.
+
 REGRA ABSOLUTA: Execute os scripts existentes. NAO crie codigo novo.
 
 ## Scripts Disponiveis
 
 | Script | Comando |
 |--------|---------|
-| Extrair cookies HAR | `python .claude/skills/pje-download/scripts/extrair_cookies_har.py` |
-| Listar processos | `python .claude/skills/pje-download/scripts/listar_processos.py` |
-| Baixar PDFs completos | `python .claude/skills/pje-download/scripts/baixar_pdfs.py` |
-| Baixar por tipo | `python .claude/skills/pje-download/scripts/baixar_por_tipo.py` |
-| Listar documentos | `python .claude/skills/pje-download/scripts/listar_documentos.py` |
-| Buscar por numero | `python .claude/skills/pje-download/scripts/buscar_processo_por_numero.py` |
-| Extrair indice | `python .claude/skills/pje-download/scripts/extrair_indice_completo.py` |
-| Baixar por ID | `python .claude/skills/pje-download/scripts/baixar_por_id.py` |
+| Extrair cookies HAR | `python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py` |
+| Sanitizar mapa HAR | `python3 scripts/sanitize_pje_har.py` |
+| Validar mapa HAR | `python3 scripts/validate_pje_har_map.py` |
+| Listar processos | `python3 .claude/skills/pje-download/scripts/listar_processos.py` |
+| Baixar PDFs completos | `python3 .claude/skills/pje-download/scripts/baixar_pdfs.py` |
+| Baixar por tipo | `python3 .claude/skills/pje-download/scripts/baixar_por_tipo.py` |
+| Listar documentos | `python3 .claude/skills/pje-download/scripts/listar_documentos.py` |
+| Buscar por numero | `python3 .claude/skills/pje-download/scripts/buscar_processo_por_numero.py` |
+| Extrair indice | `python3 .claude/skills/pje-download/scripts/extrair_indice_completo.py` |
+| Baixar por ID | `python3 .claude/skills/pje-download/scripts/baixar_por_id.py` |
 
 ## Comandos Prontos
 
 ### Extrair cookies de HAR (fallback)
 ```bash
-python .claude/skills/pje-download/scripts/extrair_cookies_har.py \
+python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --har ~/Downloads/pje_sessao.har \
   --output pje_session.json
 ```
 
+### Create a reviewable HAR evidence map
+
+Keep the raw authorized HAR outside the repository. The command below removes values and
+bodies while preserving the endpoint, capability, and failure-state structure needed by the
+TRT adapter work:
+
+```bash
+python3 scripts/sanitize_pje_har.py \
+  --input ~/Downloads/pje_authorized.har \
+  --output tests/fixtures/sanitized/trt12-first-instance-har-map.json \
+  --tribunal-code TRT12 \
+  --instance 1 \
+  --authorized-capture
+```
+
+Review the generated JSON before committing it. Never commit the raw HAR or
+`pje_session.json`.
+
+```bash
+python3 scripts/validate_pje_har_map.py \
+  --map tests/fixtures/sanitized/trt12-first-instance-har-map.json \
+  --tribunal-code TRT12 \
+  --instance 1
+```
+
+Resolve every reported gap before requesting human review.
+
 ### Listar processos de uma fila
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py \
+python3 .claude/skills/pje-download/scripts/listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --limite 5 \
@@ -43,7 +77,7 @@ python .claude/skills/pje-download/scripts/listar_processos.py \
 
 ### Baixar PDFs completos
 ```bash
-python .claude/skills/pje-download/scripts/baixar_pdfs.py \
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py \
   --cookies pje_session.json \
   --processos processos.json \
   --output data/sentenca \
@@ -52,7 +86,7 @@ python .claude/skills/pje-download/scripts/baixar_pdfs.py \
 
 ### Download seletivo (processos grandes)
 ```bash
-python .claude/skills/pje-download/scripts/baixar_por_tipo.py \
+python3 .claude/skills/pje-download/scripts/baixar_por_tipo.py \
   --cookies pje_session.json \
   --id-processo ID_AQUI \
   --relevantes \
@@ -66,7 +100,7 @@ python .claude/skills/pje-download/scripts/baixar_por_tipo.py \
 O script `listar_processos.py` suporta filtros avancados. Para ver todos:
 
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py --help
+python3 .claude/skills/pje-download/scripts/listar_processos.py --help
 ```
 
 ### Filtros Disponiveis
@@ -89,22 +123,22 @@ python .claude/skills/pje-download/scripts/listar_processos.py --help
 
 **Processos prioritarios de idosos:**
 ```bash
-python listar_processos.py --cookies pje_session.json --modo sentenca --prioridade --limite 10
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --prioridade --limite 10
 ```
 
 **Processos urgentes com liminar:**
 ```bash
-python listar_processos.py --cookies pje_session.json --modo decisao --tags URGENTE --liminar
+python3 listar_processos.py --cookies pje_session.json --modo decisao --tags URGENTE --liminar
 ```
 
 **Processos contra o INSS:**
 ```bash
-python listar_processos.py --cookies pje_session.json --modo sentenca --polo-passivo INSS
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --polo-passivo INSS
 ```
 
 **Processos novos nao triados:**
 ```bash
-python listar_processos.py --cookies pje_session.json --modo sentenca --sem-etiqueta --nao-conferidos
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --sem-etiqueta --nao-conferidos
 ```
 
 ---

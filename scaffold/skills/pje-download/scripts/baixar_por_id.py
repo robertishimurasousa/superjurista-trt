@@ -8,10 +8,10 @@ especificando o intervalo de IDs (idDe=idAte para documento único).
 
 Uso:
     # Baixar lista de IDs de um arquivo JSON
-    python baixar_por_id.py --cookies pje_session.json --id-processo 2683123 --ids-file selecao.json --output-dir ./docs/
+    python3 baixar_por_id.py --cookies pje_session.json --id-processo 2683123 --ids-file selecao.json --output-dir ./docs/
 
     # Baixar IDs específicos
-    python baixar_por_id.py --cookies pje_session.json --id-processo 2683123 --ids 100813527,127729955,124323840 --output-dir ./docs/
+    python3 baixar_por_id.py --cookies pje_session.json --id-processo 2683123 --ids 100813527,127729955,124323840 --output-dir ./docs/
 
 Saída:
     PDFs individuais nomeados por ID e descrição.
@@ -30,7 +30,7 @@ from urllib.parse import urlencode
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    print("[ERRO] BeautifulSoup não instalado. Execute: pip install beautifulsoup4")
+    print("[ERRO] BeautifulSoup não instalado. Execute: python3 -m pip install beautifulsoup4")
     sys.exit(1)
 
 

@@ -212,8 +212,8 @@ color: yellow
 
 ```bash
 # Comando para download seletivo (um por tipo)
-python baixar_pdfs.py --tipo [value1] --output tipo1.pdf
-python baixar_pdfs.py --tipo [value2] --output tipo2.pdf
+python3 baixar_pdfs.py --tipo [value1] --output tipo1.pdf
+python3 baixar_pdfs.py --tipo [value2] --output tipo2.pdf
 ...
 ```
 
@@ -221,7 +221,7 @@ Ou, se COMPLETO:
 
 ```bash
 # Comando para download completo
-python baixar_pdfs.py --output processo_completo.pdf
+python3 baixar_pdfs.py --output processo_completo.pdf
 ```
 
 ---
@@ -328,7 +328,7 @@ Download completo é mais eficiente.
 ## Execução
 
 ```bash
-python baixar_pdfs.py --output processo_completo.pdf
+python3 baixar_pdfs.py --output processo_completo.pdf
 ```
 
 ---
@@ -431,14 +431,14 @@ Download seletivo reduzirá o volume em aproximadamente 84%.
 
 ```bash
 # Downloads por tipo (executar sequencialmente)
-python baixar_pdfs.py --tipo 12 --output petição_inicial.pdf
-python baixar_pdfs.py --tipo 64 --output decisoes.pdf
-python baixar_pdfs.py --tipo 837 --output laudos.pdf
-python baixar_pdfs.py --tipo 23 --output embargos.pdf
-python baixar_pdfs.py --tipo 13 --output alegacoes_finais.pdf
-python baixar_pdfs.py --tipo 158 --output peticoes_outras.pdf
-python baixar_pdfs.py --tipo 20 --output contrarrazoes.pdf
-python baixar_pdfs.py --tipo 119 --output despachos.pdf
+python3 baixar_pdfs.py --tipo 12 --output petição_inicial.pdf
+python3 baixar_pdfs.py --tipo 64 --output decisoes.pdf
+python3 baixar_pdfs.py --tipo 837 --output laudos.pdf
+python3 baixar_pdfs.py --tipo 23 --output embargos.pdf
+python3 baixar_pdfs.py --tipo 13 --output alegacoes_finais.pdf
+python3 baixar_pdfs.py --tipo 158 --output peticoes_outras.pdf
+python3 baixar_pdfs.py --tipo 20 --output contrarrazoes.pdf
+python3 baixar_pdfs.py --tipo 119 --output despachos.pdf
 ```
 
 ---

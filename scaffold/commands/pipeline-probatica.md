@@ -58,7 +58,7 @@ allowed-tools: Read Task Bash TodoWrite
     - RETOMADA: antes de despachar qualquer etapa, o gate diz o que já está válido — o que está OK não roda de novo. Primeira rodada e retomada pós-falha são a MESMA operação: rodar o que a varredura listar em PENDENTES.
     - CONDUZIR POR CAMINHO: o orquestrador passa paths prontos; o subagente lê as entradas (Read) e GRAVA o documento no arquivo (Write). O documento NUNCA volta inline na resposta.
     - RESPOSTA DE UMA LINHA: cada subagente responde apenas "<etapa> OK | <arquivo>" — quem confere o conteúdo é o script, não o orquestrador lendo.
-    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python scripts/verificar_probatica.py "$WORKSPACE" --etapa <nome>`.
+    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa <nome>`.
     - Subagentes LEEM o próprio prompt via Read (.claude/agents/analise/...); o orquestrador não copia a capacidade deles — injeta só os caminhos e o lembrete metodológico.
     - As análises 2a/2b/2c (pearl, haack, fbd) são INDEPENDENTES entre si: despachar as pendentes em PARALELO (até 3 Tasks opus no MESMO turno). Dependem TODAS do inventário (Etapa 1); a consolidação (Etapa 3) só roda depois delas.
     - Subagentes nunca usam TodoWrite.
@@ -121,7 +121,7 @@ allowed-tools: Read Task Bash TodoWrite
          rodar `/relatar-processo <numero>` antes:
          - $WORKSPACE/$NUMERO-linha-tempo.md
          - $WORKSPACE/$NUMERO-relatorio.md
-      4. Bash: python scripts/verificar_probatica.py "$WORKSPACE"
+      4. Bash: python3 scripts/verificar_probatica.py "$WORKSPACE"
          → a linha "PENDENTES: ..." é o plano de execução. Tudo "(nenhuma)" → pular direto à
          Etapa 4 (o pipeline já estava completo). Reportar ao usuário o que será PULADO por já
          estar válido.
@@ -153,7 +153,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "inventario OK | $NUMERO-inventario.md" — NÃO imprimir o documento.</passo>
       <restricoes>Apenas catalogação descritiva (sem juízo de força/credibilidade); NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa inventario
+      Validar: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa inventario
       (exit 1 → contingência etapa_invalida).
     </acao_orquestrador>
     <transicao>Gate 0 → Etapa 2.</transicao>
@@ -192,7 +192,7 @@ allowed-tools: Read Task Bash TodoWrite
         generalizações e depurar as espúrias; escala ordinal
         (robusta/moderada/frágil/especulativa), sem valores numéricos.
       Aguardar TODAS as Tasks despachadas e validar CADA análise:
-      Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa pearl   (idem haack, fbd)
+      Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa pearl   (idem haack, fbd)
       (exit 1 → contingência etapa_invalida: redespachar SÓ a análise reprovada com o motivo
       do gate anexado; máx 2 tentativas; na 2ª falha → contingência analise_falha_2x: PARAR).
     </acao_orquestrador>
@@ -220,7 +220,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "consolidado OK | $NUMERO-probatica-consolidado.md" — NÃO imprimir o documento.</passo>
       <restricoes>NUNCA inventar análises ausentes dos relatórios; NUNCA omitir divergências; NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa consolidado
+      Validar: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa consolidado
       (exit 1 → contingência etapa_invalida; 2ª falha → PARAR e reportar).
     </acao_orquestrador>
     <transicao>Gate 0 → Etapa 4.</transicao>
@@ -228,7 +228,7 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="4" nome="Finalização">
     <acao_orquestrador>
-      1. Gate final: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --gate
+      1. Gate final: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --gate
          (exit 1 → algo regrediu; reportar o output e PARAR).
       2. Resumo de 1 tela ao usuário, SEM transcrever conteúdo dos documentos:
          - Processo ($NUMERO) e $WORKSPACE

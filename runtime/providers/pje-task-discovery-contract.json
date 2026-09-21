@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "interface_id": "pje_case_acquisition",
+  "interface_version": 1,
+  "required_capabilities": [
+    "list_tasks",
+    "list_task_cases"
+  ],
+  "max_task_pages": 50,
+  "max_case_pages_per_task": 100
+}

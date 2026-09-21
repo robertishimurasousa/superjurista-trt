@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "classifier_version": 1,
+  "document_types": [
+    "initial_pleading",
+    "defense",
+    "reply",
+    "hearing_record",
+    "expert_report",
+    "documentary_evidence",
+    "calculations",
+    "settlement",
+    "procedural_order",
+    "interlocutory_decision",
+    "judgment",
+    "appeal",
+    "other_petition",
+    "unknown"
+  ],
+  "rules": [
+    {
+      "rule_id": "initial-pleading",
+      "document_type": "initial_pleading",
+      "priority": 100,
+      "phrases": [
+        "petição inicial",
+        "reclamação trabalhista"
+      ]
+    },
+    {
+      "rule_id": "defense",
+      "document_type": "defense",
+      "priority": 90,
+      "phrases": [
+        "contestação",
+        "defesa escrita"
+      ]
+    },
+    {
+      "rule_id": "reply",
+      "document_type": "reply",
+      "priority": 95,
+      "phrases": [
+        "réplica à contestação",
+        "réplica"
+      ]
+    },
+    {
+      "rule_id": "hearing-record",
+      "document_type": "hearing_record",
+      "priority": 100,
+      "phrases": [
+        "ata de audiência"
+      ]
+    },
+    {
+      "rule_id": "expert-report",
+      "document_type": "expert_report",
+      "priority": 90,
+      "phrases": [
+        "laudo pericial",
+        "laudo de perícia"
+      ]
+    },
+    {
+      "rule_id": "documentary-evidence",
+      "document_type": "documentary_evidence",
+      "priority": 50,
+      "phrases": [
+        "documento comprobatório",
+        "prova documental"
+      ]
+    },
+    {
+      "rule_id": "calculations",
+      "document_type": "calculations",
+      "priority": 90,
+      "phrases": [
+        "cálculos de liquidação",
+        "planilha de cálculo"
+      ]
+    },
+    {
+      "rule_id": "settlement",
+      "document_type": "settlement",
+      "priority": 90,
+      "phrases": [
+        "acordo homologado",
+        "termo de acordo"
+      ]
+    },
+    {
+      "rule_id": "procedural-order",
+      "document_type": "procedural_order",
+      "priority": 90,
+      "phrases": [
+        "despacho"
+      ]
+    },
+    {
+      "rule_id": "interlocutory-decision",
+      "document_type": "interlocutory_decision",
+      "priority": 90,
+      "phrases": [
+        "decisão interlocutória",
+        "decisão"
+      ]
+    },
+    {
+      "rule_id": "judgment",
+      "document_type": "judgment",
+      "priority": 100,
+      "phrases": [
+        "sentença"
+      ]
+    },
+    {
+      "rule_id": "appeal",
+      "document_type": "appeal",
+      "priority": 90,
+      "phrases": [
+        "recurso ordinário",
+        "contrarrazões"
+      ]
+    },
+    {
+      "rule_id": "other-petition",
+      "document_type": "other_petition",
+      "priority": 10,
+      "phrases": [
+        "petição"
+      ]
+    }
+  ]
+}

@@ -11,9 +11,9 @@ Para tipo sentenca, a ingestão é condicionada ao gate determinístico
 apenas pasta não-vazia. `--forcar` ignora o gate (nunca o destino existente).
 
 Uso:
-  python scripts/ingerir_kanban.py <numero-ou-caminho> [--tipo sentenca] [--forcar]
+  python3 scripts/ingerir_kanban.py <numero-ou-caminho> [--tipo sentenca] [--forcar]
       → ingere UM workspace (exit 0 = ingerido; 1 = erro)
-  python scripts/ingerir_kanban.py --varrer [--tipo sentenca]
+  python3 scripts/ingerir_kanban.py --varrer [--tipo sentenca]
       → varre data/<tipo>/ atrás de workspaces flat com nome CNJ e ingere os
         que passam no gate; uma linha por workspace (exit 0 sempre)
 """

@@ -2,6 +2,28 @@
 __pycache__/
 *.pyc
 
+# Secrets and authenticated browser state
+.env
+.env.*
+!.env.example
+*.har
+!tests/fixtures/sanitized/**/*.har
+pje_session*.json
+sessao*.json
+cookies*
+headers*.json
+storage-state*.json
+auth-state*.json
+*.log
+
+# Local case data and generated workspaces
+data/
+cases/
+processos/
+workspace/
+processos*.json
+indice_documentos*.json
+
 # PDFs (grandes demais para git)
 *.pdf
 

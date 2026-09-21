@@ -142,16 +142,60 @@ projeto/
 
 O sistema baseia-se no framework v3.0 de orquestracao agentica com padrao "Orquestrador Cego" e injecao de contexto. Neste padrao, commands (orquestradores) delegam tarefas via Task tool para subagentes que possuem contexto isolado -- cada agente le seu proprio prompt, GRAVA o documento em disco e responde 1 linha de status. A validacao entre etapas e deterministica, por gate de script (`scripts/verificar_<sistema>.py`), e os pipelines sao retomaveis: a varredura inicial lista as etapas PENDENTES e etapa ja valida nao roda de novo. Templates e referencias completas estao disponiveis em `spec/`.
 
-## Dependencias
+## Dependencies
 
-**Python 3.8+:**
+The core scripts require Python 3.9 or newer. Local MCP servers require Python
+3.10 or newer because the supported MCP SDK line is `mcp>=1.28,<2`.
+
 ```bash
-pip install requests beautifulsoup4 pdfplumber PyPDF2 pdf2image pytesseract
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements/runtime.txt
+python3 scripts/check_python_contract.py --root . \
+  --contract runtime/python-contract.json --mode core
 ```
 
-**Sistema (para OCR):**
-- Tesseract OCR com pacote de idioma portugues
-- Poppler (Windows: extrair para `~/poppler/`)
+For local MCP servers, repeat the contract check with a Python 3.10+
+interpreter before registering them:
+
+```bash
+python3 scripts/check_python_contract.py --root . \
+  --contract runtime/python-contract.json --mode mcp
+```
+
+OCR also requires Tesseract with Portuguese language data and Poppler installed
+on the operating system. The canonical machine-readable contract is
+`runtime/python-contract.json`.
+
+## Quality gate
+
+Local development and CI use the same deterministic entry point:
+
+```bash
+python3 scripts/quality_gate.py --root .
+```
+
+It validates the Python contracts, source formatting, executable Python syntax,
+credential and case-data hygiene, the TRT12 tribunal profile, legal artifact schemas and
+fixtures, JSON contracts, the generated reuse ledger, and the complete unit-test suite.
+GitHub Actions runs this command on the
+supported Python 3.9 and Python 3.10 boundaries.
+
+## Data hygiene
+
+The repository rejects commit-ready environment files, authenticated browser
+captures, PJe sessions, cookie/header stores, logs, and local case-data
+directories. Properly ignored local files are not opened by the checker.
+
+```bash
+python3 scripts/check_data_hygiene.py \
+  --root . \
+  --contract runtime/data-hygiene-contract.json
+```
+
+Findings report only the path, line number, and rule identifier; matched secret
+values are never printed. Sanitized HAR fixtures may be stored only under
+`tests/fixtures/sanitized/` and must remain below the contract size limit.
 
 ## Licenca
 

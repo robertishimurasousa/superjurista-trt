@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "contracts": {
+    "case-context": {
+      "current_version": 1,
+      "schema": "schemas/case-context.v1.schema.json"
+    },
+    "claim-matrix": {
+      "current_version": 1,
+      "schema": "schemas/claim-matrix.v1.schema.json"
+    },
+    "evidence-matrix": {
+      "current_version": 1,
+      "schema": "schemas/evidence-matrix.v1.schema.json"
+    },
+    "issue-route": {
+      "current_version": 1,
+      "schema": "schemas/issue-route.v1.schema.json"
+    },
+    "precedent-corpus": {
+      "current_version": 1,
+      "schema": "schemas/precedent-corpus.v1.schema.json"
+    },
+    "claim-analysis": {
+      "current_version": 1,
+      "schema": "schemas/claim-analysis.v1.schema.json"
+    },
+    "disposition-matrix": {
+      "current_version": 1,
+      "schema": "schemas/disposition-matrix.v1.schema.json"
+    },
+    "document-classification": {
+      "current_version": 1,
+      "schema": "schemas/document-classification.v1.schema.json"
+    },
+    "labor-report": {
+      "current_version": 1,
+      "schema": "schemas/labor-report.v1.schema.json"
+    }
+  }
+}

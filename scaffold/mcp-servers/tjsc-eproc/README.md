@@ -8,7 +8,7 @@ Referencia: Tutorial de Pesquisa da Jurisprudencia TJSC (atualizado 06/10/2025)
 
 ```bash
 cd .claude/mcp-servers/tjsc-eproc
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## Configuracao no settings.json
@@ -19,7 +19,7 @@ Adicionar ao arquivo `.claude/settings.json` do projeto ou `~/.claude/settings.j
 {
   "mcpServers": {
     "tjsc-eproc": {
-      "command": "python",
+      "command": "python3",
       "args": [".claude/mcp-servers/tjsc-eproc/server.py"],
       "cwd": "."
     }

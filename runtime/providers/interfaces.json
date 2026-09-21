@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "interfaces": {
+    "pje_case_acquisition": {
+      "interface_id": "pje_case_acquisition",
+      "interface_version": 1,
+      "required_capabilities": [
+        "validate_session",
+        "discover_case",
+        "list_documents",
+        "fetch_document"
+      ],
+      "max_pages": 100
+    },
+    "legal_research": {
+      "interface_id": "legal_research",
+      "interface_version": 1,
+      "required_capabilities": [
+        "search",
+        "fetch_source"
+      ],
+      "max_pages": 100
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "claims": [
+    {
+      "claim_id": "claim-1",
+      "label": "overtime",
+      "claimant_position": {
+        "summary": "Overtime was worked and not fully paid.",
+        "source_document_id": "DOC-001",
+        "source_locator": "pages 4-5"
+      },
+      "respondent_positions": [],
+      "requested_remedies": [],
+      "contested_facts": [],
+      "legal_issues": [],
+      "status": "needs_human_review",
+      "review_gaps": [
+        "missing_requested_remedy",
+        "missing_respondent_position"
+      ]
+    }
+  ]
+}

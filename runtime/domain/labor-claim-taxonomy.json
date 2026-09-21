@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "claim_types": [
+    {
+      "label": "overtime",
+      "allowed_remedies": [
+        "overtime_payment",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "meal_rest_interval",
+      "allowed_remedies": [
+        "interval_payment",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "employment_relationship",
+      "allowed_remedies": [
+        "recognition_of_employment",
+        "employment_record_correction",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "termination_payments",
+      "allowed_remedies": [
+        "accrued_salary",
+        "notice_pay",
+        "proportional_vacation",
+        "thirteenth_salary",
+        "fgts_deposit",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "moral_damages",
+      "allowed_remedies": [
+        "compensation"
+      ]
+    },
+    {
+      "label": "unhealthy_work",
+      "allowed_remedies": [
+        "unhealthy_work_additional",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "hazardous_work",
+      "allowed_remedies": [
+        "hazardous_work_additional",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "wage_differences",
+      "allowed_remedies": [
+        "wage_difference_payment",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "fgts",
+      "allowed_remedies": [
+        "fgts_deposit",
+        "statutory_effects"
+      ]
+    },
+    {
+      "label": "attorney_fees",
+      "allowed_remedies": [
+        "attorney_fee_award"
+      ]
+    },
+    {
+      "label": "provisional_relief",
+      "allowed_remedies": [
+        "specific_performance"
+      ]
+    }
+  ]
+}

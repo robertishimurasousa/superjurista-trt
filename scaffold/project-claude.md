@@ -97,33 +97,35 @@ data/                   # SAÍDAS DO SISTEMA — o ÚNICO destino canônico de s
 
 ```bash
 # Listar processos do PJE
-python .claude/skills/pje-download/scripts/listar_processos.py \
+python3 .claude/skills/pje-download/scripts/listar_processos.py \
   --cookies pje_session.json --modo sentenca --limite 5 --output processos.json
 
 # Baixar PDFs (várias opções)
-python .claude/skills/pje-download/scripts/baixar_pdfs.py \
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py \
   --cookies pje_session.json --processos processos.json --output data/sentenca
 
-python .claude/skills/pje-download/scripts/baixar_por_tipo.py \
+python3 .claude/skills/pje-download/scripts/baixar_por_tipo.py \
   --cookies pje_session.json --processo-id ID --tipos "sentença,petição inicial"
 
-python .claude/skills/pje-download/scripts/baixar_por_id.py \
+python3 .claude/skills/pje-download/scripts/baixar_por_id.py \
   --cookies pje_session.json --documento-ids "123,456,789"
 
 # Extrair índice de documentos
-python .claude/skills/pje-download/scripts/extrair_indice_completo.py \
+python3 .claude/skills/pje-download/scripts/extrair_indice_completo.py \
   --cookies pje_session.json --processo-id ID --output indice.json
 
 # Converter PDF para TXT
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/sentenca/<numero>/<numero>.pdf --output data/sentenca/<numero>/
 ```
 
 ## Dependências
 
-**Python 3.8+:**
+**Python 3.9+ para scripts; Python 3.10+ para MCPs locais:**
 ```bash
-pip install requests beautifulsoup4 pdfplumber PyPDF2 pdf2image pytesseract
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements/runtime.txt
 ```
 
 **Sistema (OCR):**

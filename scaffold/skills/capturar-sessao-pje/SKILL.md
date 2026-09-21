@@ -8,6 +8,12 @@ allowed-tools: Bash Read Write mcp__claude-in-chrome__tabs_context_mcp mcp__clau
 
 # Capturar Sessao PJE
 
+> **Legacy boundary:** this fork skill describes the original TRF5 browser workflow and is
+> not the TRT12 runtime adapter. Preserve it as behavioral reference only. TRT12 session
+> probing must use the reviewed provider map and the secret-free classifier in
+> `scripts/pje_session_adapter.py`; no TRT12 endpoint, cookie, MFA, or login behavior may be
+> inferred from the examples below.
+
 <identidade>
 Especialista em automacao de captura de sessao do PJE TRF5 via Chrome MCP.
 </identidade>
@@ -113,7 +119,7 @@ ou "verificacao" e um campo numerico.
 1. Gerar o codigo por software (le `PJE_TOTP_SEED` do `.env`):
 
 ```bash
-python .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py
+python3 .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py
 ```
 
 O script imprime SOMENTE os 6 digitos (ex: `499004`). Guardar esse valor.
@@ -200,7 +206,7 @@ fi
 ### Etapa 7: Validar sessao
 
 ```bash
-python -c "
+python3 -c "
 import json
 d = json.load(open('pje_session.json'))
 cookies = d.get('cookies', {})
@@ -235,9 +241,33 @@ Preciso do arquivo HAR para capturar a sessao do PJE.
 
 Apos receber o caminho:
 ```bash
-python .claude/skills/pje-download/scripts/extrair_cookies_har.py \
+python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --har "CAMINHO_DO_HAR" \
   --output pje_session.json
+```
+
+For adapter discovery evidence, keep the raw HAR outside the repository and generate a
+separate sanitized map:
+
+```bash
+python3 scripts/sanitize_pje_har.py \
+  --input "CAMINHO_DO_HAR" \
+  --output tests/fixtures/sanitized/trt12-first-instance-har-map.json \
+  --tribunal-code TRT12 \
+  --instance 1 \
+  --authorized-capture
+```
+
+The flag is an operator acknowledgement, not an authorization detector. Review the JSON map
+before committing it. Never commit the raw HAR or `pje_session.json`.
+
+Validate the map before review:
+
+```bash
+python3 scripts/validate_pje_har_map.py \
+  --map tests/fixtures/sanitized/trt12-first-instance-har-map.json \
+  --tribunal-code TRT12 \
+  --instance 1
 ```
 
 ---

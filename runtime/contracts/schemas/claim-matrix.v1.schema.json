@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/claim-matrix.v1.schema.json",
+  "title": "Claim matrix v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "taxonomy_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "label",
+          "claimant_position",
+          "respondent_positions",
+          "requested_remedies",
+          "contested_facts",
+          "legal_issues",
+          "status",
+          "review_gaps"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "pattern": "^CLM-[0-9]{3,}$"
+          },
+          "label": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "claimant_position": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "summary",
+              "source_document_id",
+              "source_locator"
+            ],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_document_id": {
+                "type": "string",
+                "pattern": "^DOC-[0-9]{3,}$"
+              },
+              "source_locator": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "respondent_positions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "defense_id",
+                "respondent_party_id",
+                "summary",
+                "source_document_id",
+                "source_locator"
+              ],
+              "properties": {
+                "defense_id": {
+                  "type": "string",
+                  "pattern": "^DEF-[0-9]{3,}$"
+                },
+                "respondent_party_id": {
+                  "type": "string",
+                  "pattern": "^PTY-[0-9]{3,}$"
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_document_id": {
+                  "type": "string",
+                  "pattern": "^DOC-[0-9]{3,}$"
+                },
+                "source_locator": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "requested_remedies": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            }
+          },
+          "contested_facts": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            }
+          },
+          "legal_issues": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "mapped",
+              "needs_human_review",
+              "abstained"
+            ]
+          },
+          "review_gaps": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "missing_requested_remedy",
+                "missing_respondent_position",
+                "unsupported_claim_label",
+                "unsupported_requested_remedy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

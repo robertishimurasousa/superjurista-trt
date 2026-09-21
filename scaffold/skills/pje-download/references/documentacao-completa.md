@@ -69,12 +69,12 @@ Automatizar o fluxo completo de obtencao de processos do PJE:
 
 **Python:**
 ```bash
-pip install requests beautifulsoup4
+python3 -m pip install requests beautifulsoup4
 ```
 
 **Para conversao (skill converter-pdf):**
 ```bash
-pip install pdfplumber PyPDF2 pdf2image pytesseract
+python3 -m pip install pdfplumber PyPDF2 pdf2image pytesseract
 ```
 
 **Sistema (OCR):**
@@ -126,7 +126,7 @@ Usa arquivo HAR exportado manualmente do DevTools.
 **Como extrair cookies:**
 
 ```bash
-python .claude/skills/pje-download/scripts/extrair_cookies_har.py \
+python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --har ~/Downloads/pje_sessao.har \
   --output pje_session.json
 ```
@@ -136,7 +136,7 @@ python .claude/skills/pje-download/scripts/extrair_cookies_har.py \
 Se voce capturou HAR de listagem e HAR de download separadamente:
 
 ```bash
-python .claude/skills/pje-download/scripts/extrair_cookies_har.py \
+python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --har ~/Downloads/pje_lista.har ~/Downloads/pje_download.har \
   --output pje_session.json
 ```
@@ -176,7 +176,7 @@ A API REST do PJE usa apenas cookies, NAO JWT Bearer.
 ### Passo 3: Listar processos
 
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py \
+python3 .claude/skills/pje-download/scripts/listar_processos.py \
   --cookies pje_session.json \
   --modo [sentenca|decisao] \
   --limite [quantidade] \
@@ -191,7 +191,7 @@ python .claude/skills/pje-download/scripts/listar_processos.py \
 
 **Para processos pequenos (< 300 documentos):**
 ```bash
-python .claude/skills/pje-download/scripts/baixar_pdfs.py \
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py \
   --cookies pje_session.json \
   --processos processos.json \
   --output data/[modo] \
@@ -201,13 +201,13 @@ python .claude/skills/pje-download/scripts/baixar_pdfs.py \
 **Para processos GRANDES (> 300 documentos):**
 ```bash
 # Primeiro, listar indice
-python .claude/skills/pje-download/scripts/listar_documentos.py \
+python3 .claude/skills/pje-download/scripts/listar_documentos.py \
   --cookies pje_session.json \
   --id-processo [ID_INTERNO] \
   --output indice_documentos.json
 
 # Depois, baixar apenas relevantes
-python .claude/skills/pje-download/scripts/baixar_por_tipo.py \
+python3 .claude/skills/pje-download/scripts/baixar_por_tipo.py \
   --cookies pje_session.json \
   --id-processo [ID_INTERNO] \
   --relevantes \
@@ -217,7 +217,7 @@ python .claude/skills/pje-download/scripts/baixar_por_tipo.py \
 ### Passo 5: Converter para TXT (opcional)
 
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/[modo]/[numero]/[numero].pdf \
   --output data/[modo]/[numero]/
 ```

@@ -1,6 +1,16 @@
 # Credenciais PJE (NUNCA versionar)
-pje_session.json
-pje_session_backup.json
+.env
+.env.*
+!.env.example
+*.har
+!tests/fixtures/sanitized/**/*.har
+pje_session*.json
+sessao*.json
+cookies*
+headers*.json
+storage-state*.json
+auth-state*.json
+*.log
 
 # Dependencias
 node_modules/
@@ -8,8 +18,11 @@ node_modules/
 # PDFs originais (grandes demais para git)
 *.pdf
 
-# Textos extraidos (gerados pelo OCR)
-data/**/*.txt
+# Dados locais de processos e workspaces gerados
+data/
+cases/
+processos/
+workspace/
 
 # Artefatos temporarios
 output/
@@ -18,7 +31,7 @@ output/
 # Dados de processos (podem conter informacoes sensiveis)
 processos*.json
 teste_processos.json
-indice_documentos.json
+indice_documentos*.json
 
 # IDE e sistema
 .vscode/

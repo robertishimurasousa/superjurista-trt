@@ -115,7 +115,7 @@ allowed-tools: Read Task Bash TodoWrite
     - RETOMADA (L13): a varredura da Etapa 0 lista PENDENTES — só as pendentes rodam. Primeira rodada e retomada pós-falha são a MESMA operação: rodar o que a varredura listar.
     - CONDUZIR POR CAMINHO: o orquestrador passa paths; o subagente lê a entrada (Read) e GRAVA o documento no arquivo (Write). O documento NUNCA volta inline na resposta (L5).
     - RESPOSTA DE UMA LINHA: cada subagente responde apenas "<etapa> OK | <arquivo>" — quem confere o conteúdo é o script, não o orquestrador lendo.
-    - VALIDAÇÃO POR SCRIPT (L14): nunca validar lendo o documento; sempre `python scripts/verificar_<sistema>.py "$WORKSPACE" --etapa <nome>` (exit 0 = válida).
+    - VALIDAÇÃO POR SCRIPT (L14): nunca validar lendo o documento; sempre `python3 scripts/verificar_<sistema>.py "$WORKSPACE" --etapa <nome>` (exit 0 = válida).
     - Subagentes LEEM o próprio prompt via Read (não recebem cópia); o orquestrador não copia a capacidade deles.
     - Cada subagente tem contexto ISOLADO (não vê conversa anterior).
     - Etapas de UM pipeline são sequenciais ENTRE SI; pipelines de PROCESSOS distintos são independentes e podem rodar em paralelo (não existe "um por vez" entre processos).
@@ -342,7 +342,7 @@ allowed-tools: Read Task Bash TodoWrite
 
       4. **Rodar o GATE — varredura (retomada):**
          ```bash
-         python scripts/verificar_<sistema>.py "$WORKSPACE"
+         python3 scripts/verificar_<sistema>.py "$WORKSPACE"
          ```
          → A linha `PENDENTES: ...` É o plano de execução. Tudo "(nenhuma)" → pular direto à
          Finalização (o pipeline já estava completo). Reportar ao usuário o que será PULADO
@@ -400,7 +400,7 @@ allowed-tools: Read Task Bash TodoWrite
       1. **Montar prompt-invólucro com variáveis já substituídas** (ver abaixo)
       2. Disparar Task tool com o prompt montado (só se a etapa está em PENDENTES)
       3. Aguardar a linha de status do subagente
-      4. **Validar por SCRIPT:** `python scripts/verificar_<sistema>.py "$WORKSPACE" --etapa [slug-etapa]` (exit 0 = válida)
+      4. **Validar por SCRIPT:** `python3 scripts/verificar_<sistema>.py "$WORKSPACE" --etapa [slug-etapa]` (exit 0 = válida)
       5. Atualizar TodoWrite (etapa atual → completed)
     </acao_orquestrador>
 
@@ -467,7 +467,7 @@ allowed-tools: Read Task Bash TodoWrite
     </prompt_subagente>
 
     <validacao>
-      Bash: `python scripts/verificar_<sistema>.py "$WORKSPACE" --etapa [slug-etapa]`
+      Bash: `python3 scripts/verificar_<sistema>.py "$WORKSPACE" --etapa [slug-etapa]`
       | Exit-code | Significado | Ação |
       |-----------|-------------|------|
       | 0 | [OK] etapa válida | Prosseguir |
@@ -499,7 +499,7 @@ allowed-tools: Read Task Bash TodoWrite
     -->
     <retomada>Se "[slug-merge]" NÃO está em PENDENTES E nenhuma entrada do merge rodou nesta execução → PULAR. Se uma entrada foi regenerada agora, o merge RODA de novo (o artefato antigo está desatualizado).</retomada>
     <acao_orquestrador>
-      Bash: `python scripts/merge_<sistema>.py "$WORKSPACE"`
+      Bash: `python3 scripts/merge_<sistema>.py "$WORKSPACE"`
       → concatena, grava e valida o artefato unificado sem passar conteúdo pelo contexto.
       Exit 1 com "entrada inválida" → voltar à etapa apontada (contingência falha_de_entrada).
     </acao_orquestrador>
@@ -512,7 +512,7 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="N" nome="Finalização">
     <acao_orquestrador>
-      1. **Gate final:** `python scripts/verificar_<sistema>.py "$WORKSPACE" --gate`
+      1. **Gate final:** `python3 scripts/verificar_<sistema>.py "$WORKSPACE" --gate`
          (exit 1 → algo regrediu; reportar o output e PARAR).
       2. Exibir ao usuário:
 

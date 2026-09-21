@@ -18,7 +18,7 @@ silenciosamente (o servidor simplesmente não aparece na sessão).
 {
   "mcpServers": {
     "tjsc-eproc": {
-      "command": "python",
+      "command": "python3",
       "args": ["C:\\Users\\usuario\\projeto\\.claude\\mcp-servers\\tjsc-eproc\\server.py"]
     }
   }

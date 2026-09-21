@@ -4,7 +4,7 @@
 Busca ID interno do processo no PJE a partir do número CNJ.
 
 Uso:
-    python buscar_processo_por_numero.py --cookies pje_session.json --numero 0822811-25.2019.4.05.8100
+    python3 buscar_processo_por_numero.py --cookies pje_session.json --numero 0822811-25.2019.4.05.8100
 """
 
 import json

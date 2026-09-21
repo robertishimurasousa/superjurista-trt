@@ -37,7 +37,7 @@ O PJE utiliza dois sistemas de autenticacao paralelos:
 
 ```bash
 # Combinar HARs de lista e download (recomendado)
-python src/auth/extrair_cookies.py \
+python3 src/auth/extrair_cookies.py \
     --har "~/Downloads/pje_lista.har" "~/Downloads/pje_download.har" \
     --output "data/1_extracao/input/cookies.json"
 ```
@@ -64,14 +64,14 @@ Saida esperada:
 
 ```bash
 # Modo sentenca (padrao)
-python src/api/listar_processos.py \
+python3 src/api/listar_processos.py \
     --cookies "data/1_extracao/input/cookies.json" \
     --modo sentenca \
     --ordem crescente \
     --output "data/1_extracao/input/processos_sentenca.json"
 
 # Modo decisao
-python src/api/listar_processos.py \
+python3 src/api/listar_processos.py \
     --cookies "data/1_extracao/input/cookies.json" \
     --modo decisao \
     --ordem crescente \
@@ -89,7 +89,7 @@ Saida esperada:
 ### 4. Baixar PDFs
 
 ```bash
-python src/api/baixar_pdfs.py \
+python3 src/api/baixar_pdfs.py \
     --cookies "data/1_extracao/input/cookies.json" \
     --processos "data/1_extracao/input/processos_sentenca.json" \
     --output "data/1_extracao/pdfs" \
@@ -102,7 +102,7 @@ python src/api/baixar_pdfs.py \
 ### 5. Extrair Texto (Triagem Inteligente)
 
 ```bash
-python src/processing/extrair_com_triagem.py \
+python3 src/processing/extrair_com_triagem.py \
     --pasta "data/1_extracao/pdfs" \
     --output "data/1_extracao/textos" \
     --salvar-triagem

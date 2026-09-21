@@ -207,7 +207,7 @@ allowed-tools: Read Write Task Bash TodoWrite
 ## Etapa 0 — Preparação, gate e retomada
 1. Validar $ARGUMENTS (parar se vazio/inválido). Calcular $WORKSPACE e $SLUG.
 2. `Bash: test -f "$WORKSPACE/<entrada>"` — se faltar a entrada do pipeline, PARAR.
-3. `Bash: python scripts/verificar_<sistema>.py "$WORKSPACE"` → a linha `PENDENTES: ...`
+3. `Bash: python3 scripts/verificar_<sistema>.py "$WORKSPACE"` → a linha `PENDENTES: ...`
    é o plano. Tudo "(nenhuma)" → pular direto à Finalização (já estava completo).
 4. TodoWrite com todas as etapas — as já válidas nascem `completed`.
 
@@ -218,15 +218,15 @@ allowed-tools: Read Write Task Bash TodoWrite
   já substituído: Passo 1 = `Read: .claude/agents/[categoria]/[nome-agente].md`; ler as
   entradas por caminho; GRAVAR (Write) o documento completo em $WORKSPACE/<saida>;
   responder APENAS "<slug-etapa> OK | <arquivo>" — NÃO imprimir o documento.
-- Validar: `Bash: python scripts/verificar_<sistema>.py "$WORKSPACE" --etapa <slug-etapa>`
+- Validar: `Bash: python3 scripts/verificar_<sistema>.py "$WORKSPACE" --etapa <slug-etapa>`
   (exit 1 → contingência etapa_invalida). Transição ou PARAR.
 
 ## Etapa M — Merge (script, sem LLM) — quando aplicável
-`Bash: python scripts/merge_<sistema>.py "$WORKSPACE"` concatena/valida sem passar o
+`Bash: python3 scripts/merge_<sistema>.py "$WORKSPACE"` concatena/valida sem passar o
 conteúdo pelo contexto. Re-roda se uma entrada foi regenerada nesta execução.
 
 ## Finalização
-`Bash: python scripts/verificar_<sistema>.py "$WORKSPACE" --gate` (exit 1 → algo regrediu,
+`Bash: python3 scripts/verificar_<sistema>.py "$WORKSPACE" --gate` (exit 1 → algo regrediu,
 reportar e PARAR). Exibir o resumo, marcando o que foi REAPROVEITADO vs gerado agora.
 ```
 

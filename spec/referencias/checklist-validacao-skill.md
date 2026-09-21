@@ -187,7 +187,7 @@ Formato correto:
       Se não, instruir usuário a executar captura de sessão.
     </passo>
     <passo numero="2" nome="Listar processos">
-      Executar script: python scripts/listar_processos.py
+      Executar script: python3 scripts/listar_processos.py
     </passo>
   </instrucoes>
 ```
@@ -299,8 +299,8 @@ Caminhos relativos permitidos:
 
 Buscar por padrões proibidos:
   ❌ password: "minhasenha123"
-  ❌ token: "eyJhbGciOiJIUzI1NiIs..."
-  ❌ cookie: "JSESSIONID=ABC123..."
+  ❌ token: "[REDACTED]"
+  ❌ cookie: "[REDACTED]"
 
 Se precisar de exemplo:
   ✅ password: "<SUA_SENHA>"
@@ -341,7 +341,7 @@ Formato:
 
   **Python:**
   ```bash
-  pip install requests beautifulsoup4 pdfplumber
+  python3 -m pip install requests beautifulsoup4 pdfplumber
   ```
 
   **Sistema:**

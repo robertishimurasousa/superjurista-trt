@@ -6,7 +6,7 @@ Servidor MCP para acesso a jurisprudencia do Tribunal de Contas da Uniao (TCU).
 
 ```bash
 cd .claude/mcp-servers/tcu-jurisprudencia
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## Configuracao no Claude Code
@@ -18,7 +18,7 @@ Adicione ao arquivo `~/.claude/settings.json` ou ao settings do projeto:
   "mcpServers": {
     "tcu-jurisprudencia": {
       "type": "stdio",
-      "command": "python",
+      "command": "python3",
       "args": [".claude/mcp-servers/tcu-jurisprudencia/server.py"]
     }
   }

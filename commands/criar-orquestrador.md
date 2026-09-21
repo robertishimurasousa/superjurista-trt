@@ -183,7 +183,7 @@ allowed-tools: Read Write Skill Task Bash TodoWrite AskUserQuestion Glob
   <sufixo_gate_retomada>
     [FALHA NO PADRÃO v3.0.
     - Etapa 0 DEVE rodar o gate (varredura → "PENDENTES: ..." é o plano) e criar TodoWrite com as etapas já válidas como completed
-    - Cada etapa DEVE ter cláusula de retomada (pula se o slug não está em PENDENTES) + validação por "Bash: python scripts/verificar_<sistema>.py --etapa <nome>"
+    - Cada etapa DEVE ter cláusula de retomada (pula se o slug não está em PENDENTES) + validação por "Bash: python3 scripts/verificar_<sistema>.py --etapa <nome>"
     - O invólucro do subagente DEVE mandar GRAVAR (Write) + responder 1 linha ("<etapa> OK | <arquivo>") + NÃO imprimir o documento
     - DEVE existir o gate scripts/verificar_<sistema>.py (importa rodar_cli de verificar_pipeline)
     Corrija e regenere.]
@@ -477,7 +477,7 @@ allowed-tools: Read Write Skill Task Bash TodoWrite AskUserQuestion Glob
              <passo numero="4">Responder APENAS: "[slug-etapa] OK | $NUMERO-[tipo].md" — NÃO imprimir o documento.</passo>
              <restricoes>NUNCA usar TodoWrite; NÃO imprimir o documento na resposta.</restricoes>
              ═══════════════════════════════════════════════════════════
-             Validar: Bash: python scripts/verificar_[sistema].py "$WORKSPACE" --etapa [slug-etapa]
+             Validar: Bash: python3 scripts/verificar_[sistema].py "$WORKSPACE" --etapa [slug-etapa]
              (exit 1 → redespachar a MESMA etapa com o motivo do gate; máx 2x). Atualizar TodoWrite.
            </acao_orquestrador>
 

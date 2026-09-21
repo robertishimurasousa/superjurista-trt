@@ -61,7 +61,7 @@ allowed-tools: Read Task Bash TodoWrite
     - RETOMADA: antes de despachar, o gate diz o que já está válido — o que está OK não roda de novo. Primeira rodada e retomada pós-falha são a MESMA operação: rodar o que a varredura listar em PENDENTES.
     - CONDUZIR POR CAMINHO: o orquestrador passa paths prontos; o subagente pesquisa via MCP e GRAVA (Write) o relatório E o parcial de fontes no workspace. O documento NUNCA volta inline na resposta.
     - RESPOSTA DE UMA LINHA: cada subagente responde apenas "<fonte> OK | $ID-pesquisa-<fonte>.md" — quem confere o conteúdo é o script, não o orquestrador lendo.
-    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python scripts/verificar_pesquisa.py "$WORKSPACE" --etapa <fonte>`.
+    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapa <fonte>`.
     - Subagentes LEEM o próprio prompt via Read (.claude/agents/pesquisa/...); o orquestrador não copia a capacidade deles — injeta só o TEMA, os caminhos e o lembrete de sintaxe da fonte.
     - As pesquisas 1a/1b/1c/1d/1e são INDEPENDENTES entre si: despachar as pendentes em PARALELO (até 5 Tasks sonnet no MESMO turno). A consolidação (Etapa 2) só roda depois delas.
     - Subagentes nunca usam TodoWrite.
@@ -127,7 +127,7 @@ allowed-tools: Read Task Bash TodoWrite
            $WORKSPACE = data/pesquisa/<slug>; $ID = <slug> (basename). SEM timestamp — mesmo tema
            ⇒ mesmo workspace ⇒ retomada. Bash: mkdir -p "$WORKSPACE" se não existir.
            Ex.: "Pensão por morte homoafetivo" → data/pesquisa/pensao-por-morte-homoafetivo.
-      3. Bash: python scripts/verificar_pesquisa.py "$WORKSPACE"
+      3. Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE"
          → a linha "PENDENTES: ..." é o plano de execução. Tudo "(nenhuma)" → pular direto à
          Etapa 3 (a pesquisa já estava completa). Reportar ao usuário o que será PULADO por já
          estar válido.
@@ -179,7 +179,7 @@ allowed-tools: Read Task Bash TodoWrite
         Sintaxe TNU: e ou nao prox * "frase" (prox SEM número; wildcard em sufixo ou prefixo);
         use somente_precedentes_relevantes para os representativos; foque uniformização/JEFs.
       Aguardar TODAS as Tasks despachadas e validar CADA fonte:
-      Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapa bnp   (idem cjf, julia, stj, tnu)
+      Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapa bnp   (idem cjf, julia, stj, tnu)
       (exit 1 → contingência etapa_invalida: redespachar SÓ a fonte reprovada com o motivo do gate
       anexado; máx 2 tentativas; na 2ª falha → contingência fonte_indisponivel).
     </acao_orquestrador>
@@ -206,9 +206,9 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "consolidado OK | $ID-precedentes-consolidado.md" — NÃO imprimir o documento.</passo>
       <restricoes>NUNCA inventar precedentes ausentes dos relatórios; NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      2. Validar: Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapa consolidado
+      2. Validar: Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapa consolidado
          (exit 1 → contingência etapa_invalida; 2ª falha → contingência consolidacao_falha).
-      3. Merge de fontes: Bash: python scripts/merge_fontes.py "$WORKSPACE" --id "$ID"
+      3. Merge de fontes: Bash: python3 scripts/merge_fontes.py "$WORKSPACE" --id "$ID"
          → produz $ID-fontes.json sem passar conteúdo pelo contexto. Exit 1 = itens rejeitados
          NOMEADOS no stdout; NÃO é fatal se sobrar ≥1 fonte válida — anotar os rejeitados para o
          resumo (contingência fontes_rejeitadas).
@@ -219,9 +219,9 @@ allowed-tools: Read Task Bash TodoWrite
   <etapa numero="3" nome="Finalização">
     <acao_orquestrador>
       1. Gate final:
-         - Sem fonte INDISPONÍVEL: Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --gate
+         - Sem fonte INDISPONÍVEL: Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --gate
          - Com fonte(s) INDISPONÍVEL(is) após 2 tentativas:
-           Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapas <fontes-ok>,consolidado --gate
+           Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapas <fontes-ok>,consolidado --gate
            (ex.: --etapas bnp,julia,stj,consolidado --gate — TNU indisponível na sessão)
          (exit 1 → algo regrediu; reportar o output e PARAR).
       2. Resumo de 1 tela ao usuário, SEM transcrever conteúdo dos relatórios:

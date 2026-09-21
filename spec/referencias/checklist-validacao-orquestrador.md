@@ -487,7 +487,7 @@ sinalizadores (L14). O gate normaliza acento/caixa e devolve exit-code.
 ```markdown
 <!-- CORRETO: gate por script (exit 0 = válida) -->
 <validacao>
-  Bash: python scripts/verificar_<sistema>.py "$WORKSPACE" --etapa relatorio
+  Bash: python3 scripts/verificar_<sistema>.py "$WORKSPACE" --etapa relatorio
   - exit 0 → prosseguir
   - exit 1 ([AUSENTE]/[INVALIDA]) → NÃO avançar; redespachar com sufixo_gate (máx 2x)
 </validacao>
@@ -581,7 +581,7 @@ Task(agent1) → Task(agent2) → Task(agent3)
 
 ```markdown
 <!-- CORRETO: Etapa 0 roda o gate; PENDENTES é o plano; etapas válidas nascem completed -->
-Bash: python scripts/verificar_<sistema>.py "$WORKSPACE"   → "PENDENTES: relatorio fundamentacao"
+Bash: python3 scripts/verificar_<sistema>.py "$WORKSPACE"   → "PENDENTES: relatorio fundamentacao"
 <etapa numero="2">
   <retomada>Se "relatorio" NÃO está em PENDENTES → PULAR (o trabalho já foi pago).</retomada>
 </etapa>

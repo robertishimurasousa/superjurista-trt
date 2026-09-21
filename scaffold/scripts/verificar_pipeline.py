@@ -31,13 +31,13 @@ Cada sistema gerado ganha um verificar_<sistema>.py de poucas linhas:
 
 USO (idêntico ao verificar_sentenca.py, mais --etapas)
 ------------------------------------------------------
-    python scripts/verificar_<sistema>.py <workspace>
+    python3 scripts/verificar_<sistema>.py <workspace>
         -> varredura: estado por etapa + linha "PENDENTES: ..." (o PLANO)
-    python scripts/verificar_<sistema>.py <workspace> --etapa <nome>
+    python3 scripts/verificar_<sistema>.py <workspace> --etapa <nome>
         -> valida UMA etapa (exit 0 = válida; 1 = ausente/inválida)
-    python scripts/verificar_<sistema>.py <workspace> --etapas a,b
+    python3 scripts/verificar_<sistema>.py <workspace> --etapas a,b
         -> varredura de um SUBCONJUNTO (para pipelines-subconjunto)
-    python scripts/verificar_<sistema>.py <workspace> --gate
+    python3 scripts/verificar_<sistema>.py <workspace> --gate
         -> gate final: exit 1 se QUALQUER etapa pendente/inválida
 
 Marcadores casados com NORMALIZAÇÃO de acento/caixa: a âncora literal reprovava

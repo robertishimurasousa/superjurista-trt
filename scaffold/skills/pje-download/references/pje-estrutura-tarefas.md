@@ -105,17 +105,17 @@ A API retorna processos com os seguintes campos relevantes:
 ### Baixar processos para sentenca
 
 ```bash
-python listar_processos.py --cookies pje_session.json --modo sentenca --limite 10
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --limite 10
 ```
 
 ### Baixar processos para decisao
 
 ```bash
-python listar_processos.py --cookies pje_session.json --modo decisao --limite 10
+python3 listar_processos.py --cookies pje_session.json --modo decisao --limite 10
 ```
 
 ### Filtrar por prioridade
 
 ```bash
-python listar_processos.py --cookies pje_session.json --modo sentenca --prioridade
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --prioridade
 ```

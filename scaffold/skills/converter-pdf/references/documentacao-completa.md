@@ -63,7 +63,7 @@ Extrair texto de PDFs de processos judiciais com alta qualidade:
 
 **Python:**
 ```bash
-pip install pdfplumber pdf2image pytesseract
+python3 -m pip install pdfplumber pdf2image pytesseract
 ```
 
 **Sistema (OCR):**
@@ -154,14 +154,14 @@ JUSTICA FEDERAL DE PRIMEIRA INSTANCIA
 
 ### OCR (padrao)
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/sentenca/0807674-42.2015.4.05.8100/0807674-42.2015.4.05.8100.pdf \
   --output data/sentenca/0807674-42.2015.4.05.8100/
 ```
 
 ### Extracao rapida (PDFs digitais)
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input documento_digital.pdf \
   --output ./textos \
   --digital
@@ -169,7 +169,7 @@ python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
 
 ### Processamento em lote
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/sentenca/ \
   --output data/sentenca/ \
   --limite 10

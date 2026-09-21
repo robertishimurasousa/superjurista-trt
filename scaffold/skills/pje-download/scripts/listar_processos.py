@@ -6,9 +6,9 @@ Suporta dois modos: sentença e decisão.
 Suporta filtros avançados: etiquetas, prioridade, partes, etc.
 
 Uso:
-    python listar_processos.py --cookies cookies.json --modo sentenca --limite 10
-    python listar_processos.py --cookies cookies.json --modo decisao --tags URGENTE --prioridade
-    python listar_processos.py --cookies cookies.json --modo sentenca --polo-passivo INSS
+    python3 listar_processos.py --cookies cookies.json --modo sentenca --limite 10
+    python3 listar_processos.py --cookies cookies.json --modo decisao --tags URGENTE --prioridade
+    python3 listar_processos.py --cookies cookies.json --modo sentenca --polo-passivo INSS
 """
 
 import json

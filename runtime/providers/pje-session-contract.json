@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "interface_id": "pje_case_acquisition",
+  "interface_version": 1,
+  "required_capability": "validate_session",
+  "allowed_states": [
+    "valid",
+    "expired",
+    "mfa_required",
+    "unauthorized",
+    "unknown"
+  ],
+  "allowed_markers": [
+    "authenticated",
+    "session_expired",
+    "login_required",
+    "mfa_required"
+  ],
+  "http_status_states": {
+    "401": "unauthorized",
+    "403": "unauthorized"
+  },
+  "marker_states": {
+    "session_expired": "expired",
+    "login_required": "expired",
+    "mfa_required": "mfa_required"
+  },
+  "valid_marker": "authenticated",
+  "session_evidence": {
+    "cookie_names_any": [
+      "JSESSIONID",
+      "KEYCLOAK_IDENTITY",
+      "KEYCLOAK_SESSION"
+    ],
+    "header_names_any": [
+      "authorization",
+      "x-pje-cookies"
+    ]
+  }
+}

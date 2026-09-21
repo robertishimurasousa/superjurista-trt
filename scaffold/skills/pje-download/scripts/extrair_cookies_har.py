@@ -3,8 +3,8 @@
 Extrai cookies e headers de arquivos HAR para autenticacao no PJE.
 
 Uso:
-    python extrair_cookies_har.py --har arquivo.har --output pje_session.json
-    python extrair_cookies_har.py --har lista.har download.har --output pje_session.json
+    python3 extrair_cookies_har.py --har arquivo.har --output pje_session.json
+    python3 extrair_cookies_har.py --har lista.har download.har --output pje_session.json
 
 Fallback quando Chrome MCP nao funciona.
 """

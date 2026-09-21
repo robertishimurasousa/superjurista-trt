@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "output_schema_version": 1,
+  "max_entries": 5000,
+  "allowed_methods": [
+    "DELETE",
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT"
+  ],
+  "classification_markers": {
+    "authentication": [
+      "auth",
+      "login",
+      "oauth",
+      "sso",
+      "token"
+    ],
+    "task_listing": [
+      "task",
+      "tasks",
+      "tarefa",
+      "tarefas"
+    ],
+    "process_discovery": [
+      "case",
+      "cases",
+      "process",
+      "processo",
+      "processos"
+    ],
+    "document_index": [
+      "document",
+      "documents",
+      "documento",
+      "documentos"
+    ],
+    "document_download": [
+      "arquivo",
+      "binary",
+      "binario",
+      "conteudo",
+      "download",
+      "pdf"
+    ]
+  },
+  "failure_statuses": {
+    "400": "bad_request",
+    "401": "unauthorized",
+    "403": "forbidden",
+    "404": "not_found",
+    "409": "conflict",
+    "429": "rate_limited",
+    "500": "provider_error",
+    "502": "provider_error",
+    "503": "provider_unavailable",
+    "504": "provider_timeout"
+  }
+}

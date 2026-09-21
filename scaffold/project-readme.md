@@ -14,16 +14,18 @@ Antes de comecar, certifique-se de que os seguintes programas estao instalados n
 
 1. **Claude Code** -- a interface de linha de comando da Anthropic. Consulte a documentacao oficial em https://docs.anthropic.com para instrucoes de instalacao.
 
-2. **Python 3.8 ou superior** -- necessario para os scripts de download e conversao de documentos. Disponivel em https://www.python.org/downloads/.
+2. **Python 3.9 ou superior** -- necessario para os scripts de download e conversao de documentos. Os servidores MCP locais exigem Python 3.10 ou superior. Disponivel em https://www.python.org/downloads/.
 
 3. **Tesseract OCR** -- software de reconhecimento optico de caracteres, usado para extrair texto de documentos digitalizados. Instale com o pacote de idioma portugues (`por`).
 
 4. **Poppler** -- utilitario necessario para converter arquivos PDF em imagens durante o processo de OCR. No Windows, extraia os arquivos para a pasta `~/poppler/`.
 
-Apos instalar o Python, execute o seguinte comando para instalar as bibliotecas necessarias:
+Apos instalar o Python, crie um ambiente virtual e instale as dependencias declaradas pelo projeto:
 
-```
-pip install requests beautifulsoup4 pdfplumber PyPDF2 pdf2image pytesseract
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements/runtime.txt
 ```
 
 ## Primeiros passos

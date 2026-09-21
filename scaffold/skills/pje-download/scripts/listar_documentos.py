@@ -7,7 +7,7 @@ Extrai o índice de documentos da página de autos digitais para permitir
 análise e planejamento de download seletivo.
 
 Uso:
-    python listar_documentos.py --cookies pje_session.json --id-processo 2683123 --output indice.json
+    python3 listar_documentos.py --cookies pje_session.json --id-processo 2683123 --output indice.json
 
 Saída:
     JSON com lista de documentos, tipos e estatísticas.
@@ -25,7 +25,7 @@ from urllib.parse import urlencode
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    print("[ERRO] BeautifulSoup não instalado. Execute: pip install beautifulsoup4")
+    print("[ERRO] BeautifulSoup não instalado. Execute: python3 -m pip install beautifulsoup4")
     sys.exit(1)
 
 

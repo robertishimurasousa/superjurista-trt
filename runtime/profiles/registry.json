@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "cnj_branch_digits": {
+    "labor_justice": 5
+  },
+  "case_system_adapters": {
+    "trt12_first_instance": {
+      "system": "pje_jt",
+      "tribunals": [
+        "TRT12"
+      ],
+      "instances": [
+        "first"
+      ],
+      "contract_status": "declared"
+    }
+  },
+  "research_adapters": {
+    "tst_official": {
+      "sources": [
+        "tst_precedents"
+      ],
+      "scopes": [
+        "national"
+      ],
+      "official_reference": "https://www.tst.jus.br/jurisprudencia",
+      "contract_status": "declared"
+    },
+    "bnp_official": {
+      "sources": [
+        "bnp"
+      ],
+      "scopes": [
+        "national"
+      ],
+      "official_reference": "https://www.cnj.jus.br/tecnologia-da-informacao-e-comunicacao/justica-4-0/banco-nacional-de-precedentes-bnp/",
+      "contract_status": "declared"
+    },
+    "stf_official": {
+      "sources": [
+        "stf"
+      ],
+      "scopes": [
+        "national"
+      ],
+      "official_reference": "https://portal.stf.jus.br/jurisprudencia/",
+      "contract_status": "declared"
+    },
+    "trt12_official": {
+      "sources": [
+        "trt12_precedents",
+        "trt12_jurisprudence"
+      ],
+      "scopes": [
+        "regional"
+      ],
+      "tribunals": [
+        "TRT12"
+      ],
+      "official_reference": "https://portal.trt12.jus.br/consulta-jurisprudencia",
+      "contract_status": "declared"
+    }
+  }
+}

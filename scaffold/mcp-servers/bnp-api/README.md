@@ -13,7 +13,7 @@ Servidor MCP standalone para busca de precedentes qualificados no Banco Nacional
 
 ```bash
 cd .claude/mcp-servers/bnp-api
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## Registro (.mcp.json do projeto, com caminho absoluto)
@@ -24,7 +24,7 @@ Adicione ao `.mcp.json` do projeto (ou registre no escopo user via `claude mcp a
 {
   "mcpServers": {
     "bnp-api": {
-      "command": "python",
+      "command": "python3",
       "args": ["C:/Users/georg/.claude/mcp-servers/bnp-api/server.py"],
       "env": {}
     }

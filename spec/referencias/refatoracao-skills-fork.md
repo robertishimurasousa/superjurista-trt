@@ -83,7 +83,7 @@ skill/
 ```markdown
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json
+python3 .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json
 ```
 ```
 
@@ -172,13 +172,13 @@ REGRA ABSOLUTA: Execute os scripts existentes. NAO crie codigo novo.
 
 | Script | Comando |
 |--------|---------|
-| Nome | `python .claude/skills/.../scripts/nome.py` |
+| Nome | `python3 .claude/skills/.../scripts/nome.py` |
 
 ## Comandos Prontos
 
 ### Tarefa 1
 ```bash
-python .claude/skills/.../scripts/script.py --arg valor
+python3 .claude/skills/.../scripts/script.py --arg valor
 ```
 
 ## Retorno Esperado
@@ -223,7 +223,7 @@ $2 = segundo arg
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/.../scripts/script.py --arg $1
+python3 .claude/skills/.../scripts/script.py --arg $1
 ```
 
 **Checkpoint:** Arquivo existe?
@@ -234,7 +234,7 @@ python .claude/skills/.../scripts/script.py --arg $1
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/.../scripts/outro.py --arg $2
+python3 .claude/skills/.../scripts/outro.py --arg $2
 ```
 
 ---

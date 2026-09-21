@@ -170,7 +170,7 @@ description: >
     Se o usuário **já** tem um `.har` (export do DevTools) ou já rodou `capturar-har`,
     pule a captura e rode só a análise:
     ```bash
-    python "<dir da skill capturar-har>/scripts/analisar_har.py" <arquivo>.har --output captura/analise.md
+    python3 "<dir da skill capturar-har>/scripts/analisar_har.py" <arquivo>.har --output captura/analise.md
     ```
     e leia o relatório. Depois, para os detalhes, parseie o `.har` direto (Python:
     `json.load`, itere `log.entries`, filtre os não-estáticos, veja query/body/headers).
@@ -320,7 +320,7 @@ description: >
       {
         "mcpServers": {
           "[nome-tribunal]": {
-            "command": "python",
+            "command": "python3",
             "args": ["C:\\caminho\\absoluto\\para\\[nome-tribunal]\\server.py"]
           }
         }
@@ -331,7 +331,7 @@ description: >
 
     ### 3.5 Testar MCP
 
-    1. Verificar sintaxe: `python -m py_compile server.py`
+    1. Verificar sintaxe: `python3 -m py_compile server.py`
     2. Se possível, fazer busca de teste
     3. Validar output XML/Markdown
     4. Registrar no `.mcp.json` e lembrar: o servidor só carrega em sessão nova

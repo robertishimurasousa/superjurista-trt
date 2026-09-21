@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "TST-001",
+      "origin": "TST",
+      "type": "qualified_precedent",
+      "reference": "Synthetic official-source fixture reference",
+      "status": "current",
+      "status_notes": [],
+      "binding_scope": "national_labor_justice",
+      "legal_question": "Synthetic question used only for contract validation.",
+      "holding": "Synthetic holding used only for contract validation.",
+      "verbatim_excerpt": "Synthetic excerpt; not a quotation from a real decision.",
+      "official_url": "https://www.tst.jus.br/jurisprudencia",
+      "retrieved_at": "2026-09-21T12:00:00-03:00"
+    }
+  ]
+}

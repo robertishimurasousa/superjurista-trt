@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "runtime": "claude",
+  "instruction_file": "CLAUDE.md",
+  "skills_dir": ".claude/skills",
+  "command_dir": ".claude/commands",
+  "dispatch": "Task",
+  "progress": "artifact_manifest",
+  "tool_bindings": {
+    "read": "Read",
+    "write": "Write",
+    "shell": "Bash",
+    "task": "Task"
+  }
+}

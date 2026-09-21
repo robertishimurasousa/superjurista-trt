@@ -12,13 +12,13 @@ O seed e uma CREDENCIAL FORTE. Guarde em .env (gitignored), nunca no repo/log.
 
 Uso:
     # Le PJE_TOTP_SEED do ambiente ou do .env na raiz
-    python gerar_totp.py
+    python3 gerar_totp.py
 
     # Seed explicito (util para o teste de comparacao com o celular)
-    python gerar_totp.py --seed "JBSW Y3DP EHPK 3PXP"
+    python3 gerar_totp.py --seed "JBSW Y3DP EHPK 3PXP"
 
     # Verboso: mostra segundos restantes na janela atual
-    python gerar_totp.py -v
+    python3 gerar_totp.py -v
 
 Saida padrao: apenas o codigo de 6 digitos (stdout), para consumo por script.
 """
@@ -76,7 +76,7 @@ def main() -> int:
     try:
         import pyotp
     except ImportError:
-        print("[ERRO] pyotp nao instalado. Rode: python -m pip install pyotp",
+        print("[ERRO] pyotp nao instalado. Rode: python3 -m pip install pyotp",
               file=sys.stderr)
         return 1
 

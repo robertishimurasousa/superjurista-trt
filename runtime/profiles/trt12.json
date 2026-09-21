@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "profile_id": "trt12",
+  "tribunal": {
+    "segment": "labor_justice",
+    "code": "TRT12",
+    "region": 12,
+    "state": "SC",
+    "cnj_branch_digit": 5
+  },
+  "instances": {
+    "first": {
+      "enabled": true,
+      "final_artifact": "labor_judgment",
+      "signatures": [
+        "JUIZ DO TRABALHO",
+        "JUÍZA DO TRABALHO"
+      ]
+    },
+    "second": {
+      "enabled": false,
+      "final_artifact": "labor_vote",
+      "signatures": [
+        "DESEMBARGADOR DO TRABALHO",
+        "DESEMBARGADORA DO TRABALHO"
+      ]
+    }
+  },
+  "providers": {
+    "case_system": {
+      "type": "pje_jt",
+      "first_instance_adapter": "trt12_first_instance",
+      "second_instance_adapter": null
+    },
+    "research": [
+      {
+        "source": "tst_precedents",
+        "scope": "national",
+        "adapter": "tst_official",
+        "enabled": true
+      },
+      {
+        "source": "bnp",
+        "scope": "national",
+        "adapter": "bnp_official",
+        "enabled": true
+      },
+      {
+        "source": "stf",
+        "scope": "national",
+        "adapter": "stf_official",
+        "enabled": true
+      },
+      {
+        "source": "trt12_precedents",
+        "scope": "regional",
+        "adapter": "trt12_official",
+        "enabled": true
+      },
+      {
+        "source": "trt12_jurisprudence",
+        "scope": "regional",
+        "adapter": "trt12_official",
+        "enabled": true
+      }
+    ]
+  },
+  "policy": {
+    "allow_external_filing": false,
+    "allow_external_signing": false,
+    "allow_external_publication": false,
+    "require_human_review": true,
+    "require_verbatim_custody": true,
+    "sealed_case_mode": "deny_until_configured"
+  }
+}

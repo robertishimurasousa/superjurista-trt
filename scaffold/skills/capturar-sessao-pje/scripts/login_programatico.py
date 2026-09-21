@@ -21,10 +21,10 @@ Uso original (nao funciona):
     # Via variaveis de ambiente
     export PJE_CPF="12345678900"
     export PJE_SENHA="minha_senha"
-    python login_programatico.py --output pje_session.json
+    python3 login_programatico.py --output pje_session.json
 
     # Via argumentos (menos seguro)
-    python login_programatico.py --cpf 12345678900 --senha minha_senha
+    python3 login_programatico.py --cpf 12345678900 --senha minha_senha
 
 Metodo tentado:
     1. OAuth2 Password Flow contra Keycloak SSO
@@ -451,10 +451,10 @@ Exemplos:
     # Via variaveis de ambiente (recomendado)
     export PJE_CPF="12345678900"
     export PJE_SENHA="minha_senha"
-    python login_programatico.py
+    python3 login_programatico.py
 
     # Via argumentos
-    python login_programatico.py --cpf 12345678900 --senha minha_senha
+    python3 login_programatico.py --cpf 12345678900 --senha minha_senha
         """
     )
 

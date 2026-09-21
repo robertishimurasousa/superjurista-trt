@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "pipeline": "runtime-smoke",
+  "stages": [
+    {
+      "id": "runtime-smoke",
+      "artifact_suffix": "-runtime-smoke.md",
+      "gate": {
+        "start": "RUNTIME SMOKE",
+        "end": "Runtime contract validated.",
+        "contains": [
+          "shared deterministic gate"
+        ],
+        "minimum_characters": 120
+      }
+    }
+  ]
+}

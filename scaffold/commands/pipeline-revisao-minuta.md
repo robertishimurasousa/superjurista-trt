@@ -64,7 +64,7 @@ allowed-tools: Read Task Bash TodoWrite
     - RETOMADA: antes de despachar, o gate diz o que já está válido — o que está OK não roda de novo. Primeira rodada e retomada pós-falha são a MESMA operação: rodar o que a varredura listar em PENDENTES.
     - CONDUZIR POR CAMINHO: o orquestrador passa paths prontos; o subagente lê a minuta (Read) e GRAVA (Write) o relatório no workspace. O documento NUNCA volta inline na resposta.
     - RESPOSTA DE UMA LINHA: cada subagente responde apenas "<etapa> OK | <arquivo>" — quem confere o conteúdo é o script, não o orquestrador lendo.
-    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python scripts/verificar_revisao.py "$WORKSPACE" --etapa <nome>`.
+    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; sempre `python3 scripts/verificar_revisao.py "$WORKSPACE" --etapa <nome>`.
     - Subagentes LEEM o próprio prompt via Read (.claude/agents/revisao/... e redacao/...); o orquestrador não copia a capacidade deles — injeta só os caminhos, o foco da revisão e (no caso de fontes e do redator) a saída da Etapa 0.5.
     - As revisões 1a/1b/1c/1d/1e são INDEPENDENTES entre si: despachar as pendentes em PARALELO (até 5 Tasks opus no MESMO turno). A consolidação (Etapa 2) só roda depois delas.
     - A Etapa 0.5 (1ª passada de citações) roda SEMPRE — é determinística, barata e idempotente; sua saída alimenta o verificador-fontes E o redator.
@@ -132,7 +132,7 @@ allowed-tools: Read Task Bash TodoWrite
            $NUMERO-minuta.md, $NUMERO-sentenca-final.md — Bash: ls, sem abrir);
            ausente ou ambíguo → contingência minuta_nao_encontrada.
          - Nenhum dos dois → PARAR: caminho inexistente.
-      3. Bash: python scripts/verificar_revisao.py "$WORKSPACE"
+      3. Bash: python3 scripts/verificar_revisao.py "$WORKSPACE"
          → a linha "PENDENTES: ..." é o plano de execução. Tudo "(nenhuma)" → pular direto à
          Etapa 3 (a revisão já estava completa; o re-gate de citações fatal AINDA roda lá).
          Reportar ao usuário o que será PULADO por já estar válido.
@@ -150,7 +150,7 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="0.5" nome="Gate de citações — 1ª passada (script, informativa)">
     <acao_orquestrador>
-      1. Bash: python scripts/verificar_citacoes.py "$WORKSPACE" --doc "$MINUTA"
+      1. Bash: python3 scripts/verificar_citacoes.py "$WORKSPACE" --doc "$MINUTA"
          ($MINUTA é caminho COMPLETO, sem hífen inicial — a forma com espaço funciona;
          só SUFIXO exige a forma --doc=-sufixo.md).
       2. Interpretar o exit code:
@@ -214,7 +214,7 @@ allowed-tools: Read Task Bash TodoWrite
         Foco: tipo de ação e resultado antes; cabimento, dispensa por valor e por
         precedente, regimes especiais (MS, ação popular, ACP, desapropriação, JEF).
       Aguardar TODAS as Tasks despachadas e validar CADA revisão:
-      Bash: python scripts/verificar_revisao.py "$WORKSPACE" --etapa embargabilidade
+      Bash: python3 scripts/verificar_revisao.py "$WORKSPACE" --etapa embargabilidade
       (idem calculos, fontes, honorarios, remessa)
       (exit 1 → contingência etapa_invalida: redespachar SÓ o revisor reprovado com o motivo
       do gate anexado; máx 2 tentativas; na 2ª falha → contingência revisor_indisponivel).
@@ -252,7 +252,7 @@ allowed-tools: Read Task Bash TodoWrite
       script); conflito entre revisores → versão mais conservadora + registro no log;
       NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      2. Validar: Bash: python scripts/verificar_revisao.py "$WORKSPACE" --etapa robustecida
+      2. Validar: Bash: python3 scripts/verificar_revisao.py "$WORKSPACE" --etapa robustecida
          (exit 1 → contingência etapa_invalida; 2ª falha → contingência consolidacao_falha).
     </acao_orquestrador>
     <transicao>Gate robustecida 0 → Etapa 3.</transicao>
@@ -261,14 +261,14 @@ allowed-tools: Read Task Bash TodoWrite
   <etapa numero="3" nome="Finalização — gate final + re-gate de citações (FATAL)">
     <acao_orquestrador>
       1. Gate final de formato:
-         - Sem revisor INDISPONÍVEL: Bash: python scripts/verificar_revisao.py "$WORKSPACE" --gate
+         - Sem revisor INDISPONÍVEL: Bash: python3 scripts/verificar_revisao.py "$WORKSPACE" --gate
          - Com revisor(es) INDISPONÍVEL(is) após 2 tentativas:
-           Bash: python scripts/verificar_revisao.py "$WORKSPACE" --etapas <revisoes-ok>,robustecida --gate
+           Bash: python3 scripts/verificar_revisao.py "$WORKSPACE" --etapas <revisoes-ok>,robustecida --gate
            (ex.: --etapas embargabilidade,calculos,fontes,remessa,robustecida --gate —
            honorários indisponível na sessão)
          (exit 1 → algo regrediu; reportar o output e PARAR).
       2. Re-gate de citações — 2ª passada, FATAL:
-         Bash: python scripts/verificar_citacoes.py "$WORKSPACE" --doc=-minuta-robustecida.md --ignorar-apos "log de alterações"
+         Bash: python3 scripts/verificar_citacoes.py "$WORKSPACE" --doc=-minuta-robustecida.md --ignorar-apos "log de alterações"
          (sufixo exige a forma --doc=-…; --ignorar-apos corta o "## Log de Alterações", que
          AUTO-CITA trechos da minuta original — sem a flag, cada correção documentada viraria
          falso positivo).

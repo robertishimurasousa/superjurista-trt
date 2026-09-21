@@ -308,7 +308,7 @@ allowed-tools: Read Task Bash TodoWrite
     <acao_orquestrador>
       1. **Executar conversão via script Python:**
          ```bash
-         Bash: python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+         Bash: python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
            --input "$PDF_PATH" \
            --output "$WORKSPACE"
          ```
@@ -325,7 +325,7 @@ allowed-tools: Read Task Bash TodoWrite
 
       4. **Se falhar, tentar com --digital (PDFs nativos):**
          ```bash
-         Bash: python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+         Bash: python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
            --input "$PDF_PATH" \
            --output "$WORKSPACE" \
            --digital

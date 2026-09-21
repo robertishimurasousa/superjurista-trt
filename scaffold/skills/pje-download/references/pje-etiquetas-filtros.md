@@ -108,7 +108,7 @@ A API do PJE aceita diversos filtros no payload da requisicao.
 ### Argumentos CLI disponíveis
 
 ```bash
-python listar_processos.py --help
+python3 listar_processos.py --help
 
 Opcoes:
   --cookies, -c    Arquivo de cookies (obrigatorio)
@@ -136,7 +136,7 @@ Filtros (a implementar):
 #### Processos prioritários de idosos
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --prioridade \
@@ -146,7 +146,7 @@ python listar_processos.py \
 #### Processos com etiqueta LIMINAR
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo decisao \
   --tags LIMINAR \
@@ -156,7 +156,7 @@ python listar_processos.py \
 #### Processos não conferidos (novos)
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --nao-conferidos
@@ -165,7 +165,7 @@ python listar_processos.py \
 #### Processos de autor específico
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --polo-ativo "MARIA SILVA"

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/disposition-matrix.v1.schema.json",
+  "title": "Disposition matrix v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "disposition_id",
+          "claim_id",
+          "outcome",
+          "command",
+          "period",
+          "effects",
+          "calculation_criteria",
+          "source_analysis_id"
+        ],
+        "properties": {
+          "disposition_id": {
+            "type": "string",
+            "pattern": "^DSP-[0-9]{3,}$"
+          },
+          "claim_id": {
+            "type": "string",
+            "pattern": "^CLM-[0-9]{3,}$"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "granted",
+              "denied",
+              "granted_in_part",
+              "dismissed_without_merits",
+              "procedural_resolution",
+              "pending_human_review",
+              "abstained"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "period": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effects": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "calculation_criteria": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "source_analysis_id": {
+            "type": "string",
+            "pattern": "^ANL-[0-9]{3,}$"
+          }
+        }
+      }
+    }
+  }
+}

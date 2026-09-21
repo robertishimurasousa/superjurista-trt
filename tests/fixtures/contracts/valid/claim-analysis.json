@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "analyses": [
+    {
+      "analysis_id": "ANL-001",
+      "claim_id": "CLM-001",
+      "facts_found": [
+        "The submitted time records cover the reviewed period."
+      ],
+      "evidence_assessment": [
+        "EVD-001 requires human review before a factual conclusion."
+      ],
+      "evidence_ids": [
+        "EVD-001"
+      ],
+      "applicable_rules": [
+        "RULE-001"
+      ],
+      "precedent_source_ids": [
+        "TST-001"
+      ],
+      "reasoning": "The fixture preserves the reasoning field without asserting a real outcome.",
+      "proposed_outcome": "pending_human_review",
+      "limitations": [
+        "Synthetic fixture only."
+      ]
+    }
+  ]
+}

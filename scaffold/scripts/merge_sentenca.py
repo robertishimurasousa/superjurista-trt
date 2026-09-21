@@ -7,7 +7,7 @@ precisa de LLM nem de contexto: este script lê relatório + fundamentação,
 concatena e grava a sentença, validando o resultado com as mesmas âncoras
 normalizadas do verificar_sentenca.py.
 
-Uso: python scripts/merge_sentenca.py <workspace> [--numero N]
+Uso: python3 scripts/merge_sentenca.py <workspace> [--numero N]
 Exit 0 = sentença gravada e válida; 1 = entrada faltando ou resultado inválido.
 """
 import argparse

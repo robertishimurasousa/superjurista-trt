@@ -293,13 +293,13 @@ allowed-tools: Read, Write, Bash
     **Teste minimo:**
     ```bash
     # 1. Extrair cookies
-    python scripts/extrair_cookies_har.py --har ~/Downloads/pje.har --output session.json
+    python3 scripts/extrair_cookies_har.py --har ~/Downloads/pje.har --output session.json
 
     # 2. Listar 1 processo
-    python scripts/listar_processos.py --cookies session.json --limite 1
+    python3 scripts/listar_processos.py --cookies session.json --limite 1
 
     # 3. Baixar 1 processo
-    python scripts/baixar_pdfs.py --cookies session.json --processos processos.json --limite 1
+    python3 scripts/baixar_pdfs.py --cookies session.json --processos processos.json --limite 1
     ```
   </passo>
 

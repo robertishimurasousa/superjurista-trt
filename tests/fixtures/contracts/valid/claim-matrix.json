@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "claims": [
+    {
+      "claim_id": "CLM-001",
+      "label": "overtime",
+      "claimant_position": {
+        "summary": "Overtime was worked and not fully paid.",
+        "source_document_id": "DOC-001",
+        "source_locator": "pages 4-5"
+      },
+      "respondent_positions": [
+        {
+          "defense_id": "DEF-001",
+          "respondent_party_id": "PTY-002",
+          "summary": "All recorded overtime was paid.",
+          "source_document_id": "DOC-002",
+          "source_locator": "pages 2-3"
+        }
+      ],
+      "requested_remedies": [
+        "overtime_payment",
+        "statutory_effects"
+      ],
+      "contested_facts": [
+        "actual_working_hours"
+      ],
+      "legal_issues": [
+        "reliability_of_time_records"
+      ],
+      "status": "mapped",
+      "review_gaps": []
+    }
+  ]
+}

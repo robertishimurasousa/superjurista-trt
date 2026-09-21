@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_context": {
+    "schema_version": 1,
+    "case_number": "0000000-00.2026.5.12.0000",
+    "court": "TRT12",
+    "instance": 1,
+    "phase": "knowledge",
+    "procedure": "ordinary",
+    "court_unit": "Synthetic Labor Court",
+    "confidentiality": "public_or_authorized",
+    "source_manifest": "document-index.json"
+  },
+  "parties": [
+    {
+      "party_id": "PTY-001",
+      "role": "claimant",
+      "display_name": "Synthetic Claimant",
+      "source_document_id": "DOC-001"
+    }
+  ],
+  "procedural_phase": {
+    "phase": "unknown",
+    "status": "needs_human_review",
+    "source_document_id": null,
+    "source_locator": null
+  },
+  "timeline": [],
+  "positions": [],
+  "review_gaps": [
+    "missing_claim_position",
+    "missing_defense_position",
+    "unknown_phase"
+  ]
+}

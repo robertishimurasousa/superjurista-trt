@@ -375,7 +375,7 @@ Exit code 2 = feedback para continuar trabalhando.
     "TeammateIdle": [
       {
         "type": "command",
-        "command": "python validate_teammate_output.py"
+        "command": "python3 validate_teammate_output.py"
       }
     ]
   }

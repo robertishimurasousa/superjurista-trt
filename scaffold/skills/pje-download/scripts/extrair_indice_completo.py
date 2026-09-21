@@ -9,7 +9,7 @@ em uma única tabela, com ID, Tipo, Descrição, Data e Tamanho.
 Este índice é a base para a análise semântica feita pelo agent seletor-documentos.
 
 Uso:
-    python extrair_indice_completo.py --cookies pje_session.json --id-processo 2683123 --output indice.json
+    python3 extrair_indice_completo.py --cookies pje_session.json --id-processo 2683123 --output indice.json
 
 Saída:
     JSON com lista completa de documentos para análise pelo LLM.
@@ -27,7 +27,7 @@ from urllib.parse import urlencode
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    print("[ERRO] BeautifulSoup não instalado. Execute: pip install beautifulsoup4")
+    print("[ERRO] BeautifulSoup não instalado. Execute: python3 -m pip install beautifulsoup4")
     sys.exit(1)
 
 

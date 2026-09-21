@@ -68,7 +68,7 @@ A skill tenta Chrome MCP primeiro, e se falhar, pede HAR ao usuario.
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/buscar_processo_por_numero.py --cookies pje_session.json --numero NUMERO_PROCESSO
+python3 .claude/skills/pje-download/scripts/buscar_processo_por_numero.py --cookies pje_session.json --numero NUMERO_PROCESSO
 ```
 
 Capturar o ID_PROCESSO retornado.
@@ -79,7 +79,7 @@ Capturar o ID_PROCESSO retornado.
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/extrair_indice_completo.py --cookies pje_session.json --id-processo ID_PROCESSO --output WORKSPACE/indice_completo.json
+python3 .claude/skills/pje-download/scripts/extrair_indice_completo.py --cookies pje_session.json --id-processo ID_PROCESSO --output WORKSPACE/indice_completo.json
 ```
 
 **Checkpoint:** Arquivo contem lista de documentos?
@@ -113,7 +113,7 @@ Task tool:
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/baixar_por_id.py --cookies pje_session.json --id-processo ID_PROCESSO --ids-file WORKSPACE/selecao_documentos.json --output-dir WORKSPACE/documentos/
+python3 .claude/skills/pje-download/scripts/baixar_por_id.py --cookies pje_session.json --id-processo ID_PROCESSO --ids-file WORKSPACE/selecao_documentos.json --output-dir WORKSPACE/documentos/
 ```
 
 ---
@@ -148,7 +148,7 @@ PULAR se FLAG_CONVERTER = False
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py --input WORKSPACE/NUMERO_PROCESSO.pdf --output WORKSPACE/
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py --input WORKSPACE/NUMERO_PROCESSO.pdf --output WORKSPACE/
 ```
 
 ---

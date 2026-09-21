@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "routes": [
+    {
+      "claim_id": "CLM-001",
+      "route_status": "routed",
+      "requires_legal_research": "yes",
+      "requires_evidence_analysis": true,
+      "requires_calculation_review": false,
+      "requires_procedural_review": false,
+      "research_questions": [],
+      "evidence_questions": [],
+      "route_reason": "The route flag must be a boolean.",
+      "abstention_reasons": []
+    }
+  ]
+}

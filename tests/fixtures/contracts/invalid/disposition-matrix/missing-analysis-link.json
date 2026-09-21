@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "disposition_id": "DSP-001",
+      "claim_id": "CLM-001",
+      "outcome": "pending_human_review",
+      "command": "Human review is required.",
+      "period": "not_applicable",
+      "effects": [],
+      "calculation_criteria": []
+    }
+  ]
+}

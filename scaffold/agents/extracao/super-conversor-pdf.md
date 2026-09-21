@@ -271,7 +271,7 @@ color: yellow
   <passo numero="2" nome="Estágio 1 - Extração Nativa">
     Executar extração via pdfplumber usando script existente:
     ```bash
-    python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+    python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
       --input [caminho_pdf] --output [diretorio_saida] --mode pdfplumber
     ```
     Analisar resultado: contar caracteres por página, identificar lacunas.
@@ -282,7 +282,7 @@ color: yellow
     Se extração nativa insuficiente (< 70% páginas com texto adequado):
     Executar OCR nas páginas problemáticas:
     ```bash
-    python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+    python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
       --input [caminho_pdf] --output [diretorio_saida] --mode ocr --pages [lista]
     ```
     Integrar resultado com texto da extração nativa.

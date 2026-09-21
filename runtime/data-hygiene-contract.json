@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "required_ignore_patterns": {
+    ".gitignore": [
+      ".env",
+      ".env.*",
+      "!.env.example",
+      "*.har",
+      "!tests/fixtures/sanitized/**/*.har",
+      "pje_session*.json",
+      "sessao*.json",
+      "cookies*",
+      "headers*.json",
+      "storage-state*.json",
+      "auth-state*.json",
+      "data/",
+      "cases/",
+      "processos/",
+      "workspace/",
+      "processos*.json",
+      "indice_documentos*.json",
+      "*.log"
+    ]
+  },
+  "conditional_ignore_patterns": {
+    "scaffold/project-gitignore": [
+      ".env",
+      ".env.*",
+      "!.env.example",
+      "*.har",
+      "!tests/fixtures/sanitized/**/*.har",
+      "pje_session*.json",
+      "sessao*.json",
+      "cookies*",
+      "headers*.json",
+      "storage-state*.json",
+      "auth-state*.json",
+      "data/",
+      "cases/",
+      "processos/",
+      "workspace/",
+      "processos*.json",
+      "indice_documentos*.json",
+      "*.log"
+    ]
+  },
+  "allowed_paths": [
+    ".env.example",
+    "**/.env.example",
+    "tests/fixtures/sanitized/**"
+  ],
+  "forbidden_paths": [
+    {"id": "environment-file", "glob": ".env"},
+    {"id": "environment-file", "glob": ".env.*"},
+    {"id": "environment-file", "glob": "**/.env"},
+    {"id": "environment-file", "glob": "**/.env.*"},
+    {"id": "browser-capture", "glob": "*.har"},
+    {"id": "browser-capture", "glob": "**/*.har"},
+    {"id": "pje-session", "glob": "pje_session*.json"},
+    {"id": "pje-session", "glob": "**/pje_session*.json"},
+    {"id": "session-state", "glob": "sessao*.json"},
+    {"id": "session-state", "glob": "**/sessao*.json"},
+    {"id": "cookie-store", "glob": "cookies*"},
+    {"id": "cookie-store", "glob": "**/cookies*"},
+    {"id": "header-store", "glob": "headers*.json"},
+    {"id": "header-store", "glob": "**/headers*.json"},
+    {"id": "browser-auth-state", "glob": "storage-state*.json"},
+    {"id": "browser-auth-state", "glob": "**/storage-state*.json"},
+    {"id": "browser-auth-state", "glob": "auth-state*.json"},
+    {"id": "browser-auth-state", "glob": "**/auth-state*.json"},
+    {"id": "case-data", "glob": "data/**"},
+    {"id": "case-data", "glob": "**/data/**"},
+    {"id": "case-data", "glob": "cases/**"},
+    {"id": "case-data", "glob": "**/cases/**"},
+    {"id": "case-data", "glob": "processos/**"},
+    {"id": "case-data", "glob": "**/processos/**"},
+    {"id": "case-data", "glob": "workspace/**"},
+    {"id": "case-data", "glob": "**/workspace/**"},
+    {"id": "case-index", "glob": "processos*.json"},
+    {"id": "case-index", "glob": "**/processos*.json"},
+    {"id": "document-index", "glob": "indice_documentos*.json"},
+    {"id": "document-index", "glob": "**/indice_documentos*.json"},
+    {"id": "runtime-log", "glob": "*.log"},
+    {"id": "runtime-log", "glob": "**/*.log"}
+  ],
+  "content_rules": [
+    {
+      "id": "authorization-bearer",
+      "pattern": "(?i)\\bauthorization\\s*:\\s*bearer\\s+[A-Za-z0-9._~+/=-]{16,}"
+    },
+    {
+      "id": "cookie-header",
+      "pattern": "(?i)\\b(?:cookie|set-cookie)\\s*:\\s*[A-Za-z0-9_.-]+=[A-Za-z0-9%._~+/=-]{12,}"
+    },
+    {
+      "id": "private-key",
+      "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
+    },
+    {
+      "id": "jwt",
+      "pattern": "\\beyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b"
+    },
+    {
+      "id": "secret-assignment",
+      "pattern": "(?i)\\b(?:api[_-]?key|client[_-]?secret|password|senha|token)\\s*[:=]\\s*[\\\"']?[A-Za-z0-9._~+/=-]{16,}"
+    }
+  ],
+  "scan_filenames": [
+    ".env.example"
+  ],
+  "scan_extensions": [
+    ".har",
+    ".json",
+    ".md",
+    ".py",
+    ".txt",
+    ".toml",
+    ".yaml",
+    ".yml",
+    ".sh",
+    ".ps1",
+    ".js"
+  ],
+  "max_file_bytes": 2000000
+}

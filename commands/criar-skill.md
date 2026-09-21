@@ -549,13 +549,13 @@ allowed-tools: Read Write Skill Task TodoWrite AskUserQuestion
 
     | Script | Comando |
     |--------|---------|
-    | [nome] | `python .claude/skills/$NOME/scripts/[script].py` |
+    | [nome] | `python3 .claude/skills/$NOME/scripts/[script].py` |
 
     ## Comandos Prontos
 
     ### [Tarefa 1]
     ```bash
-    python .claude/skills/$NOME/scripts/[script].py --arg valor
+    python3 .claude/skills/$NOME/scripts/[script].py --arg valor
     ```
 
     ## Retorno Esperado

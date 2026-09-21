@@ -24,20 +24,20 @@ o lado do dict NÃO é normalizado — as âncoras de ETAPAS são escritas JÁ
 normalizadas (minúsculas, sem acentos).
 
 Uso:
-  python scripts/verificar_sentenca.py <workspace> [--numero N]
+  python3 scripts/verificar_sentenca.py <workspace> [--numero N]
       → varredura: estado por etapa + linha "PENDENTES: ..." (exit 0)
-  python scripts/verificar_sentenca.py <workspace> --etapa relatorio
+  python3 scripts/verificar_sentenca.py <workspace> --etapa relatorio
       → valida UMA etapa (exit 0 = válida; 1 = ausente/inválida)
-  python scripts/verificar_sentenca.py <workspace> --etapa analise
+  python3 scripts/verificar_sentenca.py <workspace> --etapa analise
       → idem, com terceiro estado: exit 3 = ESCALAR
         ("[ESCALAR] analise: <trilhos> — <motivo>" — o orquestrador roda o
         trilho pedido e redespacha a análise; máx. 1 escalada por processo)
-  python scripts/verificar_sentenca.py <workspace> --rota
+  python3 scripts/verificar_sentenca.py <workspace> --rota
       → lê o contrato C2 da triagem e imprime "ROTA: ..." (+ linhas TEMA:/FATO:);
         em rota direta ([]) imprime também "JUSTIFICATIVA: <justificativa_rotina>"
         — o resumo da Etapa 6 cita a justificativa sem ler o documento
         exit 0 = rota válida; 1 = triagem ausente/JSON inválido/contrato violado
-  python scripts/verificar_sentenca.py <workspace> --gate
+  python3 scripts/verificar_sentenca.py <workspace> --gate
       → gate final: exit 1 se QUALQUER etapa pendente/inválida
 
 --numero é inferido do nome da pasta quando ela segue o padrão CNJ.

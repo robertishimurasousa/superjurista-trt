@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "analyses": [
+    {
+      "analysis_id": "ANL-001",
+      "claim_id": "CLM-001",
+      "facts_found": [],
+      "evidence_ids": [],
+      "evidence_assessment": [],
+      "applicable_rules": [],
+      "precedent_source_ids": [],
+      "reasoning": "The artifact intentionally proposes a merits outcome without support.",
+      "proposed_outcome": "granted",
+      "limitations": []
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "executable": "python3",
+  "environments": {
+    "core": {
+      "minimum_version": "3.9",
+      "requirements": {
+        "requirements/runtime.txt": [
+          "-r pje.txt",
+          "-r pdf.txt",
+          "-r auth.txt",
+          "urllib3>=1.26,<2"
+        ],
+        "requirements/pje.txt": [
+          "beautifulsoup4>=4.12,<5",
+          "requests>=2.31,<3"
+        ],
+        "requirements/pdf.txt": [
+          "pdf2image>=1.17,<2",
+          "pdfplumber>=0.11,<1",
+          "PyPDF2>=3,<4",
+          "pytesseract>=0.3.13,<1"
+        ],
+        "requirements/auth.txt": [
+          "pyotp>=2.9,<3",
+          "requests>=2.31,<3"
+        ]
+      }
+    },
+    "mcp": {
+      "minimum_version": "3.10",
+      "requirements": {},
+      "requirements_globs": [
+        "scaffold/mcp-servers/*/requirements.txt",
+        ".claude/mcp-servers/*/requirements.txt"
+      ],
+      "required_constraint": "mcp>=1.28,<2"
+    }
+  },
+  "command_scan": {
+    "include": [
+      "README.md",
+      ".claude/**/*.md",
+      ".claude/**/*.py",
+      "agents/**/*.md",
+      "commands/**/*.md",
+      "skills/**/*.md",
+      "scaffold/**/*.md",
+      "scaffold/**/*.py",
+      "spec/README.md",
+      "spec/templates/**/*.md",
+      "spec/referencias/**/*.md"
+    ]
+  }
+}

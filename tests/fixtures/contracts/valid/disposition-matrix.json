@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "disposition_id": "DSP-001",
+      "claim_id": "CLM-001",
+      "outcome": "pending_human_review",
+      "command": "No operative command may be emitted before human review.",
+      "period": "not_applicable",
+      "effects": [],
+      "calculation_criteria": [],
+      "source_analysis_id": "ANL-001"
+    }
+  ]
+}

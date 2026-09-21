@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "classifier_version": 1,
+  "documents": [
+    {
+      "document_id": "DOC-001",
+      "document_type": "guessed_type",
+      "classification_status": "classified",
+      "matched_rule_ids": [
+        "initial-pleading"
+      ],
+      "reason_code": "matched_rule"
+    }
+  ]
+}

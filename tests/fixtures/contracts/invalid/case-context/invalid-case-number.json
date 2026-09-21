@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "case_number": "not-a-cnj-number",
+  "court": "TRT12",
+  "instance": 1,
+  "phase": "knowledge",
+  "procedure": "ordinary",
+  "court_unit": "Labor Court",
+  "confidentiality": "public_or_authorized",
+  "source_manifest": "document-index.json"
+}

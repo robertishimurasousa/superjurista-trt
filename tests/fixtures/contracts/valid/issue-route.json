@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "routes": [
+    {
+      "claim_id": "CLM-001",
+      "route_status": "routed",
+      "requires_legal_research": true,
+      "requires_evidence_analysis": true,
+      "requires_calculation_review": true,
+      "requires_procedural_review": false,
+      "research_questions": [
+        "Which burden-of-proof rule applies to the identified time records?"
+      ],
+      "evidence_questions": [
+        "Do the records reliably represent the alleged working hours?"
+      ],
+      "route_reason": "The claim depends on documentary evidence, legal research, and calculation criteria.",
+      "abstention_reasons": []
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "case_context": {
+    "schema_version": 1,
+    "case_number": "0000000-00.2026.5.12.0000",
+    "court": "TRT12",
+    "instance": 1,
+    "phase": "knowledge",
+    "procedure": "ordinary",
+    "court_unit": "Synthetic Labor Court",
+    "confidentiality": "public_or_authorized",
+    "source_manifest": "document-index.json"
+  },
+  "parties": [
+    {
+      "party_id": "PTY-001",
+      "role": "claimant",
+      "display_name": "Synthetic Claimant",
+      "source_document_id": "DOC-001",
+      "source_locator": "page 1, header"
+    },
+    {
+      "party_id": "PTY-002",
+      "role": "respondent",
+      "display_name": "Synthetic Respondent",
+      "source_document_id": "DOC-002",
+      "source_locator": "page 1, header"
+    }
+  ],
+  "procedural_phase": {
+    "phase": "knowledge",
+    "status": "identified",
+    "source_document_id": "DOC-001",
+    "source_locator": "page 1, case metadata"
+  },
+  "timeline": [
+    {
+      "event_id": "EVT-001",
+      "event_date": "2026-01-10",
+      "event_type": "case_filed",
+      "summary": "Synthetic case was filed.",
+      "source_document_id": "DOC-001",
+      "source_locator": "page 1"
+    }
+  ],
+  "positions": [
+    {
+      "position_id": "POS-001",
+      "kind": "claim",
+      "label": "overtime",
+      "summary": "Synthetic allegation of unpaid overtime.",
+      "source_document_id": "DOC-001",
+      "source_locator": "pages 4-5"
+    },
+    {
+      "position_id": "POS-002",
+      "kind": "defense",
+      "label": "overtime",
+      "summary": "Synthetic denial of unpaid overtime.",
+      "source_document_id": "DOC-002",
+      "source_locator": "pages 2-3"
+    }
+  ],
+  "review_gaps": []
+}

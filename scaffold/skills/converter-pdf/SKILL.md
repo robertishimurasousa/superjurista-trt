@@ -13,7 +13,7 @@ REGRA ABSOLUTA: Execute o script existente. NAO crie codigo novo.
 ## Script
 
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input CAMINHO_PDF \
   --output DIRETORIO_SAIDA
 ```
@@ -31,14 +31,14 @@ python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
 
 ### Converter um PDF
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/sentenca/0807674-42.2015.4.05.8100/0807674-42.2015.4.05.8100.pdf \
   --output data/sentenca/0807674-42.2015.4.05.8100/
 ```
 
 ### Converter em lote
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input data/sentenca/ \
   --output data/sentenca/ \
   --limite 10
@@ -46,7 +46,7 @@ python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
 
 ### PDF digital (mais rapido)
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py \
   --input documento.pdf \
   --output ./textos \
   --digital

@@ -39,7 +39,7 @@ Se a skill retornar falha, PARAR e informar usuario
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1 --output processos.json
+python3 .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1 --output processos.json
 ```
 
 **Checkpoint:** Arquivo `processos.json` existe e contem processos?
@@ -52,7 +52,7 @@ Se erro "Expecting value" → Sessao expirou, voltar a Etapa 1.
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json --output data/$2 --delay 2
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json --output data/$2 --delay 2
 ```
 
 **Checkpoint:** PDFs baixados em `data/$2/`?
@@ -63,7 +63,7 @@ python .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.
 
 Para CADA processo baixado, executar EXATAMENTE:
 ```bash
-python .claude/skills/converter-pdf/scripts/pdf_para_txt.py --input data/$2/[NUMERO]/[NUMERO].pdf --output data/$2/[NUMERO]/
+python3 .claude/skills/converter-pdf/scripts/pdf_para_txt.py --input data/$2/[NUMERO]/[NUMERO].pdf --output data/$2/[NUMERO]/
 ```
 
 Substituir [NUMERO] pelo numero real do processo.

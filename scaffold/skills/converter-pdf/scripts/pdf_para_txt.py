@@ -8,7 +8,7 @@ Processos judiciais frequentemente contem documentos escaneados, portanto
 OCR e o metodo padrao. Use --digital para extracao rapida sem OCR.
 
 Dependencias:
-    pip install pdfplumber pdf2image pytesseract
+    python3 -m pip install pdfplumber pdf2image pytesseract
     + Tesseract OCR instalado no sistema (com idioma portugues)
     + Poppler (para pdf2image no Windows)
 """
@@ -231,7 +231,7 @@ def extrair_texto_pdfplumber(pdf_path: str) -> Tuple[str, int]:
         return '\n'.join(texto_total), num_paginas
 
     except ImportError:
-        raise ImportError("pdfplumber nao instalado. Instale com: pip install pdfplumber")
+        raise ImportError("pdfplumber nao instalado. Instale com: python3 -m pip install pdfplumber")
     except Exception as e:
         raise Exception(f"Erro pdfplumber: {e}")
 
@@ -262,7 +262,7 @@ def extrair_texto_pypdf2(pdf_path: str) -> Tuple[str, int]:
         return '\n'.join(texto_total), num_paginas
 
     except ImportError:
-        raise ImportError("PyPDF2 nao instalado. Instale com: pip install PyPDF2")
+        raise ImportError("PyPDF2 nao instalado. Instale com: python3 -m pip install PyPDF2")
     except Exception as e:
         raise Exception(f"Erro PyPDF2: {e}")
 
@@ -322,7 +322,7 @@ def extrair_texto_ocr(pdf_path: str, verbose: bool = False) -> Tuple[str, int]:
     except ImportError as e:
         raise ImportError(
             f"Dependencias de OCR nao instaladas: {e}\n"
-            "Instale com: pip install pdf2image pytesseract\n"
+            "Instale com: python3 -m pip install pdf2image pytesseract\n"
             "E instale o Tesseract OCR: https://github.com/tesseract-ocr/tesseract"
         )
     except Exception as e:

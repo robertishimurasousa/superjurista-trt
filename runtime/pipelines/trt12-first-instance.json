@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "pipeline": "trt12-first-instance",
+  "profile": "trt12",
+  "retry_policy": {
+    "max_attempts": 2,
+    "on_exhausted": "stop"
+  },
+  "gates": {
+    "profile-context": {
+      "kind": "contract",
+      "target": "case-context"
+    },
+    "authorized-acquisition": {
+      "kind": "contract",
+      "target": "document-index"
+    },
+    "record-completeness": {
+      "kind": "contract",
+      "target": "procedural-record"
+    },
+    "decision-unit-coverage": {
+      "kind": "contract",
+      "target": "claim-and-evidence-matrices"
+    },
+    "route-coverage": {
+      "kind": "contract",
+      "target": "issue-route"
+    },
+    "conditional-track-custody": {
+      "kind": "contract",
+      "target": "conditional-track-artifacts"
+    },
+    "claim-analysis-coverage": {
+      "kind": "contract",
+      "target": "claim-analysis"
+    },
+    "draft-congruence": {
+      "kind": "contract",
+      "target": "draft-and-disposition"
+    },
+    "deterministic-merge": {
+      "kind": "deterministic",
+      "target": "labor-judgment"
+    },
+    "global-acceptance": {
+      "kind": "composite",
+      "target": "final-review"
+    }
+  },
+  "stages": [
+    {
+      "id": "prepare-profile",
+      "capability": "prepare-and-validate-profile",
+      "depends_on": [],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/case-context.json",
+        "{workspace}/execution-manifest.json"
+      ],
+      "gate": "profile-context"
+    },
+    {
+      "id": "acquire-case",
+      "capability": "acquire-authorized-case",
+      "depends_on": [
+        "prepare-profile"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/document-index.json",
+        "{workspace}/source-manifest.json"
+      ],
+      "gate": "authorized-acquisition"
+    },
+    {
+      "id": "extract-record",
+      "capability": "extract-procedural-record",
+      "depends_on": [
+        "acquire-case"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/document-classification.json",
+        "{workspace}/procedural-timeline.json",
+        "{workspace}/labor-report.json"
+      ],
+      "gate": "record-completeness"
+    },
+    {
+      "id": "build-decision-units",
+      "capability": "build-claim-and-evidence-matrices",
+      "depends_on": [
+        "extract-record"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/claim-matrix.json",
+        "{workspace}/evidence-matrix.json"
+      ],
+      "gate": "decision-unit-coverage"
+    },
+    {
+      "id": "route-claims",
+      "capability": "route-claim-work",
+      "depends_on": [
+        "build-decision-units"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/issue-route.json"
+      ],
+      "gate": "route-coverage"
+    },
+    {
+      "id": "execute-conditional-tracks",
+      "capability": "execute-routed-tracks",
+      "depends_on": [
+        "route-claims"
+      ],
+      "condition": "routed",
+      "outputs": [
+        "{workspace}/precedent-corpus.json",
+        "{workspace}/evidence-review.json",
+        "{workspace}/calculation-review.json"
+      ],
+      "gate": "conditional-track-custody"
+    },
+    {
+      "id": "analyze-claims",
+      "capability": "analyze-each-claim",
+      "depends_on": [
+        "execute-conditional-tracks"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/claim-analysis.json"
+      ],
+      "gate": "claim-analysis-coverage"
+    },
+    {
+      "id": "draft-judgment",
+      "capability": "draft-labor-judgment",
+      "depends_on": [
+        "analyze-claims"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/disposition-matrix.json",
+        "{workspace}/judgment-draft.md"
+      ],
+      "gate": "draft-congruence"
+    },
+    {
+      "id": "merge-judgment",
+      "capability": "merge-judgment-deterministically",
+      "depends_on": [
+        "draft-judgment"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/{case_number}-labor-judgment.md"
+      ],
+      "gate": "deterministic-merge"
+    },
+    {
+      "id": "review-and-gate",
+      "capability": "review-and-apply-global-gate",
+      "depends_on": [
+        "merge-judgment"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/review-report.json",
+        "{workspace}/global-gate.json"
+      ],
+      "gate": "global-acceptance"
+    }
+  ]
+}

@@ -22,7 +22,7 @@ $2 = modo (padrao: sentenca)
 ### Etapa 0: Verificar sessao existente
 
 ```bash
-python -c "
+python3 -c "
 import json
 from pathlib import Path
 import sys
@@ -100,7 +100,7 @@ Exemplo: C:\Users\georg\Downloads\pje1g.trf5.jus.br.har
 
 Apos usuario informar caminho:
 ```bash
-python .claude/skills/pje-download/scripts/extrair_cookies_har.py --har "CAMINHO_DO_HAR" --output pje_session.json
+python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py --har "CAMINHO_DO_HAR" --output pje_session.json
 ```
 
 **Checkpoint:** Script retornou `[OK]`?
@@ -111,7 +111,7 @@ python .claude/skills/pje-download/scripts/extrair_cookies_har.py --har "CAMINHO
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1 --output processos.json
+python3 .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1 --output processos.json
 ```
 
 **Checkpoint:** Arquivo `processos.json` existe e contem processos?
@@ -125,7 +125,7 @@ python .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_ses
 
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json --output data/$2 --delay 2
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json --output data/$2 --delay 2
 ```
 
 **Checkpoint:** PDFs baixados em `data/$2/`?

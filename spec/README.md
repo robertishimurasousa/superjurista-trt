@@ -834,8 +834,8 @@ REGRA ABSOLUTA: Execute os scripts existentes. NAO crie codigo novo.
 
 | Script | Comando |
 |--------|---------|
-| Listar | `python .claude/skills/pje-download/scripts/listar_processos.py` |
-| Baixar | `python .claude/skills/pje-download/scripts/baixar_pdfs.py` |
+| Listar | `python3 .claude/skills/pje-download/scripts/listar_processos.py` |
+| Baixar | `python3 .claude/skills/pje-download/scripts/baixar_pdfs.py` |
 
 ## Retorno Esperado
 
@@ -894,13 +894,13 @@ Siga os passos da skill `pje-download`
 ### Etapa 1: Listar processos
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1
+python3 .claude/skills/pje-download/scripts/listar_processos.py --cookies pje_session.json --modo $2 --limite $1
 ```
 
 ### Etapa 2: Baixar PDFs
 Executar EXATAMENTE:
 ```bash
-python .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json
+python3 .claude/skills/pje-download/scripts/baixar_pdfs.py --cookies pje_session.json --processos processos.json
 ```
 ```
 

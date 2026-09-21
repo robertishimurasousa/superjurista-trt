@@ -9,7 +9,7 @@ Este documento contem receitas praticas para casos de uso comuns na navegacao do
 Processos com prioridade legal (idosos 60+, doentes graves, etc).
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --prioridade \
@@ -27,7 +27,7 @@ python listar_processos.py \
 Processos com pedido de tutela provisoria.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo decisao \
   --tags LIMINAR \
@@ -44,7 +44,7 @@ python listar_processos.py \
 Processos que acabaram de chegar na fila.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --nao-conferidos \
@@ -61,7 +61,7 @@ python listar_processos.py \
 Processos de uma classe ou assunto específico.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --assunto "aposentadoria" \
@@ -81,7 +81,7 @@ python listar_processos.py \
 Filtrar por polo passivo.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --polo-passivo "INSS" \
@@ -96,7 +96,7 @@ python listar_processos.py \
 Processos que ainda não foram classificados.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --sem-etiqueta \
@@ -113,7 +113,7 @@ python listar_processos.py \
 Processos com restricao de acesso.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --sigiloso \
@@ -129,7 +129,7 @@ python listar_processos.py \
 Triagem inteligente para despacho imediato.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo decisao \
   --tags URGENTE \
@@ -148,7 +148,7 @@ python listar_processos.py \
 Buscar todos os processos de uma parte.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --polo-ativo "MARIA DA SILVA" \
@@ -164,7 +164,7 @@ python listar_processos.py \
 Processos marcados para sessao.
 
 ```bash
-python listar_processos.py \
+python3 listar_processos.py \
   --cookies pje_session.json \
   --modo sentenca \
   --tags PAUTA \
@@ -191,27 +191,27 @@ python listar_processos.py \
 
 ```bash
 # Ver novos processos
-python listar_processos.py --cookies pje_session.json --modo decisao --nao-lidos --limite 10
+python3 listar_processos.py --cookies pje_session.json --modo decisao --nao-lidos --limite 10
 
 # Ver urgentes
-python listar_processos.py --cookies pje_session.json --modo decisao --tags URGENTE --limite 5
+python3 listar_processos.py --cookies pje_session.json --modo decisao --tags URGENTE --limite 5
 ```
 
 ### 2. Producao de sentencas
 
 ```bash
 # Listar por ordem de antiguidade
-python listar_processos.py --cookies pje_session.json --modo sentenca --ordem crescente --limite 10
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --ordem crescente --limite 10
 
 # Baixar PDFs
-python baixar_pdfs.py --cookies pje_session.json --processos processos_sentenca.json --output data/sentenca
+python3 baixar_pdfs.py --cookies pje_session.json --processos processos_sentenca.json --output data/sentenca
 ```
 
 ### 3. Fim do dia
 
 ```bash
 # Ver o que ficou pendente
-python listar_processos.py --cookies pje_session.json --modo sentenca --nao-conferidos
+python3 listar_processos.py --cookies pje_session.json --modo sentenca --nao-conferidos
 ```
 
 ---

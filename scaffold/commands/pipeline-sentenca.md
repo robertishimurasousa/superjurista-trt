@@ -75,7 +75,7 @@ allowed-tools: Read Task Bash TodoWrite
     - A ROTA É LEI: os trilhos 2.6/2.7 só rodam se a ROTA (lida por --rota) os pedir; a retomada de trilho é do gate do PRÓPRIO trilho (verificar_pesquisa/verificar_probatica com --etapas), não do verificar_sentenca.
     - CONDUZIR POR CAMINHO: o orquestrador passa paths; o subagente lê a entrada (Read) e GRAVA o documento no arquivo (Write). O documento NUNCA volta inline na resposta.
     - RESPOSTA DE UMA LINHA: cada subagente responde apenas "etapa X OK | <arquivo>" — quem confere o conteúdo é o script, não o orquestrador lendo.
-    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; tronco → `python scripts/verificar_sentenca.py "$WORKSPACE" --etapa <nome>`; trilhos → o gate do respectivo pipeline; rota → `--rota`; citações → `verificar_citacoes.py`.
+    - VALIDAÇÃO POR SCRIPT: nunca validar lendo o documento; tronco → `python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa <nome>`; trilhos → o gate do respectivo pipeline; rota → `--rota`; citações → `verificar_citacoes.py`.
     - Subagentes LEEM o próprio prompt via Read (.claude/agents/...); o orquestrador não copia a capacidade deles — injeta caminhos, TEMAS/FATOS da triagem e o lembrete de sintaxe/método.
     - As etapas do tronco (1→2→2.5→3→4→5) são sequenciais ENTRE SI; DENTRO dos trilhos, pesquisadores e tríplice probática rodam em PARALELO (Tasks no mesmo turno). Para VÁRIOS processos, os pipelines são independentes — podem rodar em paralelo (um Task de pipeline por processo).
     - TodoWrite DINÂMICO: os todos dos trilhos 2.6/2.7 NÃO nascem na Etapa 0 — entram na Etapa 2.5, quando a ROTA é conhecida.
@@ -143,7 +143,7 @@ allowed-tools: Read Task Bash TodoWrite
     <acao_orquestrador>
       1. $ARGUMENTS: caminho da pasta (→ $WORKSPACE; $NUMERO = padrão CNJ no nome) ou número (→ localizar a pasta em data/sentenca/ ou data/decisao/). Vazio/inválido → PARAR e pedir.
       2. Bash: test -f "$WORKSPACE/processo.txt" — se faltar, PARAR (a entrada do pipeline é o processo.txt).
-      3. Bash: python scripts/verificar_sentenca.py "$WORKSPACE"
+      3. Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE"
          → a linha "PENDENTES: ..." é o plano de execução (a varredura agora INCLUI a triagem:
          workspaces pré-v3.1 acusam "triagem" pendente — comportamento desejado, ganham a triagem
          na retomada sem repagar as demais etapas). Tudo "(nenhuma)" → pular direto à Etapa 6
@@ -173,7 +173,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "linha-tempo OK | $NUMERO-linha-tempo.md" — NÃO imprimir o documento.</passo>
       <restricoes>Apenas extração (não analisar, não sugerir decisão); NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --etapa linha-tempo
+      Validar: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa linha-tempo
       (exit 1 → contingência etapa_invalida).
     </acao_orquestrador>
     <transicao>Gate 0 → Etapa 2.</transicao>
@@ -192,7 +192,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "relatorio OK | $NUMERO-relatorio.md"</passo>
       <restricoes>IDs quando disponíveis; NUNCA usar TodoWrite; NÃO imprimir o documento.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --etapa relatorio
+      Validar: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa relatorio
     </acao_orquestrador>
     <transicao>Gate 0 → Etapa 2.5.</transicao>
   </etapa>
@@ -211,15 +211,15 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "triagem OK | $NUMERO-triagem.md" — NÃO imprimir os documentos.</passo>
       <restricoes>Apenas rotear (não decidir mérito, não antecipar a análise); rota [] exige justificativa_rotina afirmativa; NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --etapa triagem
+      Validar: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa triagem
       (exit 1 → contingência etapa_invalida).
       2. Merge de fontes — SEMPRE, mesmo em rota direta (garante $NUMERO-fontes.json com as teses
          colhidas no reconhecimento, que a fundamentação vai citar):
-         Bash: python scripts/merge_fontes.py "$WORKSPACE" --id "$NUMERO"
+         Bash: python3 scripts/merge_fontes.py "$WORKSPACE" --id "$NUMERO"
          (exit 1 = itens rejeitados NOMEADOS no stdout; NÃO-fatal — anotar para o resumo final;
          contingência fontes_rejeitadas.)
       3. Ler a rota — SEMPRE:
-         Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --rota
+         Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --rota
          → saída em linhas simples: "ROTA: pesquisa probatica" (ou "ROTA: direta"), UMA linha
          "TEMA: ..." por tema de pesquisa e UMA linha "FATO: ..." por fato probatório; em rota
          direta vem também "JUSTIFICATIVA: ..." (a justificativa_rotina, citada no resumo da
@@ -236,7 +236,7 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="2.6" nome="Trilho de pesquisa (condicional) — SÓ SE 'pesquisa' na ROTA" modo="paralelo">
     <retomada>O trilho tem retomada PRÓPRIA, pelo gate do pipeline-pesquisa:
-      Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapas bnp,cjf,julia,consolidado
+      Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapas bnp,cjf,julia,consolidado
       → a linha PENDENTES é o plano DO TRILHO (sem --gate a varredura de subconjunto SEMPRE sai 0 — ela informa, não bloqueia).
       STJ/TNU: incluir no subconjunto APENAS se os MCPs correspondentes estiverem conectados NESTA sessão (ferramentas mcp__claude_ai_PESQUISA_STJ__* e mcp__tnu-eproc__* disponíveis); se incluídos, usar o subconjunto ampliado bnp,cjf,julia,stj,tnu,consolidado em TODOS os comandos do trilho. Nada pendente → pular direto ao fechamento (passo 4).</retomada>
     <acao_orquestrador>
@@ -274,7 +274,7 @@ allowed-tools: Read Task Bash TodoWrite
         Sintaxe TNU: e ou nao prox * "frase" (prox SEM número); use somente_precedentes_relevantes
         para os representativos; foque uniformização/JEFs.
       2. Validar CADA fonte despachada:
-         Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapa bnp   (idem cjf, julia, stj, tnu)
+         Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapa bnp   (idem cjf, julia, stj, tnu)
          (exit 1 → redespachar SÓ a fonte reprovada com o motivo do gate anexado; máx 2 tentativas;
          na 2ª falha → contingência fonte_indisponivel_no_trilho: INDISPONÍVEL e seguir. Task que
          reporta MCP desconectado → INDISPONÍVEL DIRETO, sem gastar tentativas. Ao menos 1 fonte
@@ -294,14 +294,14 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "consolidado OK | $NUMERO-precedentes-consolidado.md" — NÃO imprimir o documento.</passo>
       <restricoes>NUNCA inventar precedentes ausentes dos relatórios; NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapa consolidado
+      Validar: Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapa consolidado
       (exit 1 → contingência etapa_invalida; 2ª falha → PARAR e reportar).
       4. Fechamento EXIT-CODED do trilho (com o subconjunto que ficou OK):
-         Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapas <subconjunto-ok>,consolidado --gate
+         Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapas <subconjunto-ok>,consolidado --gate
          (ex.: --etapas bnp,cjf,julia,consolidado --gate; fonte INDISPONÍVEL fica FORA do
          subconjunto. Exit 1 → algo regrediu; PARAR e reportar.)
       5. Re-rodar o merge de fontes (agora com os parciais novos do trilho):
-         Bash: python scripts/merge_fontes.py "$WORKSPACE" --id "$NUMERO"
+         Bash: python3 scripts/merge_fontes.py "$WORKSPACE" --id "$NUMERO"
          (exit 1 não-fatal — contingência fontes_rejeitadas.)
     </acao_orquestrador>
     <transicao>ROTA contém "probatica" → Etapa 2.7. Senão → Etapa 3.</transicao>
@@ -309,7 +309,7 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="2.7" nome="Trilho probático (condicional) — SÓ SE 'probatica' na ROTA" modo="paralelo">
     <retomada>O trilho tem retomada PRÓPRIA, pelo gate do pipeline-probatica:
-      Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapas inventario,pearl,haack,fbd,consolidado
+      Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapas inventario,pearl,haack,fbd,consolidado
       → a linha PENDENTES é o plano DO TRILHO. Nada pendente → pular direto ao fechamento (passo 4).</retomada>
     <acao_orquestrador>
       $FATOS = as linhas "FATO:" lidas na Etapa 2.5 (focos probatórios injetados nos envelopes).
@@ -327,7 +327,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "inventario OK | $NUMERO-inventario.md" — NÃO imprimir o documento.</passo>
       <restricoes>Apenas catalogação descritiva (sem juízo de força/credibilidade); NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa inventario
+      Validar: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa inventario
       (exit 1 → contingência etapa_invalida; máx 2 tentativas).
       2. Tríplice metodológica em PARALELO (só as pendentes; até 3 Tasks opus no MESMO turno) — exemplo Pearl:
       ═══════════════════════════════════════════════════════════════════
@@ -353,7 +353,7 @@ allowed-tools: Read Task Bash TodoWrite
         abre "## MOVIMENTO 1 — ENQUADRAMENTO", fecha "Análise probatória FBD concluída.".
         Método: 7 movimentos sequenciais; escala ordinal, sem valores numéricos.
       Validar CADA análise:
-      Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa pearl   (idem haack, fbd)
+      Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa pearl   (idem haack, fbd)
       (exit 1 → redespachar SÓ a análise reprovada com o motivo do gate anexado; máx 2 tentativas;
       na 2ª falha → PARAR — o consolidador exige as três análises.)
       3. Consolidação [se "consolidado" pendente OU alguma análise da tríplice foi regenerada agora] — Task (opus):
@@ -372,10 +372,10 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "consolidado OK | $NUMERO-probatica-consolidado.md" — NÃO imprimir o documento.</passo>
       <restricoes>NUNCA inventar análises ausentes; NUNCA omitir divergências; NUNCA usar TodoWrite.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      Validar: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapa consolidado
+      Validar: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapa consolidado
       (exit 1 → contingência etapa_invalida; 2ª falha → PARAR e reportar).
       4. Fechamento EXIT-CODED do trilho:
-         Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapas inventario,pearl,haack,fbd,consolidado --gate
+         Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapas inventario,pearl,haack,fbd,consolidado --gate
          (exit 1 → algo regrediu; PARAR e reportar.)
     </acao_orquestrador>
     <transicao>Gate do trilho 0 → Etapa 3.</transicao>
@@ -396,7 +396,7 @@ allowed-tools: Read Task Bash TodoWrite
       <passo>Responder APENAS: "analise OK | $NUMERO-analise.md"</passo>
       <restricoes>Identificar a fase e a questão pendente; NUNCA usar TodoWrite; NÃO imprimir o documento.</restricoes>
       ═══════════════════════════════════════════════════════════════════
-      2. Validar: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --etapa analise
+      2. Validar: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa analise
          → exit 0: "[OK] analise" → Etapa 4.
          → exit 1: [AUSENTE]/[INVALIDA] → contingência etapa_invalida (máx 2 tentativas).
          → exit 3: "[ESCALAR] analise: <trilhos> — <motivo>" → VÁLVULA ESCALAR (passo 3).
@@ -406,8 +406,8 @@ allowed-tools: Read Task Bash TodoWrite
              anexá-lo nos despachos seguintes.
          (ii) DETECÇÃO PERSISTENTE em disco (sobrevive a /clear): para cada trilho pedido, checar
               se ele JÁ passa no gate dele —
-              pesquisa:  Bash: python scripts/verificar_pesquisa.py "$WORKSPACE" --etapas consolidado --gate
-              probatica: Bash: python scripts/verificar_probatica.py "$WORKSPACE" --etapas consolidado --gate
+              pesquisa:  Bash: python3 scripts/verificar_pesquisa.py "$WORKSPACE" --etapas consolidado --gate
+              probatica: Bash: python3 scripts/verificar_probatica.py "$WORKSPACE" --etapas consolidado --gate
               (o consolidado é o PRODUTO final do trilho: só existe válido se o trilho rodou —
               inclusive rodada degradada com fonte INDISPONÍVEL, cujo subconjunto exato não é
               recuperável após /clear).
@@ -450,9 +450,9 @@ allowed-tools: Read Task Bash TodoWrite
       <restricoes>NÃO inventar legislação/precedente/doutrina; doutrina NÃO entra na minuta automatizada; NUNCA usar TodoWrite; NÃO imprimir o documento.</restricoes>
       ═══════════════════════════════════════════════════════════════════
       2. VALIDAÇÃO DUPLA:
-         a) Formato: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --etapa fundamentacao
+         a) Formato: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --etapa fundamentacao
             (exit 1 → contingência etapa_invalida; máx 2 tentativas).
-         b) Citações: Bash: python scripts/verificar_citacoes.py "$WORKSPACE"
+         b) Citações: Bash: python3 scripts/verificar_citacoes.py "$WORKSPACE"
             (documento default: $NUMERO-fundamentacao.md; corpus: $NUMERO-fontes.json + processo.txt)
             exit 1 → contingência citacao_sem_lastro: REGENERAR a fundamentação (mesmo invólucro do
             passo 1) com a lista de linhas [ERRO] do gate anexada ao prompt e a instrução: "as
@@ -466,7 +466,7 @@ allowed-tools: Read Task Bash TodoWrite
   <etapa numero="5" nome="Merge (script, sem LLM)">
     <retomada>Se "sentenca" não está em PENDENTES E as etapas 2 e 4 não rodaram nesta execução → pular. Se relatório OU fundamentação foram regenerados agora, o merge RODA de novo (a sentença antiga está desatualizada).</retomada>
     <acao_orquestrador>
-      Bash: python scripts/merge_sentenca.py "$WORKSPACE"
+      Bash: python3 scripts/merge_sentenca.py "$WORKSPACE"
       → concatena, grava e valida $NUMERO-sentenca.md sem passar conteúdo pelo contexto.
       Exit 1 com "entrada inválida" → voltar à etapa apontada (contingência falha_de_entrada).
     </acao_orquestrador>
@@ -475,10 +475,10 @@ allowed-tools: Read Task Bash TodoWrite
 
   <etapa numero="6" nome="Finalização — gate global + citações na sentença">
     <acao_orquestrador>
-      1. Gate final: Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --gate
+      1. Gate final: Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --gate
          (agora INCLUI a triagem; exit 1 → algo regrediu; reportar o output e PARAR).
       2. Citações na SENTENÇA (ela herda as citações da fundamentação via merge):
-         Bash: python scripts/verificar_citacoes.py "$WORKSPACE" --doc=-sentenca.md
+         Bash: python3 scripts/verificar_citacoes.py "$WORKSPACE" --doc=-sentenca.md
          (forma "--doc=" OBRIGATÓRIA — o valor começa com hífen e o argparse rejeita
          "--doc -sentenca.md" com o valor separado por espaço.)
          Exit 1 → VOLTAR à Etapa 4 (regenerar a fundamentação com a lista de [ERRO] anexada e
@@ -488,12 +488,12 @@ allowed-tools: Read Task Bash TodoWrite
          - ROTA tomada (se direta, citar a linha "JUSTIFICATIVA: ..." impressa pelo --rota) e
            trilhos rodados (2.6/2.7 e eventual escalada da Etapa 3) — se a saída do --rota não
            estiver no contexto (ex.: pulo direto da Etapa 0 para cá), obtê-la por:
-           Bash: python scripts/verificar_sentenca.py "$WORKSPACE" --rota
+           Bash: python3 scripts/verificar_sentenca.py "$WORKSPACE" --rota
            (nunca lendo a triagem: a justificativa vem da linha JUSTIFICATIVA do script)
          - Fontes: nº de itens válidos em $NUMERO-fontes.json e itens REJEITADOS no merge, se
            houver (do stdout do merge_fontes.py)
          - Artefatos em $WORKSPACE: REAPROVEITADOS da execução anterior × gerados agora
-         — Ingestão no Kanban (opcional): python scripts/ingerir_kanban.py "$NUMERO" — move o workspace para data/sentenca/01-por-analisar/ (visível no frontend).
+         — Ingestão no Kanban (opcional): python3 scripts/ingerir_kanban.py "$NUMERO" — move o workspace para data/sentenca/01-por-analisar/ (visível no frontend).
     </acao_orquestrador>
   </etapa>
 

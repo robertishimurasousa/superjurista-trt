@@ -112,7 +112,7 @@ metadata:
   <!-- Opcional: Se a skill incluir scripts executáveis -->
 
   <script nome="[Nome do Script]">
-    <comando>python .claude/skills/[nome-skill]/scripts/[script].py [ARGUMENTOS]</comando>
+    <comando>python3 .claude/skills/[nome-skill]/scripts/[script].py [ARGUMENTOS]</comando>
 
     <parametros>
       | Parâmetro | Tipo | Obrigatório | Descrição |
@@ -438,7 +438,7 @@ allowed-tools: Read Write Bash
 <instrucoes>
   <passo numero="1" nome="Verificar arquivo">
     Confirme que o arquivo existe e é um PDF válido.
-    Use: file [caminho] ou python -c "import PyPDF2; ..."
+    Use: file [caminho] ou python3 -c "import PyPDF2; ..."
   </passo>
 
   <passo numero="2" nome="Escolher operação">
@@ -477,7 +477,7 @@ allowed-tools: Read Write Bash
 
 <scripts>
   <script nome="Extrair Texto">
-    <comando>python .claude/skills/pdf-processing/scripts/extract_text.py INPUT OUTPUT</comando>
+    <comando>python3 .claude/skills/pdf-processing/scripts/extract_text.py INPUT OUTPUT</comando>
     <parametros>
       | Parâmetro | Tipo | Obrigatório | Descrição |
       |-----------|------|-------------|-----------|
@@ -488,7 +488,7 @@ allowed-tools: Read Write Bash
   </script>
 
   <script nome="Mesclar PDFs">
-    <comando>python .claude/skills/pdf-processing/scripts/merge_pdfs.py OUTPUT INPUT1 INPUT2 ...</comando>
+    <comando>python3 .claude/skills/pdf-processing/scripts/merge_pdfs.py OUTPUT INPUT1 INPUT2 ...</comando>
     <parametros>
       | Parâmetro | Tipo | Obrigatório | Descrição |
       |-----------|------|-------------|-----------|
@@ -503,7 +503,7 @@ allowed-tools: Read Write Bash
   <exemplo cenario="Extrair texto de um contrato">
     <entrada>Extraia o texto do arquivo contrato.pdf</entrada>
     <saida>
-      Executando: python scripts/extract_text.py contrato.pdf contrato.txt
+      Executando: python3 scripts/extract_text.py contrato.pdf contrato.txt
       Texto extraído com sucesso: contrato.txt (15.2 KB, 3 páginas)
     </saida>
   </exemplo>
@@ -511,7 +511,7 @@ allowed-tools: Read Write Bash
   <exemplo cenario="Mesclar relatórios mensais">
     <entrada>Junte os PDFs janeiro.pdf, fevereiro.pdf e marco.pdf em um único arquivo</entrada>
     <saida>
-      Executando: python scripts/merge_pdfs.py trimestre-q1.pdf janeiro.pdf fevereiro.pdf marco.pdf
+      Executando: python3 scripts/merge_pdfs.py trimestre-q1.pdf janeiro.pdf fevereiro.pdf marco.pdf
       PDFs mesclados com sucesso: trimestre-q1.pdf (45 páginas)
     </saida>
   </exemplo>
@@ -541,8 +541,8 @@ allowed-tools: Read Write Bash
 </referencias>
 
 <pre_requisitos>
-  - Python 3.8+ - `python --version`
-  - pdfplumber - `pip install pdfplumber`
-  - PyPDF2 - `pip install PyPDF2`
+  - Python 3.8+ - `python3 --version`
+  - pdfplumber - `python3 -m pip install pdfplumber`
+  - PyPDF2 - `python3 -m pip install PyPDF2`
 </pre_requisitos>
 ```

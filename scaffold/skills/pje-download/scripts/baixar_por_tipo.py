@@ -8,10 +8,10 @@ economizando tempo e espaço em processos volumosos.
 
 Uso:
     # Baixar apenas petições iniciais
-    python baixar_por_tipo.py --cookies pje_session.json --id-processo 2683123 --tipo 12 --output inicial.pdf
+    python3 baixar_por_tipo.py --cookies pje_session.json --id-processo 2683123 --tipo 12 --output inicial.pdf
 
     # Baixar múltiplos tipos
-    python baixar_por_tipo.py --cookies pje_session.json --id-processo 2683123 --tipos 12,64,837 --output-dir ./tipos/
+    python3 baixar_por_tipo.py --cookies pje_session.json --id-processo 2683123 --tipos 12,64,837 --output-dir ./tipos/
 
 Tipos PJE comuns:
     12 = Petição inicial
@@ -37,7 +37,7 @@ from urllib.parse import urlencode
 try:
     from bs4 import BeautifulSoup
 except ImportError:
-    print("[ERRO] BeautifulSoup não instalado. Execute: pip install beautifulsoup4")
+    print("[ERRO] BeautifulSoup não instalado. Execute: python3 -m pip install beautifulsoup4")
     sys.exit(1)
 
 

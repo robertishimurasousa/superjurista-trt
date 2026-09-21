@@ -137,7 +137,7 @@ REGRA ABSOLUTA: Execute os scripts existentes. NAO crie codigo novo.
 ## Scripts Disponíveis
 | Script | Comando |
 |--------|---------|
-| [nome] | `python .claude/skills/$NOME/scripts/[script].py` |
+| [nome] | `python3 .claude/skills/$NOME/scripts/[script].py` |
 
 ## Retorno Esperado
 Retorne APENAS: status, caminhos, estatísticas.

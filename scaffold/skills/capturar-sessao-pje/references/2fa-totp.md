@@ -20,19 +20,19 @@ software — o celular vira backup.
    PJE_TOTP_SEED=cole-a-chave-base32-aqui
    ```
    Pode colar com ou sem espaços; o gerador normaliza. Sem aspas.
-3. Dependência: `pip install pyotp`.
+3. Dependência: `python3 -m pip install pyotp`.
 
 ## Uso
 
 ```bash
 # Imprime SO os 6 digitos (para o passo de login consumir)
-python .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py
+python3 .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py
 
 # Verboso: mostra os segundos restantes na janela atual
-python .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py -v
+python3 .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py -v
 
 # Seed explicito (util para testar comparando com o celular)
-python .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py --seed "JBSW Y3DP ..."
+python3 .claude/skills/capturar-sessao-pje/scripts/gerar_totp.py --seed "JBSW Y3DP ..."
 ```
 
 No fluxo da skill, isso acontece na **Etapa 4.5** do `SKILL.md`: após o ENTRAR, se a

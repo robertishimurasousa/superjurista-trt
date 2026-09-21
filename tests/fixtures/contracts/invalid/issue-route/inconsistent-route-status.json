@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "routes": [
+    {
+      "claim_id": "CLM-001",
+      "route_status": "abstained",
+      "requires_legal_research": true,
+      "requires_evidence_analysis": false,
+      "requires_calculation_review": false,
+      "requires_procedural_review": false,
+      "research_questions": [
+        "Which rule governs the synthetic issue?"
+      ],
+      "evidence_questions": [],
+      "route_reason": "This artifact intentionally contradicts its status.",
+      "abstention_reasons": []
+    }
+  ]
+}

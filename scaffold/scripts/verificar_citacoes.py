@@ -12,7 +12,7 @@ com >= LIMIAR chars normalizados deve constar do corpus. Aspas curtas
 (expressões idiomáticas) são ignoradas.
 
 Uso:
-  python scripts/verificar_citacoes.py <workspace> [--id N] [--doc SUFIXO_OU_CAMINHO]
+  python3 scripts/verificar_citacoes.py <workspace> [--id N] [--doc SUFIXO_OU_CAMINHO]
       [--limiar 60] [--ignorar-apos MARCADOR]
       -> exit 0: todas as citações conferem; 1: alguma não confere; 2: erro de uso
 

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "evidence_items": [
+    {
+      "evidence_id": "EVD-001",
+      "claim_ids": [
+        "CLM-001"
+      ],
+      "type": "time_record",
+      "source_document_id": "DOC-014",
+      "proposition": "The record contains one relevant entry.",
+      "relation": "supports_claim",
+      "limitations": [],
+      "analysis_status": "pending",
+      "conflicts_with_evidence_ids": []
+    }
+  ],
+  "uncovered_claim_ids": []
+}

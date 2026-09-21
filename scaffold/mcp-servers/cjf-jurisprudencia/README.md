@@ -46,11 +46,11 @@ A tool `verificar_cobertura_cjf` mede isso ao vivo.
 ## Instalação
 
 ```bash
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Registrar (escopo user):
-`claude mcp add -s user cjf-jurisprudencia -- python C:/Users/georg/.claude/mcp-servers/cjf-jurisprudencia/server.py`
+`claude mcp add -s user cjf-jurisprudencia -- python3 C:/Users/georg/.claude/mcp-servers/cjf-jurisprudencia/server.py`
 
 ## Detalhes técnicos
 

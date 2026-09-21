@@ -1,0 +1,406 @@
+# Roadmap: SuperJurista TRT12
+
+**Status:** Active draft
+**Version:** 0.19.0
+**Date:** 2026-09-21
+**Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
+
+---
+
+## 1. Purpose
+
+This roadmap measures delivered capability, not activity. A work item contributes to progress
+only after its acceptance gate passes and its evidence is linked in this document.
+
+The roadmap answers four operating questions:
+
+1. What is the next bounded delivery target?
+2. How much validated capability exists now?
+3. What evidence supports the reported percentage?
+4. What is blocking the next milestone?
+
+---
+
+## 2. Program Structure
+
+The program has three independently measured tracks:
+
+| Track | Outcome | Program weight | Initial state |
+|---|---|---:|---:|
+| A | TRT12 first-instance validated MVP | 60% | 0/100 accepted points |
+| B | TRT12 second-instance validated extension | 25% | 0/100 accepted points |
+| C | Multi-TRT portability proof | 15% | 0/100 accepted points |
+
+### 2.1 Program progress formula
+
+```text
+PROGRAM_PROGRESS =
+    0.60 × TRACK_A_PROGRESS
+  + 0.25 × TRACK_B_PROGRESS
+  + 0.15 × TRACK_C_PROGRESS
+```
+
+Each track score ranges from 0 to 100. The program reaches 60% when the TRT12 first-instance
+MVP is fully accepted, even if no second-instance or multi-TRT work has started. This prevents
+future scope from hiding whether the first usable target is actually ready.
+
+### 2.2 Current baseline
+
+```text
+Track A — TRT12 first instance: 0/100 accepted points
+Track B — TRT12 second instance: 0/100 accepted points
+Track C — multi-TRT:            0/100 accepted points
+Program progress:               0.0%
+Track A candidate in review:    20/100 points
+```
+
+The blueprint and roadmap are currently drafts. `ARC-01` earns points only after explicit
+architectural approval. Candidate points are reported separately and never contribute to the
+program progress formula before acceptance.
+
+---
+
+## 3. Status and Evidence Rules
+
+### 3.1 Status values
+
+| Status | Meaning | Earned points |
+|---|---|---:|
+| `PLANNED` | Defined but not started | 0 |
+| `IN_PROGRESS` | Work exists but acceptance gate has not passed | 0 |
+| `BLOCKED` | Cannot advance without a named dependency or decision | 0 |
+| `IN_REVIEW` | Candidate evidence exists and is being evaluated | 0 |
+| `ACCEPTED` | Acceptance gate passed and evidence is linked | Full item weight |
+| `REOPENED` | Previously accepted evidence was invalidated | 0 until reaccepted |
+
+Partial percentages are prohibited at work-item level. They are subjective and easy to game.
+Incremental progress comes from using small independently acceptable work items.
+
+### 3.2 Evidence requirements
+
+Every `ACCEPTED` item must record:
+
+- commit or pull request;
+- files delivered;
+- validation commands and results;
+- fixture, dataset, or case sample used;
+- reviewer or approval record when human judgment is required;
+- known limitations that remain outside the item.
+
+Documentation alone cannot prove runtime behavior. Synthetic tests cannot prove historical
+legal adequacy. A successful historical case cannot prove adapter reproducibility.
+
+### 3.3 Reopening rule
+
+An accepted item returns to `REOPENED` when:
+
+- a regression invalidates its acceptance evidence;
+- a contract changes incompatibly;
+- an official source or endpoint changes materially;
+- a critical defect is traced to that item.
+
+The points are removed until the item passes its gate again.
+
+---
+
+## 4. Track A — TRT12 First-Instance MVP
+
+Track A contains exactly 100 points.
+
+### 4.1 Work-package summary
+
+| Work package | Weight | Accepted | Status |
+|---|---:|---:|---|
+| FND — Foundation hardening | 8 | 0 | `IN_PROGRESS` |
+| ARC — Architecture and contracts | 12 | 0 | `IN_PROGRESS` |
+| PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
+| DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
+| JUR — Authoritative research | 15 | 0 | `PLANNED` |
+| PIP — End-to-end pipeline and gates | 15 | 0 | `PLANNED` |
+| VAL — Historical validation | 10 | 0 | `PLANNED` |
+| OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
+| **Total** | **100** | **0** |  |
+
+### 4.2 Foundation hardening — 8 points
+
+The first implementation package is `PKG-01 — Fork Baseline and Dual-Runtime Contract`. It
+starts with `FND-04` and produces the evidence required to adapt the fork without a rewrite.
+
+`PKG-01` delivers:
+
+- a file-level inventory of existing commands, agents, skills, scripts, and providers;
+- a Preserve/Adapt/Replace/Retire disposition for every in-scope component;
+- characterization tests for reusable deterministic behavior;
+- a map of Claude-specific bindings and their Codex equivalents;
+- the proposed runtime-neutral pipeline manifest boundary;
+- one minimal smoke path proving that Claude Code and Codex can invoke the same shared gate.
+
+`PKG-01` is accepted when `FND-04` passes. It earns 2 Track A points. It does not claim that
+the labor pipeline or either complete runtime is ready.
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| FND-01 | Cross-platform Python and dependency contract | 2 | `IN_REVIEW` | Installer and documented commands run on the target macOS environment; supported Python version is consistent with code | [`runtime/python-contract.json`](../../runtime/python-contract.json), [`requirements`](../../requirements), [`scripts/check_python_contract.py`](../../scripts/check_python_contract.py), `tests/test_python_contract.py`; clean temporary install layout passes on macOS Python 3.9, dependencies import with the LibreSSL-compatible constraint, and the MCP contract is tested against the Python 3.10 boundary |
+| FND-02 | Automated quality suite and CI entry point | 2 | `IN_REVIEW` | One documented command runs format/static checks/tests; CI or equivalent clean-room execution passes | [`scripts/quality_gate.py`](../../scripts/quality_gate.py), [`.github/workflows/quality.yml`](../../.github/workflows/quality.yml), `tests/test_quality_gate.py`; the shared command passes 130 tests on local Python 3.9 and bundled Python 3.12, and passes from a clean temporary workspace copy |
+| FND-03 | Credential and case-data hygiene | 2 | `IN_REVIEW` | Tests prove `.env`, sessions, HARs, cookies, headers, and case data are excluded or redacted | [`runtime/data-hygiene-contract.json`](../../runtime/data-hygiene-contract.json), [`scripts/check_data_hygiene.py`](../../scripts/check_data_hygiene.py), `tests/test_data_hygiene.py`, `.gitignore`, and `scaffold/project-gitignore`; the integrated quality gate passes 130 tests and the installed-layout rehearsal passes without reading external symlink targets or printing matched secret values |
+| FND-04 | Fork inventory, characterization, and dual-runtime reuse ledger | 2 | `IN_REVIEW` | Every in-scope existing command, agent, skill, script, and provider has a Preserve/Adapt/Replace/Retire disposition; reusable behavior has characterization evidence; Claude bindings have Codex mappings; both runtimes invoke one shared smoke gate | [`spec/inventory`](../inventory/README.md), [`runtime`](../../runtime/README.md), `tests/test_reuse_ledger.py`, `tests/test_runtime_contract.py`; the 130-test suite passes locally on Python 3.9 and bundled Python 3.12 |
+
+### 4.3 Architecture and contracts — 12 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| ARC-01 | Blueprint and evidence-weighted roadmap | 3 | `IN_REVIEW` | User explicitly approves scope, sequencing, extension boundaries, and progress model | This blueprint and roadmap |
+| ARC-02 | Versioned tribunal-profile schema and TRT12 profile | 2 | `IN_REVIEW` | Valid profile passes; invalid branch digit, adapter, source, or signature fixtures fail closed | [`runtime/profiles`](../../runtime/profiles), [`scripts/validate_tribunal_profile.py`](../../scripts/validate_tribunal_profile.py), `tests/test_tribunal_profile.py`; the shared quality gate validates the canonical profile, and 10 focused tests cover the valid first-instance profile plus fail-closed branch, adapter, source, signature, safety-policy, and schema-drift cases |
+| ARC-03 | Versioned case, document classification, labor report, claim, evidence, route, precedent, analysis, and disposition schemas | 3 | `IN_REVIEW` | Positive and negative schema fixtures pass; migration/version policy documented | [`runtime/contracts`](../../runtime/contracts), [`scripts/validate_artifact_contracts.py`](../../scripts/validate_artifact_contracts.py), `tests/fixtures/contracts`, and `tests/test_artifact_contracts.py`; nine valid and twelve invalid fixtures pass the shared contract suite, including cross-field route consistency and merits-analysis completeness, direct artifact validation rejects future versions, and the versioning policy requires immutable accepted schemas plus deterministic non-destructive migrations |
+| ARC-04 | PJe and research adapter interfaces | 2 | `IN_REVIEW` | Contract tests execute against a fake provider without TRT12 constants in core modules | [`runtime/providers`](../../runtime/providers), [`scripts/provider_interfaces.py`](../../scripts/provider_interfaces.py), `tests/provider_fakes.py`, and `tests/test_provider_interfaces.py`; six fake-provider tests use TRT99 to cover both happy paths plus missing capability, repeated cursor, SHA-256 mismatch, and non-HTTPS official-source rejection |
+| ARC-05 | Runtime-neutral execution manifest and Claude/Codex adapter contracts | 2 | `IN_REVIEW` | The same fixture graph, dependencies, retry limits, artifact paths, and gates are resolved by both runtime adapters | [`runtime/pipelines/trt12-first-instance.json`](../../runtime/pipelines/trt12-first-instance.json), [`scripts/resolve_runtime_pipeline.py`](../../scripts/resolve_runtime_pipeline.py), `tests/test_pipeline_resolution.py`; both runtimes resolve the same contract digest |
+
+### 4.4 TRT12 PJe-JT acquisition — 18 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| PJE-01 | Authorized, sanitized TRT12 first-instance HAR map | 3 | `IN_PROGRESS` | Endpoint, cookie/header, task, document, and failure-state map reviewed; no credential remains in the fixture | [`runtime/providers`](../../runtime/providers), [`scripts/sanitize_pje_har.py`](../../scripts/sanitize_pje_har.py), [`scripts/validate_pje_har_map.py`](../../scripts/validate_pje_har_map.py), `tests/test_pje_har_sanitizer.py`, and `tests/test_pje_har_map_review.py`; thirteen synthetic tests prove deterministic redaction, endpoint classification, failure mapping, integrity verification, review-gap reporting, target binding, and fail-closed handling. An authorized TRT12 capture and human map review remain required |
+| PJE-02 | Session and authentication adapter | 4 | `IN_PROGRESS` | Detects valid, expired, MFA-required, and unauthorized states without leaking secrets | [`runtime/providers/pje-session-contract.json`](../../runtime/providers/pje-session-contract.json), [`scripts/pje_session_adapter.py`](../../scripts/pje_session_adapter.py), and `tests/test_pje_session_adapter.py`; nine synthetic TRT99 tests cover valid, expired, MFA-required, unauthorized, conflicting, and insufficient-evidence states plus capability enforcement and secret-free output. A concrete TRT12 probe and authorized real-state evidence remain required |
+| PJE-03 | Task and process discovery | 3 | `IN_PROGRESS` | Reproducibly lists the authorized target queue and identifies case numbers with no silent pagination loss | [`runtime/providers/pje-task-discovery-contract.json`](../../runtime/providers/pje-task-discovery-contract.json), [`scripts/pje_task_discovery.py`](../../scripts/pje_task_discovery.py), and `tests/test_pje_task_discovery.py`; eight synthetic TRT99 tests cover complete two-level pagination, empty queues, repeated cursors, duplicate cases, CNJ region mismatch, capability enforcement, and secret-free output. A concrete TRT12 adapter and authorized queue rehearsal remain required |
+| PJE-04 | Document index and download | 4 | `PLANNED` | Produces stable IDs, hashes, metadata, and explicit gaps for the rehearsal set | — |
+| PJE-05 | Recovery and reproducibility | 4 | `PLANNED` | Repeated closed rehearsal succeeds at least 95%; retries are bounded and failures remain resumable | — |
+
+### 4.5 Labor domain capabilities — 20 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| DOM-01 | Labor document classification | 3 | `IN_PROGRESS` | Approved fixture set meets the calibrated document-type target and preserves unknown type | [`runtime/domain/labor-document-classification.json`](../../runtime/domain/labor-document-classification.json), [`runtime/contracts/schemas/document-classification.v1.schema.json`](../../runtime/contracts/schemas/document-classification.v1.schema.json), [`scripts/classify_labor_documents.py`](../../scripts/classify_labor_documents.py), and `tests/test_labor_document_classifier.py`; eight synthetic tests cover core labor types, explicit unknown, specific-rule precedence, accent/case normalization, conflict handling, deterministic ordering, duplicate IDs, and source-text exclusion. Calibration against an approved authorized TRT12 fixture set remains required |
+| DOM-02 | Procedural timeline and labor report | 3 | `IN_PROGRESS` | Dates, parties, procedural phase, claims, defenses, and source locators pass blind sample review | [`runtime/contracts/schemas/labor-report.v1.schema.json`](../../runtime/contracts/schemas/labor-report.v1.schema.json), [`scripts/build_labor_report.py`](../../scripts/build_labor_report.py), and `tests/test_labor_report_builder.py`; seven synthetic tests cover deterministic ordering, source custody, explicit unknown phase and missing defense, manifest boundaries, duplicate stable IDs, phase evidence, context-schema boundaries, and input immutability. Blind review against an approved authorized TRT12 fixture set remains required |
+| DOM-03 | Claim and requested-remedy matrix | 4 | `IN_PROGRESS` | At least 95% recall during calibration and 100% claim coverage on the final acceptance sample | [`runtime/domain/labor-claim-taxonomy.json`](../../runtime/domain/labor-claim-taxonomy.json), [`runtime/contracts/schemas/claim-matrix.v1.schema.json`](../../runtime/contracts/schemas/claim-matrix.v1.schema.json), [`scripts/build_claim_matrix.py`](../../scripts/build_claim_matrix.py), and `tests/test_claim_matrix_builder.py`; eight synthetic tests cover deterministic assembly, multiple defenses, source custody, explicit missing or unsupported information, manifest boundaries, orphan defenses, stable-ID uniqueness, and taxonomy integrity. Recall and final claim coverage remain dependent on approved TRT12 calibration and acceptance samples |
+| DOM-04 | Evidence matrix | 4 | `IN_PROGRESS` | Every material proposition links to a source locator; limitations and conflicting evidence are preserved | [`runtime/contracts/schemas/evidence-matrix.v1.schema.json`](../../runtime/contracts/schemas/evidence-matrix.v1.schema.json), [`scripts/build_evidence_matrix.py`](../../scripts/build_evidence_matrix.py), and `tests/test_evidence_matrix_builder.py`; eight synthetic tests cover deterministic assembly, claim coverage, symmetric conflicts, manifest and claim boundaries, self or missing conflict rejection, stable-ID uniqueness, and disputed-status consistency. Blind material-proposition review against an approved TRT12 fixture set remains required |
+| DOM-05 | Claim-level issue routing | 3 | `IN_PROGRESS` | Every claim receives an explainable legal/evidence/calculation/procedural route or explicit abstention | [`runtime/contracts/schemas/issue-route.v1.schema.json`](../../runtime/contracts/schemas/issue-route.v1.schema.json), [`scripts/build_issue_routes.py`](../../scripts/build_issue_routes.py), and `tests/test_issue_router.py`; eight synthetic tests cover deterministic one-route-per-claim assembly, full manifest coverage, explicit abstention, route/abstention exclusivity, track-question consistency, and duplicate or unknown claim rejection. Blind routing review against an approved TRT12 fixture set remains required |
+| DOM-06 | Claim analysis, judgment drafting, and disposition matrix | 3 | `IN_PROGRESS` | All accepted claims have facts, rule, reasoning, outcome, limitations, and disposition linkage | [`runtime/contracts/schemas/claim-analysis.v1.schema.json`](../../runtime/contracts/schemas/claim-analysis.v1.schema.json), [`runtime/contracts/schemas/disposition-matrix.v1.schema.json`](../../runtime/contracts/schemas/disposition-matrix.v1.schema.json), [`scripts/build_claim_decisions.py`](../../scripts/build_claim_decisions.py), and `tests/test_claim_decision_builder.py`; eight synthetic tests cover deterministic analysis, disposition, and draft assembly, exact claim coverage, evidence custody, outcome completeness, unresolved limitations, stable-ID linkage, and duplicate rejection. Blind legal and drafting review against an approved TRT12 fixture set remains required |
+
+### 4.6 Authoritative research — 15 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| JUR-01 | TST official-source adapter | 4 | `PLANNED` | Retrieves official result, status, reference, URL, and verbatim excerpt for the test queries | — |
+| JUR-02 | TRT12 jurisprudence adapter | 4 | `PLANNED` | Covers the approved TRT12 source set and distinguishes PJe/current material from legacy coverage | — |
+| JUR-03 | TRT12 precedent adapter | 3 | `PLANNED` | Captures IRDR/IAC/regional thesis status, scope, suspension, and official source | — |
+| JUR-04 | Precedent consolidation and citation custody | 4 | `PLANNED` | Deduplication, hierarchy, status conflicts, and quotation custody pass deterministic fixtures | — |
+
+### 4.7 End-to-end pipeline and gates — 15 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| PIP-01 | Resumable first-instance orchestrator for Claude Code and Codex | 3 | `PLANNED` | On both runtimes, an interrupted fixture resumes without rerunning accepted stages or trusting stale stages | — |
+| PIP-02 | Conditional claim tracks | 3 | `PLANNED` | Research, evidence, calculation, and procedural tracks run only when routed; abstention remains valid | — |
+| PIP-03 | Claim/reasoning/disposition congruence gates | 4 | `PLANNED` | Missing claims and orphan dispositions fail; acceptance fixture reaches 100% coverage | — |
+| PIP-04 | Citation, source, calculation, and final gates | 3 | `PLANNED` | Unsupported quotations and inconsistent criteria fail closed; source unavailability is explicit | — |
+| PIP-05 | Cross-runtime synthetic/sanitized end-to-end fixture | 2 | `PLANNED` | Claude Code and Codex each produce all required artifacts and a passing shared global gate from a clean workspace | — |
+
+### 4.8 Historical validation — 10 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| VAL-01 | Frozen historical validation protocol | 2 | `PLANNED` | Sampling, claim categories, reviewer form, severity scale, and analysis plan are fixed before outcomes | — |
+| VAL-02 | Blind historical review | 4 | `PLANNED` | Approved sample is completed; defects are traceable by stage and severity | — |
+| VAL-03 | Correction and untouched rerun | 2 | `PLANNED` | Critical/high defects are corrected and rerun on an untouched subset without regression | — |
+| VAL-04 | Acceptance dossier | 2 | `PLANNED` | Results, limitations, failure modes, and go/no-go recommendation are approved | — |
+
+### 4.9 Controlled pilot readiness — 2 points
+
+| ID | Deliverable | Points | Status | Acceptance gate | Evidence |
+|---|---|---:|---|---|---|
+| OPS-01 | Installation and operator runbook | 1 | `PLANNED` | A clean operator rehearsal completes using only the runbook | — |
+| OPS-02 | Pilot safety and rollback plan | 1 | `PLANNED` | Human review, incident handling, rollback, retention, and support ownership are approved | — |
+
+---
+
+## 5. Track A Milestones
+
+| Milestone | Required accepted items | Outcome |
+|---|---|---|
+| M0 — Safe reusable foundation | FND-01 through FND-04 | Existing value is characterized and the repository can support trustworthy incremental implementation |
+| M1 — Contract freeze | ARC-01 through ARC-04 | Core/profile boundary is executable and versioned |
+| M2 — Authorized acquisition | PJE-01 through PJE-05 | TRT12 first-instance records can be acquired reproducibly |
+| M3 — Structured case | DOM-01 through DOM-05 | Case becomes traceable claims, defenses, evidence, and routes |
+| M4 — Authoritative research | JUR-01 through JUR-04 | Research corpus is official, ranked, and auditable |
+| M5 — Complete draft pipeline | DOM-06 and PIP-01 through PIP-05 | End-to-end draft and all gates execute |
+| M6 — Historically validated | VAL-01 through VAL-04 | Quality is measured on frozen historical evidence |
+| M7 — Pilot candidate | OPS-01 and OPS-02 | Controlled human-supervised pilot may be considered |
+
+Milestones are dependency gates, not dates. Calendar dates will be added after implementation
+capacity and access to TRT12 fixtures are known.
+
+---
+
+## 6. Track B — TRT12 Second Instance
+
+Track B starts only after Track A milestone M5 unless an explicit architectural dependency
+must be resolved earlier.
+
+| Work package | Weight | Acceptance outcome |
+|---|---:|---|
+| B-ARC — Appellate contracts and scope | 10 | Versioned appealed-chapter and appellate-disposition schemas |
+| B-PJE — TRT12 second-instance acquisition | 20 | Verified second-instance PJe adapter |
+| B-DOM — Appeal analysis and vote drafting | 30 | Admissibility, devolutive scope, chapter outcome, and vote artifacts |
+| B-JUR — Panel and divergence research | 10 | Regional panel/divergence metadata and authority handling |
+| B-PIP — Second-instance orchestrator and gates | 15 | Resumable vote pipeline with appellate congruence gates |
+| B-VAL — Historical blind validation | 12 | Frozen protocol, review, correction, untouched rerun |
+| B-OPS — Controlled pilot readiness | 3 | Runbook and human-supervised pilot approval |
+| **Total** | **100** |  |
+
+Track B remains 0 until its items are decomposed into evidence-bearing tasks and accepted.
+
+---
+
+## 7. Track C — Multi-TRT Portability
+
+Track C begins with one intentionally selected second TRT. It does not begin by duplicating
+TRT12 files.
+
+| Work package | Weight | Acceptance outcome |
+|---|---:|---|
+| C-ABS — Review real variability and refine interfaces | 10 | Differences are evidenced, not guessed |
+| C-PRO — Second-TRT profile | 20 | Valid court profile and local policy |
+| C-PJE — Second-TRT PJe adapter/shared-adapter proof | 25 | Acquisition passes tribunal-specific rehearsals |
+| C-JUR — Second-TRT research adapter | 20 | Regional precedents and jurisprudence are verified |
+| C-REG — Cross-TRT regression suite | 20 | TRT12 remains green while second TRT passes |
+| C-OPS — Portability runbook | 5 | A third profile can follow a documented process |
+| **Total** | **100** |  |
+
+Only after Track C reaches 100 may the project describe itself as validated for more than one
+TRT.
+
+---
+
+## 8. Quality KPIs
+
+Progress points answer “how much accepted capability exists?” Quality KPIs answer “is the
+capability trustworthy enough to advance?”
+
+### 8.1 Primary KPIs
+
+| KPI | Definition | Target | Decision supported |
+|---|---|---:|---|
+| Accepted capability progress | Accepted Track A points divided by 100 | 100% for MVP | Delivery readiness |
+| End-to-end accepted-run rate | Runs passing every required gate / eligible runs | Calibrate, then at least 95% | Operational reliability |
+| Critical legal defect rate | Critical defects / blindly reviewed cases | 0 before pilot | Go/no-go |
+
+### 8.2 Driver metrics
+
+| Metric | Definition | Use |
+|---|---|---|
+| Claim extraction recall | Gold claims found / gold claims | Diagnose omitted requests |
+| Congruence coverage | Claims with reasoning and disposition / mapped claims | Diagnose structural completeness |
+| Citation custody rate | Verified external quotations / external quotations | Diagnose source discipline |
+| Adapter explicit-failure rate | Explicit failures / all failed operations | Detect silent failure |
+| Regression closure rate | Closed accepted defects / discovered accepted defects | Measure learning from failures |
+| Fork disposition coverage | In-scope existing components with an evidenced disposition / in-scope existing components | Prevent accidental rewrites and invisible legacy dependencies |
+| Reuse realization | Accepted Preserve or Adapt components / components initially eligible for reuse | Show how much of the fork was successfully carried into TRT12 |
+| Runtime conformance rate | Shared acceptance fixtures passing on both runtimes / eligible shared fixtures | Detect runtime drift without requiring identical prose |
+
+### 8.3 Guardrails
+
+| Guardrail | Limit |
+|---|---|
+| Unsupported external quotation | Zero |
+| Orphan disposition | Zero |
+| Silent missing claim | Zero in acceptance sample |
+| Credential or sealed-data leakage in logs/fixtures | Zero |
+| External filing/signing/publication action | Zero in MVP |
+| Progress item without linked evidence | Cannot be `ACCEPTED` |
+| Runtime-specific legal rule or artifact schema | Zero; differences must remain in runtime adapters only |
+
+Targets that depend on empirical distributions remain provisional until calibration. They may
+be tightened after the baseline; they may not be relaxed merely to mark a milestone complete.
+
+---
+
+## 9. Review Cadence
+
+Update this roadmap at each accepted pull request or equivalent delivery checkpoint.
+
+### Weekly or milestone review
+
+1. Recalculate accepted points.
+2. Verify that every accepted item still has valid evidence.
+3. List newly discovered critical/high defects.
+4. Name the next highest-value unblocked item.
+5. Record blockers with owner and required decision.
+6. Update KPI baselines only from reproducible evidence.
+
+### Status report template
+
+```text
+Date:
+Track A progress: X/100
+Program progress: Y%
+Milestone reached:
+Accepted this period:
+Evidence:
+Reopened items:
+Critical/high defects:
+Current blocker:
+Next acceptance target:
+```
+
+---
+
+## 10. Decision Log
+
+| Date | Decision | Effect |
+|---|---|---|
+| 2026-09-20 | TRT12 first instance is the first executable target | Track A created |
+| 2026-09-20 | TRT12 second instance is a separate future pipeline | Track B created |
+| 2026-09-20 | Other TRTs require a portability proof | Track C created |
+| 2026-09-20 | Only accepted evidence earns progress points | Binary evidence-weighted scoring adopted |
+| 2026-09-20 | The fork is the implementation baseline, not a disposable prototype | Reuse-first brownfield migration and `FND-04` adopted |
+| 2026-09-20 | Claude Code and Codex are first-class runtimes over one shared core | Dual-runtime contracts added to Track A |
+| 2026-09-20 | Core scripts support Python 3.9+; local MCP servers require Python 3.10+ and MCP SDK 1.x | Executable and dependency contract added in `FND-01` |
+| 2026-09-20 | Local development and CI share one deterministic quality command | Python 3.9/3.10 workflow and fail-closed checks added in `FND-02` |
+| 2026-09-20 | Sensitive local files remain ignored while tracked and commit-ready files are scanned without echoing values | Executable hygiene contract added in `FND-03` |
+| 2026-09-21 | Tribunal structure, provider registry, and TRT12 values are separate versioned contracts | `ARC-02` remains portable while TRT12 first instance is active and second instance is disabled |
+| 2026-09-21 | Legal artifact schemas use a versioned catalog and explicit fail-closed migrations | `ARC-03` contracts are shared across Claude Code and Codex without tribunal constants |
+| 2026-09-21 | PJe and research providers implement versioned capability contracts | `ARC-04` validates fake TRT99 providers without embedding TRT12 constants in the shared core |
+| 2026-09-21 | Raw HAR and session files remain local while reviewed sanitized maps may become evidence | `PJE-01` can map endpoints without retaining credentials, query values, bodies, or dynamic identifiers |
+| 2026-09-21 | Sanitized HAR maps require a separate integrity and coverage gate before human review | Missing observations remain explicit and tampered or target-mismatched maps fail closed |
+| 2026-09-21 | Session classification is separate from credential acquisition | `PJE-02` can validate secret-free synthetic state observations while the real TRT12 probe remains blocked by `PJE-01` evidence |
+| 2026-09-21 | Task and case discovery uses normalized bounded pages | `PJE-03` detects silent pagination loss without adopting TRF5 endpoints, task names, or payload fields as TRT12 facts |
+| 2026-09-21 | Labor document triage uses versioned deterministic rules and preserves uncertainty | `DOM-01` can advance on synthetic fixtures without copying case text or claiming calibrated TRT12 accuracy |
+| 2026-09-21 | Procedural reports are structured artifacts with mandatory source custody and explicit gaps | `DOM-02` can advance synthetically while real-process calibration remains a separate acceptance gate |
+| 2026-09-21 | Claim matrices preserve multiple source-linked defenses and do not normalize taxonomy gaps silently | `DOM-03` can advance synthetically without claiming recall or final coverage before real-fixture review |
+| 2026-09-21 | Evidence matrices preserve source custody, claim coverage, limitations, and symmetric contradictions | `DOM-04` can advance synthetically without claiming evidentiary completeness before blind review |
+| 2026-09-21 | Every claim must receive one explainable route or an explicit abstention | `DOM-05` rejects silent claim loss and inconsistent downstream work requests before real-process calibration |
+| 2026-09-21 | Analysis, outcome, disposition, and draft remain linked by stable decision identifiers | `DOM-06` can advance synthetically without treating an unreviewed draft as a judicial act ready for signature or publication |
+
+---
+
+## 11. Current Blockers and Inputs
+
+| ID | Input or decision | Blocks | Status |
+|---|---|---|---|
+| BLK-01 | Explicit approval of blueprint and roadmap | ARC-01 | Open |
+| BLK-02 | Authorized TRT12 first-instance HAR capture | PJE-01 onward | Open |
+| BLK-03 | Data-handling decision for personal and sealed case data | Real fixtures and PJe acquisition rehearsals | Open |
+| BLK-04 | Approved historical sample and reviewer availability | VAL work package | Open |
+| BLK-05 | Judgment house style or approved seed document | DOM-06 | Open |
+| BLK-06 | Python 3.10+ interpreter on the target macOS host for real local-MCP execution | FND-01 acceptance and local MCP servers | Open |
+| BLK-07 | Target-host Tesseract with Portuguese data and a user-installed Poppler executable | FND-01 OCR rehearsal | Open |
+| BLK-08 | Commit or pull request plus the first remote GitHub Actions run | FND-02 acceptance evidence | Open |
+
+Open blockers do not prevent unrelated foundation and contract work.
+
+---
+
+## 12. Next Acceptance Sequence
+
+The recommended sequence after blueprint approval is:
+
+1. Review `ARC-01`, `ARC-02`, `FND-03`, `FND-04`, and `ARC-05` against their linked evidence.
+2. Complete the environment and remote-CI rehearsals required to accept `FND-01` and `FND-02`.
+3. Review `ARC-04` fake-provider evidence and explicitly accept the complete architecture gate.
+4. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
+5. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
+6. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
+7. Continue through the dependency order in the Track A tables.
+
+This sequence keeps architecture, security, and objective measurement ahead of real case
+processing.
