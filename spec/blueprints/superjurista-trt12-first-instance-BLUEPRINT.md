@@ -1,7 +1,7 @@
 # Blueprint: SuperJurista TRT12 — First Instance
 
-**Status:** Draft for architectural approval
-**Version:** 0.16.0
+**Status:** Approved
+**Version:** 0.17.0
 **Date:** 2026-09-21
 **Primary target:** TRT12 first-instance labor judgments
 **Future targets:** TRT12 second instance, then additional Regional Labor Courts
@@ -927,9 +927,9 @@ These do not block blueprint approval, but they block the indicated work package
 
 ---
 
-## 20. Blueprint Acceptance Gate
+## 20. Blueprint Acceptance Record
 
-This blueprint is accepted when the user confirms all of the following:
+The user accepted this blueprint on 2026-09-21 and confirmed all of the following:
 
 - TRT12 first instance is the first executable target;
 - second instance remains a separate future pipeline;
@@ -938,8 +938,8 @@ This blueprint is accepted when the user confirms all of the following:
 - progress is measured by the evidence-weighted roadmap;
 - no filing, signing, or publication automation is included in the MVP.
 
-On acceptance, roadmap item `ARC-01` earns its allocated points and the project moves to the
-foundation and contract implementation work packages.
+Roadmap item `ARC-01` therefore earns its allocated three points, and the project proceeds with
+the remaining foundation and contract acceptance gates.
 
 ---
 

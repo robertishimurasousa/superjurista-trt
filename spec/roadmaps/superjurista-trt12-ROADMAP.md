@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
-**Status:** Active draft
-**Version:** 0.19.0
+**Status:** Active and approved
+**Version:** 0.20.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,16 +47,17 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 0/100 accepted points
+Track A — TRT12 first instance: 3/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               0.0%
-Track A candidate in review:    20/100 points
+Program progress:               1.8%
+Track A candidate in review:    17/100 points
 ```
 
-The blueprint and roadmap are currently drafts. `ARC-01` earns points only after explicit
-architectural approval. Candidate points are reported separately and never contribute to the
-program progress formula before acceptance.
+The blueprint and roadmap were explicitly approved by the user on 2026-09-21. `ARC-01` is
+therefore accepted and earns its three points. The remaining candidate points are reported
+separately and never contribute to the program progress formula before their technical gates
+pass.
 
 ---
 
@@ -112,14 +113,14 @@ Track A contains exactly 100 points.
 | Work package | Weight | Accepted | Status |
 |---|---:|---:|---|
 | FND — Foundation hardening | 8 | 0 | `IN_PROGRESS` |
-| ARC — Architecture and contracts | 12 | 0 | `IN_PROGRESS` |
+| ARC — Architecture and contracts | 12 | 3 | `IN_PROGRESS` |
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
 | DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
 | JUR — Authoritative research | 15 | 0 | `PLANNED` |
 | PIP — End-to-end pipeline and gates | 15 | 0 | `PLANNED` |
 | VAL — Historical validation | 10 | 0 | `PLANNED` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **0** |  |
+| **Total** | **100** | **3** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -149,7 +150,7 @@ the labor pipeline or either complete runtime is ready.
 
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
-| ARC-01 | Blueprint and evidence-weighted roadmap | 3 | `IN_REVIEW` | User explicitly approves scope, sequencing, extension boundaries, and progress model | This blueprint and roadmap |
+| ARC-01 | Blueprint and evidence-weighted roadmap | 3 | `ACCEPTED` | User explicitly approves scope, sequencing, extension boundaries, and progress model | User approval recorded on 2026-09-21; this blueprint and roadmap revision; repository commit history |
 | ARC-02 | Versioned tribunal-profile schema and TRT12 profile | 2 | `IN_REVIEW` | Valid profile passes; invalid branch digit, adapter, source, or signature fixtures fail closed | [`runtime/profiles`](../../runtime/profiles), [`scripts/validate_tribunal_profile.py`](../../scripts/validate_tribunal_profile.py), `tests/test_tribunal_profile.py`; the shared quality gate validates the canonical profile, and 10 focused tests cover the valid first-instance profile plus fail-closed branch, adapter, source, signature, safety-policy, and schema-drift cases |
 | ARC-03 | Versioned case, document classification, labor report, claim, evidence, route, precedent, analysis, and disposition schemas | 3 | `IN_REVIEW` | Positive and negative schema fixtures pass; migration/version policy documented | [`runtime/contracts`](../../runtime/contracts), [`scripts/validate_artifact_contracts.py`](../../scripts/validate_artifact_contracts.py), `tests/fixtures/contracts`, and `tests/test_artifact_contracts.py`; nine valid and twelve invalid fixtures pass the shared contract suite, including cross-field route consistency and merits-analysis completeness, direct artifact validation rejects future versions, and the versioning policy requires immutable accepted schemas plus deterministic non-destructive migrations |
 | ARC-04 | PJe and research adapter interfaces | 2 | `IN_REVIEW` | Contract tests execute against a fake provider without TRT12 constants in core modules | [`runtime/providers`](../../runtime/providers), [`scripts/provider_interfaces.py`](../../scripts/provider_interfaces.py), `tests/provider_fakes.py`, and `tests/test_provider_interfaces.py`; six fake-provider tests use TRT99 to cover both happy paths plus missing capability, repeated cursor, SHA-256 mismatch, and non-HTTPS official-source rejection |
@@ -370,6 +371,7 @@ Next acceptance target:
 | 2026-09-21 | Evidence matrices preserve source custody, claim coverage, limitations, and symmetric contradictions | `DOM-04` can advance synthetically without claiming evidentiary completeness before blind review |
 | 2026-09-21 | Every claim must receive one explainable route or an explicit abstention | `DOM-05` rejects silent claim loss and inconsistent downstream work requests before real-process calibration |
 | 2026-09-21 | Analysis, outcome, disposition, and draft remain linked by stable decision identifiers | `DOM-06` can advance synthetically without treating an unreviewed draft as a judicial act ready for signature or publication |
+| 2026-09-21 | User approved the blueprint, roadmap, target sequence, extension boundaries, traceability rule, progress model, and MVP automation boundary | `ARC-01` accepted; Track A reaches 3% and weighted program progress reaches 1.8% |
 
 ---
 
@@ -377,7 +379,7 @@ Next acceptance target:
 
 | ID | Input or decision | Blocks | Status |
 |---|---|---|---|
-| BLK-01 | Explicit approval of blueprint and roadmap | ARC-01 | Open |
+| BLK-01 | Explicit approval of blueprint and roadmap | ARC-01 | Closed on 2026-09-21 |
 | BLK-02 | Authorized TRT12 first-instance HAR capture | PJE-01 onward | Open |
 | BLK-03 | Data-handling decision for personal and sealed case data | Real fixtures and PJe acquisition rehearsals | Open |
 | BLK-04 | Approved historical sample and reviewer availability | VAL work package | Open |
@@ -394,7 +396,7 @@ Open blockers do not prevent unrelated foundation and contract work.
 
 The recommended sequence after blueprint approval is:
 
-1. Review `ARC-01`, `ARC-02`, `FND-03`, `FND-04`, and `ARC-05` against their linked evidence.
+1. Review `ARC-02`, `FND-03`, `FND-04`, and `ARC-05` against their linked evidence.
 2. Complete the environment and remote-CI rehearsals required to accept `FND-01` and `FND-02`.
 3. Review `ARC-04` fake-provider evidence and explicitly accept the complete architecture gate.
 4. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
