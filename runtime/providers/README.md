@@ -97,6 +97,43 @@ Run the network-free contract and normalization suite:
 python3 -m unittest tests.test_trt12_official_adapter -v
 ```
 
+## Query official TRT12 regional precedents
+
+`scripts/trt12_precedent_adapter.py` implements `legal_research` for the TRT12 regional
+precedent source. It combines the IRDR tracker linked by the TRT12 uniformization portal with
+the tribunal's legal-thesis page. The adapter uses exact bounded HTTPS locations, rejects
+unexpected redirects or page shapes, and re-reads the official publication when fetching a
+selected source.
+
+IRDR records preserve the submitted legal question, published thesis, tracker status, and
+suspension scope. A published thesis is `current` unless the official material expressly marks
+it as cancelled. An admitted incident without a thesis is `pending`, or `stayed` when the
+tracker expressly reports an active suspension. Historical suspension text remains a status
+note after a thesis is published and is not treated as an active stay.
+
+The official thesis page currently states that no legal thesis has been established in IAC.
+The adapter exposes that fact through `coverage()` and intentionally returns no fabricated IAC
+precedent. Published IUJ theses are normalized as regional orientations, including explicit
+cancellation markers.
+
+Generate a bounded corpus outside the repository:
+
+```bash
+python3 scripts/trt12_precedent_adapter.py \
+  --query 'horas extras' \
+  --output /tmp/trt12-precedent-corpus.json \
+  --tribunal-code TRT12 \
+  --limit 5
+```
+
+The generated artifact contains public legal text and must be reviewed under the project data
+policy before it is moved into a tracked fixture. Run the network-free contract, source-shape,
+status, suspension, IAC-coverage, and corpus suite with:
+
+```bash
+python3 -m unittest tests.test_trt12_precedent_adapter -v
+```
+
 ## Assess a sanitized session observation
 
 `pje-session-contract.json` defines provider-neutral states for session probes. A concrete
