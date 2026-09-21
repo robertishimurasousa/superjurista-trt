@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/final-review.v1.schema.json",
+  "title": "Final review v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sources",
+    "calculations"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_id",
+          "status",
+          "verbatim_excerpt",
+          "unavailability_reason"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]+-[0-9]{3,}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable"
+            ]
+          },
+          "verbatim_excerpt": {
+            "type": "string"
+          },
+          "unavailability_reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "calculations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "status",
+          "criteria",
+          "unavailability_reason"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "pattern": "^CLM-[0-9]{3,}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "not_required",
+              "unavailable"
+            ]
+          },
+          "criteria": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "unavailability_reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

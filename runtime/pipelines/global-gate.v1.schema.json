@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/global-gate.v1.schema.json",
+  "title": "Global acceptance gate v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "checks",
+    "quotation_count",
+    "issues"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "blocked"
+      ]
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "congruence",
+        "citations",
+        "sources",
+        "calculations"
+      ],
+      "properties": {
+        "congruence": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "citations": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "sources": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "blocked"
+          ]
+        },
+        "calculations": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed",
+            "blocked"
+          ]
+        }
+      }
+    },
+    "quotation_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "subject_id",
+          "detail"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "congruence_not_passed",
+              "unsupported_quotation",
+              "missing_source_review",
+              "source_unavailable",
+              "missing_calculation_review",
+              "calculation_unavailable",
+              "calculation_mismatch",
+              "calculation_status_mismatch"
+            ]
+          },
+          "subject_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
