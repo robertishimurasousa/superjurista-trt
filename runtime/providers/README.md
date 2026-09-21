@@ -29,6 +29,38 @@ python3 -m unittest tests.test_provider_interfaces -v
 Real PJe-JT and research adapters remain separate work packages and require authorized,
 sanitized evidence before implementation or acceptance.
 
+## Query the official TST jurisprudence source
+
+`scripts/tst_official_adapter.py` implements the shared `legal_research` interface against the
+public TST jurisprudence application. It targets the backend published by the official portal
+configuration, restricts every request and redirect to `jurisprudencia-backend.tst.jus.br`,
+bounds response sizes, and emits a schema-valid `precedent-corpus` artifact.
+
+An exact CNJ case number uses the TST structured `numeracaoUnica` filter. Other input is sent as
+a textual query. The adapter verifies that the normalized excerpt is present in the official
+full-document HTML before accepting the source. It does not infer whether a decision remains a
+current binding precedent because the search response has no normalized validity field; such
+results retain status `unknown` and require human review.
+
+Generate a bounded corpus outside the repository:
+
+```bash
+python3 scripts/tst_official_adapter.py \
+  --query '0021532-54.2015.5.04.0006' \
+  --output /tmp/tst-precedent-corpus.json \
+  --tribunal-code TRT12 \
+  --limit 1 \
+  --page-size 1
+```
+
+The generated artifact may contain public judicial text. Review it under the project data policy
+before moving it into a tracked fixture. Unit tests use synthetic records and never call the
+network:
+
+```bash
+python3 -m unittest tests.test_tst_official_adapter -v
+```
+
 ## Assess a sanitized session observation
 
 `pje-session-contract.json` defines provider-neutral states for session probes. A concrete

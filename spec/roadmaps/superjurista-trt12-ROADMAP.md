@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.21.0
+**Version:** 0.22.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 18/100 accepted points
+Track A — TRT12 first instance: 22/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               10.8%
+Program progress:               13.2%
 Track A candidate in review:    2/100 points
 ```
 
@@ -116,11 +116,11 @@ Track A contains exactly 100 points.
 | ARC — Architecture and contracts | 12 | 12 | `ACCEPTED` |
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
 | DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
-| JUR — Authoritative research | 15 | 0 | `PLANNED` |
+| JUR — Authoritative research | 15 | 4 | `IN_PROGRESS` |
 | PIP — End-to-end pipeline and gates | 15 | 0 | `PLANNED` |
 | VAL — Historical validation | 10 | 0 | `PLANNED` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **18** |  |
+| **Total** | **100** | **22** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -181,7 +181,7 @@ the labor pipeline or either complete runtime is ready.
 
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
-| JUR-01 | TST official-source adapter | 4 | `PLANNED` | Retrieves official result, status, reference, URL, and verbatim excerpt for the test queries | — |
+| JUR-01 | TST official-source adapter | 4 | `ACCEPTED` | Retrieves official result, status, reference, URL, and verbatim excerpt for the test queries | [`scripts/tst_official_adapter.py`](../../scripts/tst_official_adapter.py), `tests/test_tst_official_adapter.py`, and [`runtime/providers`](../../runtime/providers); 12 synthetic tests cover normalized search, exact-CNJ filtering, pagination, schema-valid corpus generation, verbatim custody, source and origin restrictions, response limits, and publication-date variants. A bounded live query on 2026-09-21 retrieved TST document `7a2d741d22e82084a45f85ba428fa103` from the official HTTPS backend and generated one valid source while preserving status `unknown` for human review |
 | JUR-02 | TRT12 jurisprudence adapter | 4 | `PLANNED` | Covers the approved TRT12 source set and distinguishes PJe/current material from legacy coverage | — |
 | JUR-03 | TRT12 precedent adapter | 3 | `PLANNED` | Captures IRDR/IAC/regional thesis status, scope, suspension, and official source | — |
 | JUR-04 | Precedent consolidation and citation custody | 4 | `PLANNED` | Deduplication, hierarchy, status conflicts, and quotation custody pass deterministic fixtures | — |
@@ -373,6 +373,7 @@ Next acceptance target:
 | 2026-09-21 | Analysis, outcome, disposition, and draft remain linked by stable decision identifiers | `DOM-06` can advance synthetically without treating an unreviewed draft as a judicial act ready for signature or publication |
 | 2026-09-21 | User approved the blueprint, roadmap, target sequence, extension boundaries, traceability rule, progress model, and MVP automation boundary | `ARC-01` accepted; Track A reaches 3% and weighted program progress reaches 1.8% |
 | 2026-09-21 | Remote CI and focused foundation/architecture reviews passed | `FND-02` through `FND-04` and `ARC-02` through `ARC-05` accepted; Track A reaches 18% and weighted program progress reaches 10.8% |
+| 2026-09-21 | TST research uses its official public search and document endpoints with bounded HTTPS transport and verbatim custody | `JUR-01` accepted; exact CNJ queries use the structured official filter and unnormalized precedential status remains explicit |
 
 ---
 
@@ -401,7 +402,8 @@ The recommended sequence after blueprint approval is:
 2. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
 3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
-5. Continue through the dependency order in the Track A tables while independent research work advances without case data.
+5. Implement `JUR-02` against the official TRT12 source while independent research work advances without case data.
+6. Continue through the dependency order in the Track A tables.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.
