@@ -42,7 +42,8 @@
       "priority": 95,
       "phrases": [
         "réplica à contestação",
-        "réplica"
+        "réplica",
+        "impugnação à contestação"
       ]
     },
     {
@@ -50,7 +51,8 @@
       "document_type": "hearing_record",
       "priority": 100,
       "phrases": [
-        "ata de audiência"
+        "ata de audiência",
+        "ata da audiência"
       ]
     },
     {
@@ -68,7 +70,24 @@
       "priority": 50,
       "phrases": [
         "documento comprobatório",
-        "prova documental"
+        "prova documental",
+        "carteira de trabalho e previdência social",
+        "ctps",
+        "termo de rescisão de contrato de trabalho",
+        "trct",
+        "cartão de ponto",
+        "controle de frequência",
+        "contracheque",
+        "recibo de salário",
+        "extrato de fgts",
+        "comprovante fgts",
+        "procuração",
+        "contrato de trabalho",
+        "contrato social",
+        "carta de preposição",
+        "declaração de hipossuficiência",
+        "carteira de identidade",
+        "cadastro nacional de pessoa jurídica"
       ]
     },
     {
@@ -128,7 +147,11 @@
       "document_type": "other_petition",
       "priority": 10,
       "phrases": [
-        "petição"
+        "petição",
+        "manifestação",
+        "razões finais",
+        "solicitação de habilitação",
+        "apresentação de substabelecimento"
       ]
     }
   ]

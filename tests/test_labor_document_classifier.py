@@ -91,6 +91,34 @@ class LaborDocumentClassifierTest(unittest.TestCase):
             },
         )
 
+    def test_classifies_generic_trt12_provider_labels_without_case_text(self) -> None:
+        api = self.api()
+        labels = (
+            ("Carteira de Trabalho e Previdência Social (CTPS)", "documentary_evidence"),
+            ("Termo de Rescisão de Contrato de Trabalho (TRCT)", "documentary_evidence"),
+            ("Cartão de Ponto/Controle de Frequência", "documentary_evidence"),
+            ("Contracheque/Recibo de Salário", "documentary_evidence"),
+            ("Extrato de FGTS", "documentary_evidence"),
+            ("Procuração", "documentary_evidence"),
+            ("Contrato de Trabalho", "documentary_evidence"),
+            ("Carta de Preposição", "documentary_evidence"),
+            ("Manifestação", "other_petition"),
+            ("Razões Finais", "other_petition"),
+            ("Solicitação de Habilitação", "other_petition"),
+            ("Impugnação à Contestação", "reply"),
+        )
+        candidates = tuple(
+            self.candidate(api, f"DOC-{index:03d}", provider_type=provider_type)
+            for index, (provider_type, _) in enumerate(labels, 1)
+        )
+
+        result = self.classify(api, *candidates)
+
+        self.assertEqual(
+            [item["document_type"] for item in result["documents"]],
+            [expected for _, expected in labels],
+        )
+
     def test_specific_initial_pleading_rule_wins_over_generic_petition(self) -> None:
         api = self.api()
 

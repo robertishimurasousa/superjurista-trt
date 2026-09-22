@@ -29,6 +29,37 @@ python3 -m unittest tests.test_provider_interfaces -v
 Real PJe-JT and research adapters remain separate work packages and require authorized,
 sanitized evidence before implementation or acceptance.
 
+## Segment and classify an authorized consolidated PJe PDF
+
+`scripts/segment_pje_pdf.py` uses the native outline destinations embedded by PJe when a
+consolidated process PDF is exported. It derives stable `DOC-NNN` identifiers, filing dates,
+provider references, and inclusive page ranges without reading case text. The resulting segments
+feed the shared labor-document classifier, whose output intentionally excludes provider titles,
+references, and source content.
+
+Both output artifacts contain case-specific metadata and must stay in a protected directory
+outside the repository. The command refuses repository-local output and refuses to overwrite an
+existing artifact:
+
+```bash
+mkdir -p /protected/case/classification
+chmod 700 /protected/case/classification
+python3 scripts/segment_pje_pdf.py \
+  --input /protected/case/process.pdf \
+  --output /protected/case/classification
+```
+
+The command writes `document-segments.json` and `document-classification.json` with mode `0600`.
+PDFs without a complete, ordered PJe outline fail closed; they are not heuristically split from
+OCR text. Generic certificates, notices, and ambiguous document labels remain explicitly
+`unknown` until the taxonomy has a semantically correct type and approved review evidence.
+
+Run the synthetic segmentation and classification suite with:
+
+```bash
+python3 -m unittest tests.test_pje_pdf_segmentation -v
+```
+
 ## Query the official TST jurisprudence source
 
 `scripts/tst_official_adapter.py` implements the shared `legal_research` interface against the
