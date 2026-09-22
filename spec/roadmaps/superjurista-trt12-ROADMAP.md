@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.31.0
+**Version:** 0.32.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 44/100 accepted points
+Track A — TRT12 first instance: 46/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               26.4%
+Program progress:               27.6%
 Track A candidate in review:    6/100 points
 ```
 
@@ -200,7 +200,7 @@ the labor pipeline or either complete runtime is ready.
 
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
-| VAL-01 | Frozen historical validation protocol | 2 | `PLANNED` | Sampling, claim categories, reviewer form, severity scale, and analysis plan are fixed before outcomes | — |
+| VAL-01 | Frozen historical validation protocol | 2 | `ACCEPTED` | Sampling, claim categories, reviewer form, severity scale, and analysis plan are fixed before outcomes | [`runtime/validation/historical-validation-protocol.v1.json`](../../runtime/validation/historical-validation-protocol.v1.json), [`runtime/validation/historical-validation-protocol.v1.schema.json`](../../runtime/validation/historical-validation-protocol.v1.schema.json), [`spec/validation/historical-blind-review-form.md`](../validation/historical-blind-review-form.md), [`scripts/validate_historical_protocol.py`](../../scripts/validate_historical_protocol.py), and `tests/test_historical_validation_protocol.py`; nine deterministic tests freeze a 20-case authorized sample method with 15 development and five untouched holdout cases, claim categories, blind scoring and adjudication, the complete reviewer form, zero critical/high defect budgets, 95% claim recall, 100% claim coverage, quotation support, and source-locator traceability, plus rejection of post-hoc outcomes or threshold drift |
 | VAL-02 | Blind historical review | 4 | `PLANNED` | Approved sample is completed; defects are traceable by stage and severity | — |
 | VAL-03 | Correction and untouched rerun | 2 | `PLANNED` | Critical/high defects are corrected and rerun on an untouched subset without regression | — |
 | VAL-04 | Acceptance dossier | 2 | `PLANNED` | Results, limitations, failure modes, and go/no-go recommendation are approved | — |
@@ -383,6 +383,7 @@ Next acceptance target:
 | 2026-09-21 | Final acceptance is a machine-readable report followed by mandatory enforcement | `PIP-04` accepted; unsupported long quotations and mismatched calculations fail, source or calculation unavailability blocks with an explicit reason, and no non-passing report can continue |
 | 2026-09-21 | Cross-runtime acceptance uses one sanitized fixture and one shared artifact graph | `PIP-05` accepted; Claude Code and Codex produce the same 19 pipeline outputs and final gate from clean workspaces while retaining only their declared dispatch bindings |
 | 2026-09-21 | PJe document acquisition separates complete metadata indexing from requested payload download | `PJE-04` can advance on the shared provider interface; downloaded bytes must match the indexed SHA-256, skipped items remain visible, and bounded unavailability becomes an explicit gap instead of silent loss |
+| 2026-09-21 | Historical acceptance thresholds and review fields are frozen before case outcomes are observed | `VAL-01` accepted; development and untouched holdout results must remain separate, unavailable evidence is never imputed as a pass, and critical/high defects have zero acceptance budget |
 
 ---
 
@@ -393,7 +394,7 @@ Next acceptance target:
 | BLK-01 | Explicit approval of blueprint and roadmap | ARC-01 | Closed on 2026-09-21 |
 | BLK-02 | Authorized TRT12 first-instance HAR capture | PJE-01 onward | Open |
 | BLK-03 | Data-handling decision for personal and sealed case data | Real fixtures and PJe acquisition rehearsals | Open |
-| BLK-04 | Approved historical sample and reviewer availability | VAL work package | Open |
+| BLK-04 | Approved historical sample and reviewer availability | VAL-02 onward | Open |
 | BLK-05 | Judgment house style or approved seed document | DOM-06 | Open |
 | BLK-06 | Python 3.10+ interpreter on the target macOS host for real local-MCP execution | FND-01 acceptance and local MCP servers | Open |
 | BLK-07 | Target-host Tesseract with Portuguese data and a user-installed Poppler executable | FND-01 OCR rehearsal | Open |
@@ -414,7 +415,7 @@ The recommended sequence after blueprint approval is:
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
 6. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
-7. Freeze the `VAL-01` historical validation protocol before inspecting outcomes from the future approved sample.
+7. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.

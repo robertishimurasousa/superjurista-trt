@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "protocol_id": "TRT12-HISTORICAL-V1",
+  "frozen": true,
+  "frozen_at": "2026-09-21",
+  "target": {
+    "court": "TRT12",
+    "instance": 1,
+    "decision_type": "labor_judgment"
+  },
+  "sampling": {
+    "total_cases": 20,
+    "development_cases": 15,
+    "untouched_holdout_cases": 5,
+    "selection_method": "Select consecutive eligible authorized cases, then freeze case identifiers and stratification before any system output is scored.",
+    "inclusion_criteria": [
+      "TRT12 first-instance proceeding with authorized complete electronic records",
+      "Reference judgment and claim-level outcome are available",
+      "At least one claim belongs to a frozen claim category"
+    ],
+    "exclusion_criteria": [
+      "Case access or processing is not authorized",
+      "Record is incomplete in a way that prevents reference reconstruction",
+      "Case was used to author the fixture or implementation rules"
+    ],
+    "claim_categories": [
+      "working_time",
+      "termination",
+      "compensation_and_salary",
+      "occupational_health_and_safety",
+      "moral_or_material_damages",
+      "procedural_or_preliminary",
+      "collective_or_union",
+      "other_explicitly_preserved"
+    ]
+  },
+  "review_design": {
+    "reviewer_blinded_to_system_output_origin": true,
+    "independent_reviewers_per_case": 1,
+    "reference_reveal_stage": "after_independent_scoring",
+    "disagreement_resolution": "A named adjudicator reviews every disputed critical or high finding and a reproducible sample of medium and low findings."
+  },
+  "severity_scale": {
+    "critical": "Unsafe legal conclusion, fabricated authority, missing dispositive claim, confidentiality breach, or action that could cause material judicial harm.",
+    "high": "Material claim, evidence, rule, calculation, or disposition error likely to change the result or require substantial redrafting.",
+    "medium": "Materially incomplete or imprecise reasoning that does not independently change the disposition.",
+    "low": "Localized clarity, formatting, or style defect without substantive effect."
+  },
+  "analysis_plan": {
+    "unit_of_analysis": "claim_with_case_level_safety_gates",
+    "metrics": [
+      "claim_recall",
+      "claim_coverage",
+      "quotation_support",
+      "source_locator_traceability",
+      "outcome_congruence",
+      "calculation_criteria_consistency",
+      "defects_by_severity_and_stage"
+    ],
+    "acceptance_thresholds": {
+      "claim_recall": 95,
+      "claim_coverage": 100,
+      "quotation_support": 100,
+      "source_locator_traceability": 100
+    },
+    "maximum_defects": {
+      "critical": 0,
+      "high": 0,
+      "medium": 5,
+      "low": 10
+    },
+    "missing_data_policy": "Missing or unreadable reference data is reported as unavailable and excluded only with a recorded reason; it is never imputed as a pass.",
+    "aggregation_rules": [
+      "Report development and untouched holdout results separately",
+      "Report both claim-weighted and case-level safety results",
+      "Do not pool excluded or unavailable cases into the denominator",
+      "Any critical or high defect fails the corresponding acceptance run"
+    ],
+    "no_posthoc_threshold_changes": true
+  },
+  "reviewer_form_fields": [
+    "case_id",
+    "reviewer_id",
+    "blind_output_id",
+    "sample_partition",
+    "claim_id",
+    "claim_category",
+    "claim_present_reference",
+    "claim_present_system",
+    "source_locator_correct",
+    "quotation_supported",
+    "reasoning_congruent",
+    "disposition_congruent",
+    "calculation_criteria_consistent",
+    "severity",
+    "defect_code",
+    "defect_description",
+    "reviewer_confidence",
+    "adjudication_required"
+  ]
+}
