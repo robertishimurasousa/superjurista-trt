@@ -1,6 +1,6 @@
 # TRT12 Controlled Pilot Safety and Rollback Plan
 
-**Status:** Proposed for human approval  
+**Status:** Approved; case execution remains `NO-GO` until the case-specific preflight passes
 **Scope:** TRT12 first-instance, local and human-supervised pilot  
 **External judicial actions:** Prohibited
 
@@ -167,20 +167,23 @@ decision.
 ### Approval record
 
 ```text
-Plan version/commit: 0.1 / pending approval commit
-Approved operator:
-Approved legal reviewer:
-Approved incident owner:
-Approved data steward:
-Approved raw-HAR retention:
-Approved raw-document retention:
-Approved derived-artifact retention:
-Approved incident-summary retention:
-Initial pilot case classification:
-Approval date:
-Approver:
-Decision: GO / NO-GO
-Conditions or exceptions:
+Plan version/commit: 0.1 / approval recorded on development
+Approved operator: Repository owner
+Approved legal reviewer: Qualified human reviewer named for each pilot case before GO
+Approved incident owner: Repository owner
+Approved data steward: Repository owner
+Approved raw-HAR retention: Delete after sanitized-map review; maximum 24 hours
+Approved raw-document retention: Case-specific deadline; maximum 30 days after review closure
+Approved derived-artifact retention: Case-specific deadline; maximum 90 days after review closure
+Approved incident-summary retention: Maximum 180 days
+Initial pilot case classification: Authorized, non-sealed TRT12 first-instance case
+Approval date: 2026-09-21
+Approver: Repository owner
+Decision: NO-GO for case execution until the case-specific preflight is complete
+Conditions or exceptions: No external judicial action; legal reviewer and case authorization are mandatory
 ```
 
-Until this record is approved, `OPS-02` remains incomplete and no real-case pilot is authorized.
+This approval accepts the safety, ownership, retention, and rollback policy. It does not authorize
+an unidentified case. Every real-case pilot remains `NO-GO` until its authorization,
+classification, retention deadline, legal reviewer, and reviewed sanitized endpoint map are
+recorded in the case-specific preflight.
