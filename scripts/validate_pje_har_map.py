@@ -108,15 +108,15 @@ def load_review_contract(path: Path) -> dict:
         "required_classifications",
         "authentication_header_names_any",
         "authentication_cookie_names_any",
-        "required_failure_groups",
+        "expected_failure_groups",
     }
     missing = expected - set(contract)
     unknown = set(contract) - expected
     if missing or unknown:
         detail = sorted(missing or unknown)
         raise ContractError(f"HAR map review contract fields are invalid: {', '.join(detail)}")
-    if contract["schema_version"] != 1:
-        raise ContractError("HAR map review contract schema_version must be 1")
+    if contract["schema_version"] != 2:
+        raise ContractError("HAR map review contract schema_version must be 2")
     required = _string_list(contract["required_classifications"], "required_classifications")
     if not set(required).issubset(CLASSIFICATIONS - {"other"}):
         raise ContractError("HAR map review contract has unsupported classifications")
@@ -128,13 +128,13 @@ def load_review_contract(path: Path) -> dict:
         contract["authentication_cookie_names_any"],
         "authentication_cookie_names_any",
     )
-    groups = contract["required_failure_groups"]
+    groups = contract["expected_failure_groups"]
     if not isinstance(groups, dict) or not groups:
-        raise ContractError("required_failure_groups must be a non-empty object")
+        raise ContractError("expected_failure_groups must be a non-empty object")
     for name, states in groups.items():
         if not isinstance(name, str) or not name:
-            raise ContractError("required_failure_groups names must be non-empty strings")
-        _string_list(states, f"required_failure_groups.{name}")
+            raise ContractError("expected_failure_groups names must be non-empty strings")
+        _string_list(states, f"expected_failure_groups.{name}")
     return contract
 
 
@@ -299,14 +299,28 @@ def validate_map(
     for name, count in redaction.items():
         _non_negative_integer(count, f"redaction.{name}")
 
-    gaps = review_gaps(endpoints, observed_coverage, observed_failures, review_contract)
+    all_gaps = review_gaps(
+        endpoints,
+        observed_coverage,
+        observed_failures,
+        review_contract,
+    )
+    blocking_gaps = [gap for gap in all_gaps if not gap.startswith("failure_group:")]
+    failure_observation_gaps = [
+        gap for gap in all_gaps if gap.startswith("failure_group:")
+    ]
     return {
-        "status": "review_ready" if not gaps else "incomplete",
+        "status": "review_ready" if not blocking_gaps else "incomplete",
         "tribunal_code": expected_tribunal,
         "instance": expected_instance,
         "endpoint_count": endpoint_count,
         "observed_failure_states": sorted(observed_failures),
-        **({"gaps": gaps} if gaps else {}),
+        **({"gaps": blocking_gaps} if blocking_gaps else {}),
+        **(
+            {"observed_failure_gaps": failure_observation_gaps}
+            if failure_observation_gaps
+            else {}
+        ),
     }
 
 
@@ -339,7 +353,7 @@ def review_gaps(
     if not cookie_names.intersection(contract["authentication_cookie_names_any"]):
         gaps.append("authentication:cookie_name")
     observed = set(failure_states)
-    for group, alternatives in contract["required_failure_groups"].items():
+    for group, alternatives in contract["expected_failure_groups"].items():
         if not observed.intersection(alternatives):
             gaps.append(f"failure_group:{group}")
     return sorted(gaps)
@@ -374,9 +388,14 @@ def main() -> int:
         if args.format == "json":
             print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         elif result["status"] == "review_ready":
+            detail = ""
+            if result.get("observed_failure_gaps"):
+                detail = "; unobserved_failures=" + ",".join(
+                    result["observed_failure_gaps"]
+                )
             print(
                 "[OK] sanitized HAR map is ready for human review: "
-                f"endpoints={result['endpoint_count']}"
+                f"endpoints={result['endpoint_count']}{detail}"
             )
         else:
             print("[INCOMPLETE] sanitized HAR map gaps: " + ", ".join(result["gaps"]))

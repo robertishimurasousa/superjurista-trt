@@ -126,6 +126,10 @@ def validate_pilot_preflight(
         "contract_digest": claude["contract_digest"],
         "shared_artifact_digest": claude["shared_artifact_digest"],
         "endpoint_map_digest": evidence["endpoint_map_digest"],
+        "unobserved_failure_groups": map_result.get(
+            "observed_failure_gaps",
+            [],
+        ),
         "external_actions_allowed": False,
     }
 

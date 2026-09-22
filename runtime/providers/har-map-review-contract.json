@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "required_classifications": [
     "authentication",
     "task_listing",
@@ -16,7 +16,7 @@
     "KEYCLOAK_IDENTITY",
     "KEYCLOAK_SESSION"
   ],
-  "required_failure_groups": {
+  "expected_failure_groups": {
     "authentication_failure": [
       "forbidden",
       "unauthorized"

@@ -113,6 +113,11 @@ execution, not legal adequacy or live PJe access.
 Do not place a raw HAR in the repository. Save it in an operator-controlled location outside the
 checkout, then generate only the sanitized map:
 
+During one normal authorized read-only session, retain the network log while opening the task
+list, locating one non-sealed first-instance case, opening its document list, and downloading one
+document. Do not file, sign, publish, move a task, change the case, expire the session, or induce
+an HTTP/provider failure for capture coverage.
+
 ```bash
 python3 scripts/sanitize_pje_har.py \
   --input /path/outside-the-repository/authorized-capture.har \
@@ -129,7 +134,9 @@ python3 scripts/validate_pje_har_map.py \
 Before committing a sanitized map, review every retained endpoint and marker. Exit code `0` means
 the map has the required technical coverage; it does not prove authorization. Exit code `1` means
 coverage remains incomplete. Exit code `2` means the map is invalid or inconsistent and must not
-be used.
+be used. A normal capture may report `observed_failure_gaps`; these are preserved limitations, not
+instructions to provoke errors. They are resolved only through safe, separately authorized
+session-state and recovery evidence.
 
 ## 7. Handle real process material
 
@@ -178,6 +185,9 @@ returns `NO-GO` for a sealed or exceptional-access case, repository-local worksp
 dirty working tree, non-passing host or quality evidence, divergent runtime summaries, incomplete or changed endpoint
 map, excessive retention, non-empty output directory, or any contract drift. The secret-free
 summary contains no process number, authorization scope, local path, credential, or case text.
+If failure groups were not naturally observed, the summary retains them under
+`unobserved_failure_groups` without treating them as observed or asking the operator to induce
+the failure.
 
 ## 9. Record the rehearsal
 

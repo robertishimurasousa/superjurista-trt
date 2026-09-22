@@ -199,7 +199,7 @@ class PJeHarMapReviewTest(unittest.TestCase):
                 ["authentication:cookie_name", "authentication:header_name"],
             )
 
-    def test_missing_provider_failure_observation_is_reported(self) -> None:
+    def test_missing_provider_failure_is_a_review_limitation_not_a_capture_requirement(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             map_path = Path(directory) / "map.json"
             report = self.valid_map()
@@ -216,9 +216,13 @@ class PJeHarMapReviewTest(unittest.TestCase):
 
             result = self.run_validator(map_path)
 
-            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             response = json.loads(result.stdout)
-            self.assertEqual(response["gaps"], ["failure_group:provider_failure"])
+            self.assertEqual(response["status"], "review_ready")
+            self.assertEqual(
+                response["observed_failure_gaps"],
+                ["failure_group:provider_failure"],
+            )
 
     def test_digest_mismatch_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

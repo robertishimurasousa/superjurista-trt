@@ -241,6 +241,36 @@ class PilotPreflightTest(unittest.TestCase):
             with self.assertRaisesRegex(self.api().PilotPreflightError, "endpoint map gaps"):
                 self.validate(incomplete, incomplete_map, workspace, output)
 
+    def test_unobserved_failures_remain_visible_without_requiring_induced_errors(self) -> None:
+        endpoint_map = self.endpoint_map()
+        endpoint_map["endpoints"] = [
+            item for item in endpoint_map["endpoints"] if item["failure_state"] is None
+        ]
+        endpoint_map["endpoint_count"] = len(endpoint_map["endpoints"])
+        endpoint_map["capture"]["entry_count"] = len(endpoint_map["endpoints"])
+        endpoint_map["coverage"]["process_discovery"] = 1
+        endpoint_map["failure_states"] = {}
+        endpoint_map = har_fixtures.PJeHarMapReviewTest().seal(endpoint_map)
+        preflight = self.preflight(endpoint_map)
+        preflight["evidence"]["endpoint_map_digest"] = endpoint_map["sanitized_digest"]
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workspace = base / "workspace"
+            output = base / "output"
+            workspace.mkdir()
+            output.mkdir()
+
+            result = self.validate(preflight, endpoint_map, workspace, output)
+
+        self.assertEqual(result["status"], "go_controlled_pilot")
+        self.assertEqual(
+            result["unobserved_failure_groups"],
+            [
+                "failure_group:authentication_failure",
+                "failure_group:provider_failure",
+            ],
+        )
+
     def test_commit_branch_and_local_paths_are_bound(self) -> None:
         endpoint_map = self.endpoint_map()
         wrong_commit = self.preflight(endpoint_map)

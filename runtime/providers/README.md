@@ -259,4 +259,8 @@ python3 scripts/validate_pje_har_map.py \
 
 Exit code `0` means the map has the required technical coverage and is ready for human review;
 `1` reports explicit coverage gaps; `2` rejects an invalid, inconsistent, or tampered map.
-Technical readiness is not legal or operational acceptance.
+Technical readiness is not legal or operational acceptance. Do not intentionally induce an
+authentication failure, timeout, or provider error merely to enrich a capture. Missing functional
+endpoint or authentication-artifact coverage blocks readiness; failure groups not naturally
+observed are returned as `observed_failure_gaps` and remain explicit limitations for the later
+session and recovery rehearsals.
