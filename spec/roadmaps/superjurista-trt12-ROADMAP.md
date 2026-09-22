@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.41.0
+**Version:** 0.42.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -210,7 +210,7 @@ the labor pipeline or either complete runtime is ready.
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
 | OPS-01 | Installation and operator runbook | 1 | `ACCEPTED` | A clean operator rehearsal completes using only the runbook | [`spec/operations/trt12-first-instance-operator-runbook.md`](../operations/trt12-first-instance-operator-runbook.md), [`scripts/rehearse_target_host.py`](../../scripts/rehearse_target_host.py), and [`scripts/run_synthetic_pipeline.py`](../../scripts/run_synthetic_pipeline.py); a fresh `development` checkout at commit `1c6c830` followed the runbook on macOS, created a new Python 3.12 environment, installed runtime and MCP dependencies, returned host-readiness digest `f925340cc3be04b5ef1dffe47ac317a64e0ec452eb6688f5350dc571647f1515`, passed the 257-test quality gate and four cross-runtime tests, then produced 19 artifacts and a passing global gate for both Claude Code and Codex with identical contract digest `277b660604f3512f0925b4266d669345fa2e7b84212e9769946db6fcb71aa59c` and shared artifact digest `7cbc39dab48426a72579e9cbb761dcd00363736f08e356b81c966e6fbe715a12` |
-| OPS-02 | Pilot safety and rollback plan | 1 | `ACCEPTED` | Human review, incident handling, rollback, retention, and support ownership are approved | [`spec/operations/pilot-safety-rollback-plan.md`](../operations/pilot-safety-rollback-plan.md); the user approved the repository owner as operator, incident owner, and data steward, required a qualified human legal reviewer for each case, and approved maximum retention of 24 hours for raw HAR, 30 days after review closure for raw documents, 90 days for derived artifacts, and 180 days for secret-free operational summaries. The plan preserves a case-specific `NO-GO` until authorization, classification, reviewer assignment, retention deadline, and endpoint-map review are complete |
+| OPS-02 | Pilot safety and rollback plan | 1 | `ACCEPTED` | Human review, incident handling, rollback, retention, and support ownership are approved | [`spec/operations/pilot-safety-rollback-plan.md`](../operations/pilot-safety-rollback-plan.md), [`runtime/operations/pilot-preflight.v1.schema.json`](../../runtime/operations/pilot-preflight.v1.schema.json), [`scripts/validate_pilot_preflight.py`](../../scripts/validate_pilot_preflight.py), and `tests/test_pilot_preflight.py`; the user approved the repository owner as operator, incident owner, and data steward, required a qualified human legal reviewer for each case, and approved maximum retention of 24 hours for raw HAR, 30 days after review closure for raw documents, 90 days for derived artifacts, and 180 days for secret-free operational summaries. Ten deterministic tests now enforce the case-specific `NO-GO` until authorization, non-sealed classification, reviewer assignment, current clean commit, host and quality evidence, identical Claude/Codex summaries, reviewed endpoint map, outside-repository paths, empty output, and bounded retention pass. The raw-HAR maximum is measured from capture rather than preflight creation, and external judicial actions remain permanently disabled |
 
 ---
 
@@ -393,6 +393,7 @@ Next acceptance target:
 | 2026-09-21 | Historical blind-review scoring is bound to the frozen protocol and executes development before the untouched holdout | `VAL-02` enters progress with deterministic metrics, unavailable-data exclusions, stage/severity custody, and fail-closed critical/high budgets; the 15 development cases are reviewed before correction and the five holdout cases remain unscored until `VAL-03` |
 | 2026-09-21 | Historical corrections are revision-bound and must close every material development defect before holdout scoring | `VAL-03` enters progress with fail-closed correction custody, regression evidence, metric revalidation, and a distinct passing five-case holdout contract; synthetic evidence earns no acceptance points |
 | 2026-09-21 | The historical acceptance dossier cannot promote pending, rejected, `no_go`, drifted, or materially defective evidence | `VAL-04` enters progress with source-digest custody, limitations, failure modes, explicit human approval, local supervised scope, and a permanent prohibition on external judicial actions |
+| 2026-09-21 | Every real case requires a machine-validated preflight rather than a prose-only checklist | Sealed or exceptional-access cases, stale evidence, endpoint-map drift, excessive retention, repository-local data, non-empty outputs, runtime divergence, and external actions fail closed before a controlled pilot can start |
 
 ---
 
@@ -402,7 +403,7 @@ Next acceptance target:
 |---|---|---|---|
 | BLK-01 | Explicit approval of blueprint and roadmap | ARC-01 | Closed on 2026-09-21 |
 | BLK-02 | Authorized TRT12 first-instance HAR capture | PJE-01 onward | Open |
-| BLK-03 | Data-handling decision for personal and sealed case data | Real fixtures and PJe acquisition rehearsals | Open |
+| BLK-03 | Case-specific authorization and data-handling record; sealed cases remain prohibited | Real fixtures and PJe acquisition rehearsals | Open; the executable preflight contract is ready, but a real non-sealed case record and named legal reviewer remain required |
 | BLK-04 | Approved historical sample and reviewer availability | VAL-02 onward | Open; the deterministic scoring contract is ready, while the authorized 20-case sample and qualified human reviewer remain required |
 | BLK-05 | Judgment house style or approved seed document | DOM-06 | Open |
 | BLK-06 | Python 3.10+ interpreter on the target macOS host for real local-MCP execution | FND-01 acceptance and local MCP servers | Closed on 2026-09-21 with Python 3.12.14 and MCP 1.30.0 |
@@ -420,11 +421,12 @@ Open blockers do not prevent unrelated foundation and contract work.
 The recommended sequence after blueprint approval is:
 
 1. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
-2. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
-3. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
-4. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-5. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
-6. Assemble the authorized 20-case sample and reviewer assignment, freeze all pseudonymous claim inventories, score the 15 development cases for `VAL-02`, and keep the five holdout cases unscored until `VAL-03`.
+2. Complete the protected case-specific record and pass the executable controlled-pilot preflight.
+3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
+4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
+5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
+6. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
+7. Assemble the authorized 20-case sample and reviewer assignment, freeze all pseudonymous claim inventories, score the 15 development cases for `VAL-02`, and keep the five holdout cases unscored until `VAL-03`.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.

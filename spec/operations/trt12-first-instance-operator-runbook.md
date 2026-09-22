@@ -151,7 +151,35 @@ is enabled, any expired session, MFA requirement, unauthorized response, repeate
 cursor, catalog drift, hash mismatch, or exhausted retry must stop the run without a filing or task
 movement.
 
-## 8. Record the rehearsal
+## 8. Validate the case-specific preflight
+
+Create the protected preflight JSON outside the repository using
+`runtime/operations/pilot-preflight.v1.schema.json`. Use digests instead of a process number or
+authorization text. The contract records the named roles, exact `development` commit, host and
+quality evidence, identical Claude/Codex rehearsal summaries, reviewed endpoint-map digest,
+case classification, retention deadlines, allowed local operations, and permanent prohibition on
+external judicial actions. Raw-HAR retention is measured from its capture timestamp, not from the
+later preflight timestamp.
+
+Create separate existing directories outside the checkout for authorized source material and new
+outputs. The output directory must be empty. Then run:
+
+```bash
+python3 scripts/validate_pilot_preflight.py \
+  --preflight /protected/path/pilot-preflight.json \
+  --endpoint-map tests/fixtures/sanitized/trt12-first-instance-har-map.json \
+  --workspace /protected/path/authorized-case-workspace \
+  --output /protected/path/new-pilot-output \
+  --summary /protected/path/pilot-preflight-summary.json
+```
+
+`[GO]` authorizes only the listed local, read-only controlled-pilot operations. The validator
+returns `NO-GO` for a sealed or exceptional-access case, repository-local workspace, stale commit,
+dirty working tree, non-passing host or quality evidence, divergent runtime summaries, incomplete or changed endpoint
+map, excessive retention, non-empty output directory, or any contract drift. The secret-free
+summary contains no process number, authorization scope, local path, credential, or case text.
+
+## 9. Record the rehearsal
 
 For each controlled run, retain a secret-free local record containing:
 
@@ -173,7 +201,7 @@ Observed gaps or incidents:
 Do not record cookies, tokens, header values, raw case text, party names, or protected document
 content in this summary.
 
-## 9. Stop and recovery rules
+## 10. Stop and recovery rules
 
 - Do not bypass a failed or blocked global gate.
 - Do not increase a persisted retry ceiling to force success.

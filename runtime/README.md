@@ -24,6 +24,8 @@ runtime/
 │   ├── labor-claim-taxonomy.json
 │   ├── labor-document-classification.json
 │   └── README.md
+├── operations/
+│   └── pilot-preflight.v1.schema.json
 ├── profiles/
 │   ├── schema.json
 │   ├── registry.json
