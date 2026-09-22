@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.29.0
+**Version:** 0.30.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 42/100 accepted points
+Track A — TRT12 first instance: 44/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               25.2%
+Program progress:               26.4%
 Track A candidate in review:    6/100 points
 ```
 
@@ -194,7 +194,7 @@ the labor pipeline or either complete runtime is ready.
 | PIP-02 | Conditional claim tracks | 3 | `ACCEPTED` | Research, evidence, calculation, and procedural tracks run only when routed; abstention remains valid | [`scripts/build_conditional_work_plan.py`](../../scripts/build_conditional_work_plan.py), [`runtime/pipelines/conditional-work-plan.v1.schema.json`](../../runtime/pipelines/conditional-work-plan.v1.schema.json), and `tests/test_conditional_work_plan.py`; 11 deterministic tests cover exact per-claim track dispatch, zero-dispatch abstention, mixed routed/abstained fixtures, stable ordering and identifiers, route-status consistency, question and abstention boundaries, duplicate claims, invalid input contracts, schema-valid output, and fail-closed routed claims with missing work |
 | PIP-03 | Claim/reasoning/disposition congruence gates | 4 | `ACCEPTED` | Missing claims and orphan dispositions fail; acceptance fixture reaches 100% coverage | [`scripts/validate_decision_congruence.py`](../../scripts/validate_decision_congruence.py), [`runtime/pipelines/decision-congruence-report.v1.schema.json`](../../runtime/pipelines/decision-congruence-report.v1.schema.json), and `tests/test_decision_congruence.py`; 14 deterministic tests prove exact 100% analysis, disposition, and draft coverage plus fail-closed handling of missing, duplicate, unknown, mismatched, empty-reasoning, source-link, outcome, heading, identifier, and schema-drift cases |
 | PIP-04 | Citation, source, calculation, and final gates | 3 | `ACCEPTED` | Unsupported quotations and inconsistent criteria fail closed; source unavailability is explicit | [`scripts/evaluate_final_gate.py`](../../scripts/evaluate_final_gate.py), [`runtime/pipelines/final-review.v1.schema.json`](../../runtime/pipelines/final-review.v1.schema.json), [`runtime/pipelines/global-gate.v1.schema.json`](../../runtime/pipelines/global-gate.v1.schema.json), and `tests/test_final_acceptance_gate.py`; 13 deterministic tests cover supported and unsupported quotations, the calibrated short-quotation boundary, missing and unavailable sources, exact calculation-criteria agreement, not-required and unavailable calculations, duplicate reviews, upstream congruence failure, schema-valid reporting, and fail-closed enforcement. Unavailability yields an explicit `blocked` report with subject and reason rather than silent acceptance |
-| PIP-05 | Cross-runtime synthetic/sanitized end-to-end fixture | 2 | `PLANNED` | Claude Code and Codex each produce all required artifacts and a passing shared global gate from a clean workspace | — |
+| PIP-05 | Cross-runtime synthetic/sanitized end-to-end fixture | 2 | `ACCEPTED` | Claude Code and Codex each produce all required artifacts and a passing shared global gate from a clean workspace | [`scripts/run_synthetic_pipeline.py`](../../scripts/run_synthetic_pipeline.py), `tests/fixtures/pipeline/synthetic-first-instance.json`, and `tests/test_cross_runtime_pipeline.py`; four subprocess tests execute both runtime adapters from empty workspaces, produce all 19 manifest-required outputs, preserve runtime-specific dispatch only in the execution manifest, prove byte-identical shared artifacts and digest, reach the same passing global gate, reject non-empty workspaces, and fail closed on fixture contract tampering. The fixture contains no real process data and does not establish live PJe operation or legal adequacy |
 
 ### 4.8 Historical validation — 10 points
 
@@ -381,6 +381,7 @@ Next acceptance target:
 | 2026-09-21 | Conditional work is derived solely from accepted claim-level route flags | `PIP-02` accepted; disabled tracks never dispatch, abstention remains explicit and valid, and routed claims cannot silently lose all work items |
 | 2026-09-21 | Decision artifacts require an independent congruence gate after generation | `PIP-03` accepted; every known claim must have exactly one non-empty analysis, matching disposition, outcome, source link, and exact draft custody before the report can reach 100% |
 | 2026-09-21 | Final acceptance is a machine-readable report followed by mandatory enforcement | `PIP-04` accepted; unsupported long quotations and mismatched calculations fail, source or calculation unavailability blocks with an explicit reason, and no non-passing report can continue |
+| 2026-09-21 | Cross-runtime acceptance uses one sanitized fixture and one shared artifact graph | `PIP-05` accepted; Claude Code and Codex produce the same 19 pipeline outputs and final gate from clean workspaces while retaining only their declared dispatch bindings |
 
 ---
 
@@ -411,8 +412,8 @@ The recommended sequence after blueprint approval is:
 3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-6. Implement `PIP-05` cross-runtime end-to-end fixture using the accepted shared gates.
-7. Continue through the dependency order in the Track A tables.
+6. Implement the capture-independent `PJE-04` document-index, download, integrity, and explicit-gap contracts while the authorized TRT12 capture is pending.
+7. Freeze the `VAL-01` historical validation protocol before inspecting outcomes from the future approved sample.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.

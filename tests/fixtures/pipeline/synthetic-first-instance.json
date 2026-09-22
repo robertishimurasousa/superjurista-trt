@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "fixture_id": "synthetic-trt12-first-instance-v1",
+  "case_number": "0000000-00.2026.5.12.0000",
+  "artifacts": {
+    "case-context.json": {
+      "schema_version": 1,
+      "case_number": "0000000-00.2026.5.12.0000",
+      "court": "TRT12",
+      "instance": 1,
+      "phase": "knowledge",
+      "procedure": "ordinary",
+      "court_unit": "Synthetic Labor Court",
+      "confidentiality": "public_or_authorized",
+      "source_manifest": "document-index.json"
+    },
+    "document-index.json": {
+      "schema_version": 1,
+      "fixture_notice": "Synthetic sanitized documents only.",
+      "documents": [
+        {
+          "document_id": "DOC-001",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        {
+          "document_id": "DOC-002",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000002"
+        }
+      ]
+    },
+    "source-manifest.json": {
+      "schema_version": 1,
+      "authorization": "synthetic_fixture",
+      "contains_personal_data": false,
+      "contains_real_case_data": false
+    },
+    "document-classification.json": {
+      "schema_version": 1,
+      "classifier_version": 1,
+      "documents": [
+        {
+          "document_id": "DOC-001",
+          "document_type": "initial_pleading",
+          "classification_status": "classified",
+          "matched_rule_ids": [
+            "initial-pleading"
+          ],
+          "reason_code": "matched_rule"
+        },
+        {
+          "document_id": "DOC-002",
+          "document_type": "defense",
+          "classification_status": "classified",
+          "matched_rule_ids": [
+            "defense"
+          ],
+          "reason_code": "matched_rule"
+        }
+      ]
+    },
+    "procedural-timeline.json": {
+      "schema_version": 1,
+      "events": [
+        {
+          "event_id": "EVT-001",
+          "event_date": "2026-01-10",
+          "event_type": "case_filed",
+          "source_document_id": "DOC-001"
+        }
+      ]
+    },
+    "labor-report.json": {
+      "schema_version": 1,
+      "case_context": {
+        "schema_version": 1,
+        "case_number": "0000000-00.2026.5.12.0000",
+        "court": "TRT12",
+        "instance": 1,
+        "phase": "knowledge",
+        "procedure": "ordinary",
+        "court_unit": "Synthetic Labor Court",
+        "confidentiality": "public_or_authorized",
+        "source_manifest": "document-index.json"
+      },
+      "parties": [
+        {
+          "party_id": "PTY-001",
+          "role": "claimant",
+          "display_name": "Synthetic Claimant",
+          "source_document_id": "DOC-001",
+          "source_locator": "page 1, header"
+        },
+        {
+          "party_id": "PTY-002",
+          "role": "respondent",
+          "display_name": "Synthetic Respondent",
+          "source_document_id": "DOC-002",
+          "source_locator": "page 1, header"
+        }
+      ],
+      "procedural_phase": {
+        "phase": "knowledge",
+        "status": "identified",
+        "source_document_id": "DOC-001",
+        "source_locator": "page 1, case metadata"
+      },
+      "timeline": [
+        {
+          "event_id": "EVT-001",
+          "event_date": "2026-01-10",
+          "event_type": "case_filed",
+          "summary": "Synthetic case was filed.",
+          "source_document_id": "DOC-001",
+          "source_locator": "page 1"
+        }
+      ],
+      "positions": [
+        {
+          "position_id": "POS-001",
+          "kind": "claim",
+          "label": "overtime",
+          "summary": "Synthetic allegation of unpaid overtime.",
+          "source_document_id": "DOC-001",
+          "source_locator": "pages 4-5"
+        },
+        {
+          "position_id": "POS-002",
+          "kind": "defense",
+          "label": "overtime",
+          "summary": "Synthetic denial of unpaid overtime.",
+          "source_document_id": "DOC-002",
+          "source_locator": "pages 2-3"
+        }
+      ],
+      "review_gaps": []
+    },
+    "claim-matrix.json": {
+      "schema_version": 1,
+      "taxonomy_version": 1,
+      "claims": [
+        {
+          "claim_id": "CLM-001",
+          "label": "overtime",
+          "claimant_position": {
+            "summary": "Overtime was worked and not fully paid.",
+            "source_document_id": "DOC-001",
+            "source_locator": "pages 4-5"
+          },
+          "respondent_positions": [
+            {
+              "defense_id": "DEF-001",
+              "respondent_party_id": "PTY-002",
+              "summary": "All recorded overtime was paid.",
+              "source_document_id": "DOC-002",
+              "source_locator": "pages 2-3"
+            }
+          ],
+          "requested_remedies": [
+            "overtime_payment",
+            "statutory_effects"
+          ],
+          "contested_facts": [
+            "actual_working_hours"
+          ],
+          "legal_issues": [
+            "reliability_of_time_records"
+          ],
+          "status": "mapped",
+          "review_gaps": []
+        }
+      ]
+    },
+    "evidence-matrix.json": {
+      "schema_version": 1,
+      "evidence_items": [
+        {
+          "evidence_id": "EVD-001",
+          "claim_ids": [
+            "CLM-001"
+          ],
+          "type": "time_record",
+          "source_document_id": "DOC-002",
+          "source_locator": "pages 3-8",
+          "proposition": "The synthetic time records contain uniform entries.",
+          "relation": "supports_claim",
+          "limitations": [
+            "Synthetic fixture contains no witness testimony."
+          ],
+          "analysis_status": "pending",
+          "conflicts_with_evidence_ids": []
+        }
+      ],
+      "uncovered_claim_ids": []
+    },
+    "issue-route.json": {
+      "schema_version": 1,
+      "routes": [
+        {
+          "claim_id": "CLM-001",
+          "route_status": "routed",
+          "requires_legal_research": true,
+          "requires_evidence_analysis": true,
+          "requires_calculation_review": false,
+          "requires_procedural_review": false,
+          "research_questions": [
+            "Which synthetic burden-of-proof rule applies?"
+          ],
+          "evidence_questions": [
+            "Do the synthetic records support the proposition?"
+          ],
+          "route_reason": "Synthetic claim requires legal and evidence review.",
+          "abstention_reasons": []
+        }
+      ]
+    },
+    "precedent-corpus.json": {
+      "schema_version": 1,
+      "sources": [
+        {
+          "source_id": "TST-001",
+          "origin": "TST",
+          "type": "qualified_precedent",
+          "reference": "Synthetic official-source fixture reference",
+          "status": "current",
+          "status_notes": [],
+          "binding_scope": "national_labor_justice",
+          "legal_question": "Synthetic question used only for contract validation.",
+          "holding": "Synthetic holding used only for contract validation.",
+          "verbatim_excerpt": "Synthetic excerpt; not a quotation from a real decision.",
+          "official_url": "https://www.tst.jus.br/jurisprudencia",
+          "retrieved_at": "2026-09-21T12:00:00-03:00"
+        }
+      ]
+    },
+    "evidence-review.json": {
+      "schema_version": 1,
+      "claim_id": "CLM-001",
+      "status": "pending_human_review",
+      "limitations": [
+        "Synthetic fixture only."
+      ]
+    },
+    "calculation-review.json": {
+      "schema_version": 1,
+      "calculations": [
+        {
+          "claim_id": "CLM-001",
+          "status": "not_required",
+          "criteria": [],
+          "unavailability_reason": ""
+        }
+      ]
+    },
+    "claim-analysis.json": {
+      "schema_version": 1,
+      "analyses": [
+        {
+          "analysis_id": "ANL-001",
+          "claim_id": "CLM-001",
+          "facts_found": [
+            "The submitted synthetic time records cover the reviewed period."
+          ],
+          "evidence_ids": [
+            "EVD-001"
+          ],
+          "evidence_assessment": [
+            "EVD-001 requires human review before a factual conclusion."
+          ],
+          "applicable_rules": [
+            "RULE-001"
+          ],
+          "precedent_source_ids": [
+            "TST-001"
+          ],
+          "reasoning": "The fixture preserves reasoning without asserting a real outcome.",
+          "proposed_outcome": "pending_human_review",
+          "limitations": [
+            "Synthetic fixture only."
+          ]
+        }
+      ]
+    },
+    "disposition-matrix.json": {
+      "schema_version": 1,
+      "items": [
+        {
+          "disposition_id": "DSP-001",
+          "claim_id": "CLM-001",
+          "outcome": "pending_human_review",
+          "command": "No operative command may be emitted before human review.",
+          "period": "not_applicable",
+          "effects": [],
+          "calculation_criteria": [],
+          "source_analysis_id": "ANL-001"
+        }
+      ]
+    },
+    "judgment-draft.md": "# Minuta de sentença trabalhista\n\n## Fundamentação\n\n### CLM-001\n\nAnálise: ANL-001\n\nFundamentação: The fixture preserves reasoning without asserting a real outcome.\n\nResultado proposto: pending_human_review\n\n## Dispositivo\n\n### DSP-001 — CLM-001\n\nResultado: pending_human_review\nComando: No operative command may be emitted before human review.\nPeríodo: not_applicable\n\nAnálise de origem: ANL-001\n",
+    "review-report.json": {
+      "schema_version": 1,
+      "sources": [
+        {
+          "source_id": "TST-001",
+          "status": "available",
+          "verbatim_excerpt": "Synthetic excerpt; not a quotation from a real decision.",
+          "unavailability_reason": ""
+        }
+      ],
+      "calculations": [
+        {
+          "claim_id": "CLM-001",
+          "status": "not_required",
+          "criteria": [],
+          "unavailability_reason": ""
+        }
+      ]
+    }
+  }
+}
