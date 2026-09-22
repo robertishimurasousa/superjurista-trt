@@ -230,7 +230,10 @@ locator, and scans the complete classified initial pleading with
 `scripts/extract_labor_positions.py`. Only explicit claim-section headings become positions;
 text mentions are ignored, wrapped headings are reconstructed, supported labels keep their
 taxonomy names, and unsupported categories retain an `unmapped_` label for later human review.
-Defense positions remain an explicit review gap until their dedicated extraction stage.
+`scripts/extract_labor_defenses.py` applies the same exact-heading boundary to every classified
+defense document. Defense position groups retain document-level custody and distinct stable
+identifiers, while an absent answer is never inferred. The labor-report v1 gap is global by
+position kind; claim-level defense coverage remains the responsibility of the claim matrix.
 
 ```bash
 python3 scripts/extract_pje_labor_report.py \
@@ -249,12 +252,13 @@ python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
   tests.test_labor_position_extraction \
+  tests.test_labor_defense_extraction \
   tests.test_pje_labor_report_extraction \
   -v
 ```
 
 This establishes the deterministic DOM-02 timeline, context, party, and report assembly
-boundary. Defense-position extraction, multi-case calibration, and blind review against
+boundary. Claim-level respondent linkage, multi-case calibration, and blind review against
 approved TRT12 fixtures remain separate acceptance evidence.
 
 ## Build a claim and requested-remedy matrix

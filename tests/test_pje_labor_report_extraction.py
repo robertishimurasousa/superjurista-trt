@@ -149,7 +149,12 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             ],
         }
 
-    def synthetic_pdf(self, destination: Path, claim_heading=None) -> None:
+    def synthetic_pdf(
+        self,
+        destination: Path,
+        claim_heading=None,
+        defense_heading=None,
+    ) -> None:
         writer = PdfWriter()
         texts = (
             "ANA EXEMPLO vem propor reclamacao em face de EMPRESA ALFA LTDA, "
@@ -179,6 +184,8 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             commands = [f"BT\n/F1 10 Tf\n30 720 Td\n({text}) Tj"]
             if index == 0 and claim_heading is not None:
                 commands.append(f"0 -20 Td\n({claim_heading}) Tj")
+            if index == 2 and defense_heading is not None:
+                commands.append(f"0 -20 Td\n({defense_heading}) Tj")
             commands.append("ET\n")
             stream.set_data("\n".join(commands).encode("ascii"))
             page[NameObject("/Contents")] = stream
@@ -352,6 +359,47 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
         self.assertEqual(result.initial["document_id"], "DOC-001")
         self.assertEqual(result.court["document_id"], "DOC-003")
         self.assertEqual(result.phase["document_id"], "DOC-002")
+        self.assertEqual(
+            [
+                document["document_id"]
+                for document in getattr(result, "defenses", ())
+            ],
+            ["DOC-003"],
+        )
+
+    def test_selects_every_defense_document_in_stable_order(self) -> None:
+        api = self.api()
+        segments = self.segments()
+        segments["documents"].append(
+            {
+                "document_id": "DOC-004",
+                "provider_reference": "456def0",
+                "provider_type": "Defense",
+                "filed_on": "2026-02-04",
+                "page_start": 31,
+                "page_end": 32,
+            }
+        )
+        classification = self.classification()
+        classification["documents"].append(
+            {
+                "document_id": "DOC-004",
+                "document_type": "defense",
+                "classification_status": "classified",
+                "matched_rule_ids": ["defense"],
+                "reason_code": "matched_rule",
+            }
+        )
+
+        result = api.select_source_documents(segments, classification)
+
+        self.assertEqual(
+            [
+                document["document_id"]
+                for document in getattr(result, "defenses", ())
+            ],
+            ["DOC-003", "DOC-004"],
+        )
 
     def test_source_selection_rejects_duplicate_or_mismatched_document_custody(self) -> None:
         api = self.api()
@@ -457,6 +505,48 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             ],
         )
         self.assertEqual(result["review_gaps"], ["missing_defense_position"])
+
+    def test_combines_claim_and_defense_positions_from_classified_documents(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            pdf_path = Path(temporary) / "synthetic-process.pdf"
+            self.synthetic_pdf(
+                pdf_path,
+                claim_heading="5. DO INTERVALO INTRAJORNADA",
+                defense_heading="3 - DAS VERBAS RESCISORIAS",
+            )
+            segments = self.segments()
+            segments["source_pdf"] = {
+                "sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+                "page_count": 3,
+            }
+            for index, document in enumerate(segments["documents"], 1):
+                document["page_start"] = index
+                document["page_end"] = index
+            timeline = self.timeline()
+            timeline["status"] = "complete"
+            timeline["gaps"] = []
+
+            result = api.extract_pdf_labor_report(
+                pdf_path,
+                segments,
+                self.classification(),
+                timeline,
+                tribunal="TRT99",
+                instance=1,
+                confidentiality="public_or_authorized",
+                source_manifest="document-segments.json",
+                segment_schema_path=SEGMENT_SCHEMA,
+                classification_schema_path=CLASSIFICATION_SCHEMA,
+                timeline_schema_path=TIMELINE_SCHEMA,
+                labor_report_schema_path=LABOR_REPORT_SCHEMA,
+            )
+
+        self.assertEqual(
+            [(item["position_id"], item["kind"]) for item in result["positions"]],
+            [("POS-004", "claim"), ("POS-101", "defense")],
+        )
+        self.assertEqual(result["review_gaps"], [])
 
     def test_rejects_pdf_that_does_not_match_segment_custody(self) -> None:
         api = self.api()

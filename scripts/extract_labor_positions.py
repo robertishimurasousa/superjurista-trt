@@ -91,7 +91,7 @@ CLAIM_SECTION_RULES = (
 )
 
 
-def _normalize_heading(value: str) -> str:
+def normalize_heading(value: str) -> str:
     decomposed = unicodedata.normalize("NFKD", value.replace("º", "").replace("ª", ""))
     unaccented = "".join(
         character
@@ -102,7 +102,7 @@ def _normalize_heading(value: str) -> str:
     return re.sub(r"^[0-9]+\s+", "", normalized)
 
 
-def _validated_pages(page_texts: object) -> tuple[tuple[int, str], ...]:
+def validated_pages(page_texts: object) -> tuple[tuple[int, str], ...]:
     if not isinstance(page_texts, tuple):
         raise LaborPositionExtractionError("page_texts must be a tuple")
     pages = {}
@@ -124,6 +124,20 @@ def _validated_pages(page_texts: object) -> tuple[tuple[int, str], ...]:
     return tuple(sorted(pages.items()))
 
 
+def heading_candidates_by_page(page_texts: object) -> dict[int, set[str]]:
+    """Return exact one- and two-line heading candidates for each source page."""
+    headings_by_page = {}
+    for page_number, text in validated_pages(page_texts):
+        lines = tuple(line for line in text.splitlines() if line.strip())
+        headings = {normalize_heading(line) for line in lines}
+        headings.update(
+            normalize_heading(f"{first} {second}")
+            for first, second in zip(lines, lines[1:])
+        )
+        headings_by_page[page_number] = headings
+    return headings_by_page
+
+
 def extract_claim_positions(
     *,
     initial_document_id: str,
@@ -135,16 +149,7 @@ def extract_claim_positions(
         or DOCUMENT_ID_PATTERN.fullmatch(initial_document_id) is None
     ):
         raise LaborPositionExtractionError("initial_document_id is invalid")
-    pages = _validated_pages(page_texts)
-    headings_by_page = {}
-    for page_number, text in pages:
-        lines = tuple(line for line in text.splitlines() if line.strip())
-        headings = {_normalize_heading(line) for line in lines}
-        headings.update(
-            _normalize_heading(f"{first} {second}")
-            for first, second in zip(lines, lines[1:])
-        )
-        headings_by_page[page_number] = headings
+    headings_by_page = heading_candidates_by_page(page_texts)
     positions = []
     for rule in CLAIM_SECTION_RULES:
         source_page = next(

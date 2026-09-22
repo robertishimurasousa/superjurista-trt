@@ -23,6 +23,7 @@ from build_labor_report import (
     TimelineEventCandidate,
     build_labor_report,
 )
+from extract_labor_defenses import extract_defense_positions
 from extract_labor_positions import extract_claim_positions
 from schema_validation import load_json, validate_schema_value
 from validate_artifact_contracts import validate_document
@@ -80,6 +81,7 @@ class SourceDocuments:
     initial: dict
     court: dict
     phase: dict
+    defenses: tuple[dict, ...]
 
 
 def _squash(value: str) -> str:
@@ -253,14 +255,20 @@ def select_source_documents(segments: dict, classification: dict) -> SourceDocum
     defense_ids = sorted(ids_by_type.get("defense", []))
     hearing_ids = sorted(ids_by_type.get("hearing_record", []))
     initial = documents_by_id[initial_ids[0]]
-    court = documents_by_id[defense_ids[0]] if defense_ids else initial
+    defenses = tuple(documents_by_id[document_id] for document_id in defense_ids)
+    court = defenses[0] if defenses else initial
     if hearing_ids:
         phase = documents_by_id[hearing_ids[-1]]
     elif defense_ids:
         phase = documents_by_id[defense_ids[-1]]
     else:
         phase = initial
-    return SourceDocuments(initial=initial, court=court, phase=phase)
+    return SourceDocuments(
+        initial=initial,
+        court=court,
+        phase=phase,
+        defenses=defenses,
+    )
 
 
 def timeline_candidates(timeline: dict) -> tuple[TimelineEventCandidate, ...]:
@@ -337,6 +345,17 @@ def _page_text(reader: PdfReader, page_number: int, label: str) -> str:
     return text
 
 
+def _document_page_texts(
+    reader: PdfReader,
+    document: dict,
+    label: str,
+) -> tuple[tuple[int, str], ...]:
+    return tuple(
+        (page_number, _page_text(reader, page_number, label))
+        for page_number in range(document["page_start"], document["page_end"] + 1)
+    )
+
+
 def extract_pdf_labor_report(
     pdf_path: Path,
     segments: dict,
@@ -385,15 +404,10 @@ def extract_pdf_labor_report(
         raise PJeLaborReportExtractionError("PJe PDF title metadata is missing")
     if not isinstance(subject, str) or not subject.strip():
         raise PJeLaborReportExtractionError("PJe PDF subject metadata is missing")
-    initial_pages = tuple(
-        (
-            page_number,
-            _page_text(reader, page_number, "initial pleading"),
-        )
-        for page_number in range(
-            selected.initial["page_start"],
-            selected.initial["page_end"] + 1,
-        )
+    initial_pages = _document_page_texts(
+        reader,
+        selected.initial,
+        "initial pleading",
     )
     context = extract_context_candidates(
         title=title,
@@ -413,9 +427,18 @@ def extract_pdf_labor_report(
         confidentiality=confidentiality,
         source_manifest=source_manifest,
     )
-    positions = extract_claim_positions(
+    claim_positions = extract_claim_positions(
         initial_document_id=selected.initial["document_id"],
         page_texts=initial_pages,
+    )
+    defense_positions = tuple(
+        position
+        for group, document in enumerate(selected.defenses, 1)
+        for position in extract_defense_positions(
+            defense_document_id=document["document_id"],
+            page_texts=_document_page_texts(reader, document, "defense"),
+            position_group=group,
+        )
     )
     return build_partial_labor_report(
         context,
@@ -424,7 +447,7 @@ def extract_pdf_labor_report(
         ),
         timeline=timeline,
         schema_path=labor_report_schema_path,
-        positions=positions,
+        positions=claim_positions + defense_positions,
     )
 
 

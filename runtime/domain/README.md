@@ -40,21 +40,26 @@ procedural document, consumes the complete timeline, and uses
 `scripts/extract_labor_positions.py` to recognize explicit claim-section headings throughout
 the classified initial pleading. Stable position IDs do not depend on page order, every match
 retains its page locator, prose mentions are ignored, and unsupported categories remain
-visible with `unmapped_` labels. Defense statements still require their own bounded extractor.
+visible with `unmapped_` labels. `scripts/extract_labor_defenses.py` scans every classified
+defense document under the same exact-heading rule, assigns a distinct stable ID range to each
+document, and emits only the respondent positions actually found. The labor report does not
+invent a response for a claimant position that has no matching defense section.
 
 ```bash
 python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
   tests.test_labor_position_extraction \
+  tests.test_labor_defense_extraction \
   tests.test_pje_labor_report_extraction \
   -v
 ```
 
 The synthetic suite proves PDF custody, party reconciliation, timeline custody, protected
-output, exact-heading claim extraction, and deterministic report assembly. DOM-02 still
-requires defense-position extraction plus blind review against an approved, authorized
-multi-case TRT12 fixture before acceptance.
+output, exact-heading claim and defense extraction, multiple-defense isolation, and
+deterministic report assembly. DOM-02 still requires blind review against an approved,
+authorized multi-case TRT12 fixture before acceptance. Claim-level missing-defense reporting
+belongs to DOM-03 because labor-report v1 records only global position-kind gaps.
 
 ## Claim and requested-remedy taxonomy
 
