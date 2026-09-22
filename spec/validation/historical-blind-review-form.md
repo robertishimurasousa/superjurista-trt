@@ -52,6 +52,11 @@ sealed content in this form.
 <!-- field:severity -->
 - Severity (`critical`, `high`, `medium`, `low`, or `none`):
 
+<!-- operational-field:defect_stage -->
+- Owning stage (`acquisition`, `classification`, `labor_report`, `claim_matrix`,
+  `evidence_matrix`, `issue_routing`, `legal_research`, `claim_analysis`, `disposition`,
+  `drafting`, `calculation`, `global_gate`, or `none`):
+
 <!-- field:defect_code -->
 - Defect code:
 
@@ -64,8 +69,14 @@ sealed content in this form.
 <!-- field:adjudication_required -->
 - Adjudication required (`yes` or `no`):
 
+<!-- operational-field:unavailable_reason -->
+- Unavailable-data reason (required when any value is `unavailable`):
+
 ## Blind-review attestation
 
+<!-- operational-field:blind_scoring_completed -->
 - [ ] Scoring was completed before the reference outcome was revealed.
+
+<!-- operational-field:output_origin_withheld -->
 - [ ] The candidate output's runtime or author was not disclosed during scoring.
 - [ ] Every unavailable item has a recorded reason and was not imputed as a pass.

@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/historical-review-batch.v1.schema.json",
+  "title": "Historical blind-review batch v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "protocol_digest",
+    "case_manifest",
+    "reviews"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "case_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "sample_partition",
+          "blind_output_id",
+          "reviewer_id",
+          "expected_claim_ids",
+          "claim_inventory_frozen_before_scoring"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "sample_partition": {
+            "type": "string",
+            "enum": [
+              "development",
+              "untouched_holdout"
+            ]
+          },
+          "blind_output_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "expected_claim_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+            }
+          },
+          "claim_inventory_frozen_before_scoring": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "reviewer_id",
+          "blind_output_id",
+          "sample_partition",
+          "claim_id",
+          "claim_category",
+          "claim_present_reference",
+          "claim_present_system",
+          "source_locator_correct",
+          "quotation_supported",
+          "reasoning_congruent",
+          "disposition_congruent",
+          "calculation_criteria_consistent",
+          "severity",
+          "defect_stage",
+          "defect_code",
+          "defect_description",
+          "reviewer_confidence",
+          "adjudication_required",
+          "unavailable_reason",
+          "blind_scoring_completed",
+          "output_origin_withheld"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "blind_output_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "sample_partition": {
+            "type": "string",
+            "enum": [
+              "development",
+              "untouched_holdout"
+            ]
+          },
+          "claim_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+          },
+          "claim_category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim_present_reference": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "unavailable"
+            ]
+          },
+          "claim_present_system": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "source_locator_correct": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "not_applicable",
+              "unavailable"
+            ]
+          },
+          "quotation_supported": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "not_applicable"
+            ]
+          },
+          "reasoning_congruent": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "unavailable"
+            ]
+          },
+          "disposition_congruent": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "unavailable"
+            ]
+          },
+          "calculation_criteria_consistent": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no",
+              "not_applicable",
+              "unavailable"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "none"
+            ]
+          },
+          "defect_stage": {
+            "type": "string",
+            "enum": [
+              "acquisition",
+              "classification",
+              "labor_report",
+              "claim_matrix",
+              "evidence_matrix",
+              "issue_routing",
+              "legal_research",
+              "claim_analysis",
+              "disposition",
+              "drafting",
+              "calculation",
+              "global_gate",
+              "none"
+            ]
+          },
+          "defect_code": {
+            "type": "string"
+          },
+          "defect_description": {
+            "type": "string"
+          },
+          "reviewer_confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "adjudication_required": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "unavailable_reason": {
+            "type": "string"
+          },
+          "blind_scoring_completed": {
+            "type": "boolean"
+          },
+          "output_origin_withheld": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/historical-review-report.v1.schema.json",
+  "title": "Historical blind-review report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "protocol_digest",
+    "review_batch_digest",
+    "status",
+    "case_count",
+    "claim_review_count",
+    "partitions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_batch_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed"
+      ]
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "claim_review_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "partitions": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "case_count",
+          "claim_review_count",
+          "unavailable_review_count",
+          "metrics",
+          "defects",
+          "defects_by_stage",
+          "accepted"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "development",
+              "untouched_holdout"
+            ]
+          },
+          "case_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "claim_review_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "unavailable_review_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "claim_recall",
+              "claim_coverage",
+              "quotation_support",
+              "source_locator_traceability",
+              "outcome_congruence",
+              "calculation_criteria_consistency"
+            ],
+            "properties": {
+              "claim_recall": {
+                "$ref": "#/$defs/metric"
+              },
+              "claim_coverage": {
+                "$ref": "#/$defs/metric"
+              },
+              "quotation_support": {
+                "$ref": "#/$defs/metric"
+              },
+              "source_locator_traceability": {
+                "$ref": "#/$defs/metric"
+              },
+              "outcome_congruence": {
+                "$ref": "#/$defs/metric"
+              },
+              "calculation_criteria_consistency": {
+                "$ref": "#/$defs/metric"
+              }
+            }
+          },
+          "defects": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ],
+            "properties": {
+              "critical": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "high": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "medium": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "low": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "defects_by_stage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "stage",
+                "count"
+              ],
+              "properties": {
+                "stage": {
+                  "type": "string",
+                  "enum": [
+                    "acquisition",
+                    "classification",
+                    "labor_report",
+                    "claim_matrix",
+                    "evidence_matrix",
+                    "issue_routing",
+                    "legal_research",
+                    "claim_analysis",
+                    "disposition",
+                    "drafting",
+                    "calculation",
+                    "global_gate"
+                  ]
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "accepted": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "eligible_count",
+        "excluded_count",
+        "not_applicable_count",
+        "percent",
+        "threshold",
+        "accepted"
+      ],
+      "properties": {
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eligible_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "percent": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "threshold": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "accepted": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
