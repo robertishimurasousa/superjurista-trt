@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.35.0
+**Version:** 0.36.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,10 +47,10 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 48/100 accepted points
+Track A — TRT12 first instance: 49/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               28.8%
+Program progress:               29.4%
 Track A candidate in review:    4/100 points
 ```
 
@@ -119,8 +119,8 @@ Track A contains exactly 100 points.
 | JUR — Authoritative research | 15 | 11 | `IN_PROGRESS` |
 | PIP — End-to-end pipeline and gates | 15 | 15 | `ACCEPTED` |
 | VAL — Historical validation | 10 | 2 | `IN_PROGRESS` |
-| OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **48** |  |
+| OPS — Controlled pilot readiness | 2 | 1 | `IN_PROGRESS` |
+| **Total** | **100** | **49** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -209,7 +209,7 @@ the labor pipeline or either complete runtime is ready.
 
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
-| OPS-01 | Installation and operator runbook | 1 | `PLANNED` | A clean operator rehearsal completes using only the runbook | — |
+| OPS-01 | Installation and operator runbook | 1 | `ACCEPTED` | A clean operator rehearsal completes using only the runbook | [`spec/operations/trt12-first-instance-operator-runbook.md`](../operations/trt12-first-instance-operator-runbook.md), [`scripts/rehearse_target_host.py`](../../scripts/rehearse_target_host.py), and [`scripts/run_synthetic_pipeline.py`](../../scripts/run_synthetic_pipeline.py); a fresh `development` checkout at commit `1c6c830` followed the runbook on macOS, created a new Python 3.12 environment, installed runtime and MCP dependencies, returned host-readiness digest `f925340cc3be04b5ef1dffe47ac317a64e0ec452eb6688f5350dc571647f1515`, passed the 257-test quality gate and four cross-runtime tests, then produced 19 artifacts and a passing global gate for both Claude Code and Codex with identical contract digest `277b660604f3512f0925b4266d669345fa2e7b84212e9769946db6fcb71aa59c` and shared artifact digest `7cbc39dab48426a72579e9cbb761dcd00363736f08e356b81c966e6fbe715a12` |
 | OPS-02 | Pilot safety and rollback plan | 1 | `PLANNED` | Human review, incident handling, rollback, retention, and support ownership are approved | — |
 
 ---
@@ -387,6 +387,7 @@ Next acceptance target:
 | 2026-09-21 | PJe acquisition recovery is bound to immutable request, catalog, payload, and retry evidence | `PJE-05` can advance synthetically without redownloading accepted payloads or treating exhausted retries as success; empirical acceptance remains tied to authorized TRT12 closed rehearsals |
 | 2026-09-21 | Target-host readiness requires an executed MCP and Portuguese OCR rehearsal, not package presence alone | `FND-01` accepted after all five MCP servers imported and the preserved PDF converter completed a real Poppler-to-Tesseract run on macOS; M0 is reached |
 | 2026-09-21 | Falcão bootstrap responses are validated per endpoint instead of forced into one JSON shape | `JUR-02` accepts the observed notifications array and autocomplete object while search/detail remain object-only; the subsequent live search still failed closed on the official rate limit |
+| 2026-09-21 | The operator runbook is accepted only after execution from a fresh remote checkout | `OPS-01` accepted after a clean macOS rehearsal reproduced host readiness, the complete quality gate, and identical passing Claude Code/Codex synthetic outputs |
 
 ---
 
