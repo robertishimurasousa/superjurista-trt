@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.33.0
+**Version:** 0.34.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -47,11 +47,11 @@ future scope from hiding whether the first usable target is actually ready.
 ### 2.2 Current baseline
 
 ```text
-Track A — TRT12 first instance: 46/100 accepted points
+Track A — TRT12 first instance: 48/100 accepted points
 Track B — TRT12 second instance: 0/100 accepted points
 Track C — multi-TRT:            0/100 accepted points
-Program progress:               27.6%
-Track A candidate in review:    6/100 points
+Program progress:               28.8%
+Track A candidate in review:    4/100 points
 ```
 
 The blueprint and roadmap were explicitly approved by the user on 2026-09-21. `ARC-01` is
@@ -112,7 +112,7 @@ Track A contains exactly 100 points.
 
 | Work package | Weight | Accepted | Status |
 |---|---:|---:|---|
-| FND — Foundation hardening | 8 | 6 | `IN_PROGRESS` |
+| FND — Foundation hardening | 8 | 8 | `ACCEPTED` |
 | ARC — Architecture and contracts | 12 | 12 | `ACCEPTED` |
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
 | DOM — Labor domain capabilities | 20 | 0 | `IN_PROGRESS` |
@@ -120,7 +120,7 @@ Track A contains exactly 100 points.
 | PIP — End-to-end pipeline and gates | 15 | 15 | `ACCEPTED` |
 | VAL — Historical validation | 10 | 2 | `IN_PROGRESS` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **46** |  |
+| **Total** | **100** | **48** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -141,7 +141,7 @@ the labor pipeline or either complete runtime is ready.
 
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
-| FND-01 | Cross-platform Python and dependency contract | 2 | `IN_REVIEW` | Installer and documented commands run on the target macOS environment; supported Python version is consistent with code | [`runtime/python-contract.json`](../../runtime/python-contract.json), [`requirements`](../../requirements), [`scripts/check_python_contract.py`](../../scripts/check_python_contract.py), `tests/test_python_contract.py`; clean temporary install layout passes on macOS Python 3.9, dependencies import with the LibreSSL-compatible constraint, and the MCP contract is tested against the Python 3.10 boundary |
+| FND-01 | Cross-platform Python and dependency contract | 2 | `ACCEPTED` | Installer and documented commands run on the target macOS environment; supported Python version is consistent with code | [`runtime/python-contract.json`](../../runtime/python-contract.json), [`requirements`](../../requirements), [`scripts/check_python_contract.py`](../../scripts/check_python_contract.py), [`scripts/rehearse_target_host.py`](../../scripts/rehearse_target_host.py), `tests/test_python_contract.py`, and `tests/test_target_host_rehearsal.py`; a clean `.venv` was installed on the target macOS host with Python 3.12.14, MCP 1.30.0, the complete runtime dependency set, Tesseract 5.5.3 with Portuguese data, and Poppler 26.05. The five preserved MCP servers imported successfully and the preserved PDF converter recognized both frozen Portuguese phrases from a one-page synthetic PDF. The machine-readable rehearsal returned `ready` with evidence digest `f925340cc3be04b5ef1dffe47ac317a64e0ec452eb6688f5350dc571647f1515`; five focused tests reject missing dependencies, unsupported versions, partial OCR, incomplete MCP coverage, and unknown evidence fields |
 | FND-02 | Automated quality suite and CI entry point | 2 | `ACCEPTED` | One documented command runs format/static checks/tests; CI or equivalent clean-room execution passes | [`scripts/quality_gate.py`](../../scripts/quality_gate.py), [`.github/workflows/quality.yml`](../../.github/workflows/quality.yml), `tests/test_quality_gate.py`; the shared command passes 130 tests locally, and [GitHub Actions run 35657051683](https://github.com/robertishimurasousa/superjurista-trt/actions/runs/35657051683) passed on Python 3.9 and 3.10 for commit `cf78b5c` |
 | FND-03 | Credential and case-data hygiene | 2 | `ACCEPTED` | Tests prove `.env`, sessions, HARs, cookies, headers, and case data are excluded or redacted | [`runtime/data-hygiene-contract.json`](../../runtime/data-hygiene-contract.json), [`scripts/check_data_hygiene.py`](../../scripts/check_data_hygiene.py), `tests/test_data_hygiene.py`, `.gitignore`, and `scaffold/project-gitignore`; the integrated quality gate passes 130 tests and the focused 11-test hygiene review passes without reading external symlink targets or printing matched secret values |
 | FND-04 | Fork inventory, characterization, and dual-runtime reuse ledger | 2 | `ACCEPTED` | Every in-scope existing command, agent, skill, script, and provider has a Preserve/Adapt/Replace/Retire disposition; reusable behavior has characterization evidence; Claude bindings have Codex mappings; both runtimes invoke one shared smoke gate | [`spec/inventory`](../inventory/README.md), [`runtime`](../../runtime/README.md), `tests/test_reuse_ledger.py`, `tests/test_runtime_contract.py`; the 130-test suite and focused reuse/runtime review pass, with 107 components and 0 unclassified |
@@ -385,6 +385,7 @@ Next acceptance target:
 | 2026-09-21 | PJe document acquisition separates complete metadata indexing from requested payload download | `PJE-04` can advance on the shared provider interface; downloaded bytes must match the indexed SHA-256, skipped items remain visible, and bounded unavailability becomes an explicit gap instead of silent loss |
 | 2026-09-21 | Historical acceptance thresholds and review fields are frozen before case outcomes are observed | `VAL-01` accepted; development and untouched holdout results must remain separate, unavailable evidence is never imputed as a pass, and critical/high defects have zero acceptance budget |
 | 2026-09-21 | PJe acquisition recovery is bound to immutable request, catalog, payload, and retry evidence | `PJE-05` can advance synthetically without redownloading accepted payloads or treating exhausted retries as success; empirical acceptance remains tied to authorized TRT12 closed rehearsals |
+| 2026-09-21 | Target-host readiness requires an executed MCP and Portuguese OCR rehearsal, not package presence alone | `FND-01` accepted after all five MCP servers imported and the preserved PDF converter completed a real Poppler-to-Tesseract run on macOS; M0 is reached |
 
 ---
 
@@ -397,8 +398,8 @@ Next acceptance target:
 | BLK-03 | Data-handling decision for personal and sealed case data | Real fixtures and PJe acquisition rehearsals | Open |
 | BLK-04 | Approved historical sample and reviewer availability | VAL-02 onward | Open |
 | BLK-05 | Judgment house style or approved seed document | DOM-06 | Open |
-| BLK-06 | Python 3.10+ interpreter on the target macOS host for real local-MCP execution | FND-01 acceptance and local MCP servers | Open |
-| BLK-07 | Target-host Tesseract with Portuguese data and a user-installed Poppler executable | FND-01 OCR rehearsal | Open |
+| BLK-06 | Python 3.10+ interpreter on the target macOS host for real local-MCP execution | FND-01 acceptance and local MCP servers | Closed on 2026-09-21 with Python 3.12.14 and MCP 1.30.0 |
+| BLK-07 | Target-host Tesseract with Portuguese data and a user-installed Poppler executable | FND-01 OCR rehearsal | Closed on 2026-09-21 with Tesseract 5.5.3, Portuguese data, Poppler 26.05, and successful OCR rehearsal |
 | BLK-08 | Commit or pull request plus the first remote GitHub Actions run | FND-02 acceptance evidence | Closed by successful run 35657051683 |
 | BLK-09 | Falcão network rate-limit window triggered during the bounded public integration probe | JUR-02 live acceptance evidence | Temporary; retry one bounded query after the official window expires |
 
@@ -410,13 +411,12 @@ Open blockers do not prevent unrelated foundation and contract work.
 
 The recommended sequence after blueprint approval is:
 
-1. Complete the target-host Python 3.10+, Tesseract, Poppler, OCR, and local-MCP rehearsals required to accept `FND-01`.
-2. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
-3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
-4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
-5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-6. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
-7. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
+1. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
+2. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
+3. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
+4. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
+5. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
+6. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.

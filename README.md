@@ -145,26 +145,31 @@ O sistema baseia-se no framework v3.0 de orquestracao agentica com padrao "Orque
 ## Dependencies
 
 The core scripts require Python 3.9 or newer. Local MCP servers require Python
-3.10 or newer because the supported MCP SDK line is `mcp>=1.28,<2`.
+3.10 or newer because the supported MCP SDK line is `mcp>=1.28,<2`. Use a
+Python 3.10+ interpreter when creating the shared local environment:
 
 ```bash
-python3 -m venv .venv
+/path/to/python3.12 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install -r requirements/runtime.txt
+for requirements_file in scaffold/mcp-servers/*/requirements.txt; do
+  python3 -m pip install -r "$requirements_file"
+done
 python3 scripts/check_python_contract.py --root . \
   --contract runtime/python-contract.json --mode core
-```
-
-For local MCP servers, repeat the contract check with a Python 3.10+
-interpreter before registering them:
-
-```bash
 python3 scripts/check_python_contract.py --root . \
   --contract runtime/python-contract.json --mode mcp
 ```
 
-OCR also requires Tesseract with Portuguese language data and Poppler installed
-on the operating system. The canonical machine-readable contract is
+On macOS, OCR also requires Tesseract with Portuguese language data and Poppler:
+
+```bash
+brew install tesseract tesseract-lang poppler
+python3 scripts/rehearse_target_host.py --root .
+```
+
+The rehearsal imports every preserved MCP server and runs the preserved PDF converter through
+Poppler and Portuguese OCR. The canonical machine-readable Python contract is
 `runtime/python-contract.json`.
 
 ## Quality gate
