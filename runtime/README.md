@@ -222,16 +222,35 @@ deterministic JSON artifact for parties, procedural phase, timeline events, clai
 and review gaps. Every asserted item retains its source document and locator; unknown or
 missing information is never silently completed.
 
+`scripts/extract_pje_labor_report.py` connects the protected PJe PDF, segment map,
+classification, and procedural timeline to that builder. Tribunal, instance, and
+confidentiality are explicit inputs so the extraction core remains portable. The extractor
+checks the PDF digest and page count, requires matching document custody, retains every source
+locator, and leaves claims and defenses as review gaps until their dedicated extraction stage.
+
+```bash
+python3 scripts/extract_pje_labor_report.py \
+  --input /protected/process.pdf \
+  --segments /protected/input/document-segments.json \
+  --classification /protected/input/document-classification.json \
+  --timeline /protected/input/procedural-timeline.json \
+  --output /protected/output \
+  --tribunal TRT12 \
+  --instance 1 \
+  --confidentiality public_or_authorized
+```
+
 ```bash
 python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
+  tests.test_pje_labor_report_extraction \
   -v
 ```
 
-This establishes the deterministic DOM-02 timeline and report assembly boundary. Party and
-position extraction, calibration, and blind review against approved TRT12 fixtures remain
-separate acceptance evidence.
+This establishes the deterministic DOM-02 timeline, context, party, and report assembly
+boundary. Position extraction, calibration, and blind review against approved TRT12 fixtures
+remain separate acceptance evidence.
 
 ## Build a claim and requested-remedy matrix
 

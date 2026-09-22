@@ -33,16 +33,24 @@ defenses retain document IDs and source locators. Stable identifiers and manifes
 are validated, output order is deterministic, and missing information becomes an explicit
 review gap rather than an inferred fact.
 
+`scripts/extract_pje_labor_report.py` extracts case context, every party qualified in the
+initial pleading, and the knowledge phase from a custodied PJe PDF. It reconciles the PJe
+metadata's primary parties with the initial pleading, obtains the court unit from a classified
+procedural document, consumes the complete timeline, and deliberately emits no claim or
+defense position until those statements have their own bounded extractor.
+
 ```bash
 python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
+  tests.test_pje_labor_report_extraction \
   -v
 ```
 
-The synthetic suite proves timeline custody, protected output, and deterministic report
-assembly. DOM-02 still requires party and position extraction plus blind review against an
-approved, authorized TRT12 fixture before acceptance.
+The synthetic suite proves PDF custody, party reconciliation, timeline custody, protected
+output, and deterministic report assembly. DOM-02 still requires claim and defense position
+extraction plus blind review against an approved, authorized multi-case TRT12 fixture before
+acceptance.
 
 ## Claim and requested-remedy taxonomy
 
