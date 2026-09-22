@@ -8,6 +8,7 @@
     "schema_version",
     "protocol_id",
     "protocol_digest",
+    "phase",
     "case_manifest",
     "reviews"
   ],
@@ -23,6 +24,13 @@
     "protocol_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "development",
+        "untouched_holdout"
+      ]
     },
     "case_manifest": {
       "type": "array",

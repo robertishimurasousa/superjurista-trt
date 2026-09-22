@@ -9,6 +9,7 @@
     "protocol_id",
     "protocol_digest",
     "review_batch_digest",
+    "phase",
     "status",
     "case_count",
     "claim_review_count",
@@ -31,6 +32,13 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
     },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "development",
+        "untouched_holdout"
+      ]
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -48,7 +56,7 @@
     },
     "partitions": {
       "type": "array",
-      "minItems": 2,
+      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,

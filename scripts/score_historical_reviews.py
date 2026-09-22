@@ -93,20 +93,21 @@ def score_review_batch(
         ),
     )
     _validate_review_semantics(ordered_reviews, protocol)
-    _validate_sample(ordered_reviews, ordered_manifest, protocol)
+    phase = batch["phase"]
+    _validate_sample(ordered_reviews, ordered_manifest, protocol, phase)
 
     partitions = [
         _score_partition(
-            name,
-            [review for review in ordered_reviews if review["sample_partition"] == name],
+            phase,
+            ordered_reviews,
             protocol,
         )
-        for name in PARTITIONS
     ]
     canonical_batch = {
         "schema_version": batch["schema_version"],
         "protocol_id": batch["protocol_id"],
         "protocol_digest": batch["protocol_digest"],
+        "phase": phase,
         "case_manifest": ordered_manifest,
         "reviews": ordered_reviews,
     }
@@ -115,6 +116,7 @@ def score_review_batch(
         "protocol_id": batch["protocol_id"],
         "protocol_digest": batch["protocol_digest"],
         "review_batch_digest": _digest(canonical_batch),
+        "phase": phase,
         "status": "passed" if all(item["accepted"] for item in partitions) else "failed",
         "case_count": len(ordered_manifest),
         "claim_review_count": len(ordered_reviews),
@@ -198,6 +200,7 @@ def _validate_sample(
     reviews: list[dict],
     case_manifest: list[dict],
     protocol: dict,
+    phase: str,
 ) -> None:
     by_case = {}
     blind_outputs = set()
@@ -210,22 +213,16 @@ def _validate_sample(
         blind_outputs.add(case["blind_output_id"])
         by_case[case_id] = case
 
-    expected = {
+    expected_case_count = {
         "development": protocol["sampling"]["development_cases"],
         "untouched_holdout": protocol["sampling"]["untouched_holdout_cases"],
-    }
-    actual = {
-        partition: sum(
-            case["sample_partition"] == partition for case in case_manifest
-        )
-        for partition in PARTITIONS
-    }
-    if actual != expected:
+    }[phase]
+    if any(case["sample_partition"] != phase for case in case_manifest):
         raise HistoricalReviewError(
-            "sample partition case counts do not match the frozen protocol"
+            "one review batch must contain a single frozen phase"
         )
-    if len(case_manifest) != protocol["sampling"]["total_cases"]:
-        raise HistoricalReviewError("sample case count does not match the frozen protocol")
+    if len(case_manifest) != expected_case_count:
+        raise HistoricalReviewError("phase case count does not match the frozen protocol")
 
     actual_claims: dict[str, set[str]] = {}
     for review in reviews:

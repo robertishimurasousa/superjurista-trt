@@ -19,10 +19,11 @@ exact validated protocol digest. Every claim review records its owning defect st
 unavailable-data reason when applicable, and both blind-review attestations.
 
 The batch also carries a pseudonymous case manifest whose expected claim inventory is frozen
-before scoring. The scorer requires exactly 15 development cases and five untouched holdout
-cases and exact review coverage of every manifested claim. It rejects duplicate case/claim
-reviews, post-freeze categories, inconsistent defect fields, mixed case partitions, reused blind
-output identifiers, multiple blind outputs for one case, and missing independent reviewers.
+before scoring. Each batch contains exactly one phase: first the 15 development cases, then—only
+after correction—the separate five-case untouched holdout. The scorer requires exact review
+coverage of every manifested claim. It rejects duplicate case/claim reviews, post-freeze
+categories, inconsistent defect fields, mixed phases, reused blind output identifiers, multiple
+blind outputs for one case, and missing independent reviewers.
 
 ```bash
 python3 scripts/score_historical_reviews.py \
@@ -31,9 +32,9 @@ python3 scripts/score_historical_reviews.py \
 ```
 
 The report is deterministic and validates against
-`historical-review-report.v1.schema.json`. Development and untouched holdout metrics remain
-separate. Unavailable values require a reason and are reported as excluded rather than imputed
-as passes. Any critical or high defect fails its partition and the complete batch.
+`historical-review-report.v1.schema.json`. Development and untouched holdout metrics are emitted
+by separate runs and must never be pooled. Unavailable values require a reason and are reported
+as excluded rather than imputed as passes. Any critical or high defect fails its phase.
 
 Run the network-free scoring tests with:
 

@@ -65,11 +65,15 @@ class HistoricalReviewScoringTest(unittest.TestCase):
             "output_origin_withheld": True,
         }
 
-    def batch(self):
+    def batch(self, phase="development"):
         reviews = []
         case_manifest = []
-        for index in range(1, 21):
-            partition = "development" if index <= 15 else "untouched_holdout"
+        if phase == "development":
+            indexes = range(1, 16)
+        else:
+            indexes = range(16, 21)
+        for index in indexes:
+            partition = phase
             review = self.review(index, partition=partition)
             reviews.append(review)
             case_manifest.append(
@@ -86,6 +90,7 @@ class HistoricalReviewScoringTest(unittest.TestCase):
             "schema_version": 1,
             "protocol_id": "TRT12-HISTORICAL-V1",
             "protocol_digest": self.protocol_digest(),
+            "phase": phase,
             "case_manifest": case_manifest,
             "reviews": reviews,
         }
@@ -100,20 +105,31 @@ class HistoricalReviewScoringTest(unittest.TestCase):
             report_schema_path=REPORT_SCHEMA,
         )
 
-    def test_complete_passing_sample_reports_partitions_separately(self):
+    def test_complete_passing_development_sample_reports_only_its_phase(self):
         report = self.score(self.batch())
 
         self.assertEqual(report["status"], "passed")
-        self.assertEqual(report["case_count"], 20)
-        self.assertEqual(report["claim_review_count"], 20)
+        self.assertEqual(report["phase"], "development")
+        self.assertEqual(report["case_count"], 15)
+        self.assertEqual(report["claim_review_count"], 15)
         self.assertEqual(
             [partition["name"] for partition in report["partitions"]],
-            ["development", "untouched_holdout"],
+            ["development"],
         )
         self.assertEqual(report["partitions"][0]["case_count"], 15)
-        self.assertEqual(report["partitions"][1]["case_count"], 5)
         self.assertEqual(report["partitions"][0]["metrics"]["claim_recall"]["percent"], 100)
-        self.assertTrue(report["partitions"][1]["accepted"])
+        self.assertTrue(report["partitions"][0]["accepted"])
+
+    def test_untouched_holdout_is_scored_only_in_its_separate_phase(self):
+        report = self.score(self.batch("untouched_holdout"))
+
+        self.assertEqual(report["status"], "passed")
+        self.assertEqual(report["phase"], "untouched_holdout")
+        self.assertEqual(report["case_count"], 5)
+        self.assertEqual(
+            [partition["name"] for partition in report["partitions"]],
+            ["untouched_holdout"],
+        )
 
     def test_result_is_deterministic_when_review_order_changes(self):
         batch = self.batch()
@@ -123,12 +139,20 @@ class HistoricalReviewScoringTest(unittest.TestCase):
 
         self.assertEqual(self.score(batch), self.score(reversed_batch))
 
-    def test_sample_must_match_frozen_fifteen_and_five_case_partition(self):
+    def test_phase_must_match_its_frozen_case_count(self):
         batch = self.batch()
         batch["reviews"].pop()
         batch["case_manifest"].pop()
 
-        with self.assertRaisesRegex(self.api().HistoricalReviewError, "sample partition"):
+        with self.assertRaisesRegex(self.api().HistoricalReviewError, "phase case count"):
+            self.score(batch)
+
+    def test_one_batch_cannot_mix_development_and_holdout(self):
+        batch = self.batch()
+        batch["case_manifest"][0]["sample_partition"] = "untouched_holdout"
+        batch["reviews"][0]["sample_partition"] = "untouched_holdout"
+
+        with self.assertRaisesRegex(self.api().HistoricalReviewError, "single frozen phase"):
             self.score(batch)
 
     def test_duplicate_case_claim_review_is_rejected(self):
