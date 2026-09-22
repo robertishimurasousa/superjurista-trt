@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.36.0
+**Version:** 0.37.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -210,7 +210,7 @@ the labor pipeline or either complete runtime is ready.
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
 | OPS-01 | Installation and operator runbook | 1 | `ACCEPTED` | A clean operator rehearsal completes using only the runbook | [`spec/operations/trt12-first-instance-operator-runbook.md`](../operations/trt12-first-instance-operator-runbook.md), [`scripts/rehearse_target_host.py`](../../scripts/rehearse_target_host.py), and [`scripts/run_synthetic_pipeline.py`](../../scripts/run_synthetic_pipeline.py); a fresh `development` checkout at commit `1c6c830` followed the runbook on macOS, created a new Python 3.12 environment, installed runtime and MCP dependencies, returned host-readiness digest `f925340cc3be04b5ef1dffe47ac317a64e0ec452eb6688f5350dc571647f1515`, passed the 257-test quality gate and four cross-runtime tests, then produced 19 artifacts and a passing global gate for both Claude Code and Codex with identical contract digest `277b660604f3512f0925b4266d669345fa2e7b84212e9769946db6fcb71aa59c` and shared artifact digest `7cbc39dab48426a72579e9cbb761dcd00363736f08e356b81c966e6fbe715a12` |
-| OPS-02 | Pilot safety and rollback plan | 1 | `PLANNED` | Human review, incident handling, rollback, retention, and support ownership are approved | — |
+| OPS-02 | Pilot safety and rollback plan | 1 | `IN_PROGRESS` | Human review, incident handling, rollback, retention, and support ownership are approved | [`spec/operations/pilot-safety-rollback-plan.md`](../operations/pilot-safety-rollback-plan.md); the proposed plan fixes the no-external-action boundary, single-case pilot eligibility, human legal review, zero critical/high defect budget, incident severity and containment, checkpoint invalidation, rollback and recovery rules, proposed retention defaults, and a required approval record. Named owners and retention periods still require explicit human approval before acceptance |
 
 ---
 
@@ -388,6 +388,7 @@ Next acceptance target:
 | 2026-09-21 | Target-host readiness requires an executed MCP and Portuguese OCR rehearsal, not package presence alone | `FND-01` accepted after all five MCP servers imported and the preserved PDF converter completed a real Poppler-to-Tesseract run on macOS; M0 is reached |
 | 2026-09-21 | Falcão bootstrap responses are validated per endpoint instead of forced into one JSON shape | `JUR-02` accepts the observed notifications array and autocomplete object while search/detail remain object-only; the subsequent live search still failed closed on the official rate limit |
 | 2026-09-21 | The operator runbook is accepted only after execution from a fresh remote checkout | `OPS-01` accepted after a clean macOS rehearsal reproduced host readiness, the complete quality gate, and identical passing Claude Code/Codex synthetic outputs |
+| 2026-09-21 | A real-case pilot remains prohibited until owners and retention periods are explicitly approved | `OPS-02` enters progress with fail-closed incident, rollback, recovery, and human-review controls; a blank approval record cannot authorize processing |
 
 ---
 
@@ -404,6 +405,7 @@ Next acceptance target:
 | BLK-07 | Target-host Tesseract with Portuguese data and a user-installed Poppler executable | FND-01 OCR rehearsal | Closed on 2026-09-21 with Tesseract 5.5.3, Portuguese data, Poppler 26.05, and successful OCR rehearsal |
 | BLK-08 | Commit or pull request plus the first remote GitHub Actions run | FND-02 acceptance evidence | Closed by successful run 35657051683 |
 | BLK-09 | Falcão network rate-limit window triggered during the bounded public integration probe | JUR-02 live acceptance evidence | Temporary; reconfirmed after successful session bootstrap on 2026-09-21, so wait for the official window before another bounded query |
+| BLK-10 | Named pilot owners and approved judicial-data retention periods | OPS-02 acceptance and real-case pilot authorization | Open; proposed defaults await explicit human approval |
 
 Open blockers do not prevent unrelated foundation and contract work.
 
@@ -413,12 +415,13 @@ Open blockers do not prevent unrelated foundation and contract work.
 
 The recommended sequence after blueprint approval is:
 
-1. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
-2. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
-3. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
-4. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-5. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
-6. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
+1. Approve the `OPS-02` pilot roles and judicial-data retention periods before any real-case run.
+2. Run the sanitizer against an authorized local TRT12 first-instance capture and review the map for `PJE-01`.
+3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
+4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
+5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
+6. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
+7. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.
