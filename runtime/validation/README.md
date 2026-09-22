@@ -70,3 +70,24 @@ The validator requires a correction for every development critical/high defect, 
 custody fields, rejects open or failing corrections, rechecks the scoring metrics against the
 frozen thresholds, binds baseline and corrected revisions, and accepts only a distinct passing
 five-case holdout.
+
+## Acceptance dossier
+
+After `VAL-03`, prepare a secret-free human review that satisfies
+`historical-dossier-review.v1.schema.json`. It records limitations, observed or potential failure
+modes, mitigations, a go/no-go recommendation, reasons, and an explicit pending, approved, or
+rejected decision. Build the evidence-bound dossier with:
+
+```bash
+python3 scripts/build_historical_acceptance_dossier.py \
+  --development-report /protected/path/development-report.json \
+  --holdout-report /protected/path/holdout-report.json \
+  --rerun-report /protected/path/historical-rerun-report.json \
+  --dossier-review /protected/path/dossier-review.json \
+  --output /protected/path/historical-acceptance-dossier.json
+```
+
+The builder verifies protocol, report digests, phases, baseline and corrected revisions, material
+holdout defects, and approval identity. A pending decision remains `pending_approval`; rejection
+or a `no_go` recommendation remains `no_go`. Even an approved dossier is restricted to a local,
+human-supervised, case-specific preflight and always keeps external judicial actions disabled.

@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/historical-dossier-review.v1.schema.json",
+  "title": "Historical acceptance dossier human review v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "reviewer_id",
+    "limitations",
+    "failure_modes",
+    "recommendation",
+    "recommendation_reasons",
+    "approval"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "reviewer_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "failure_modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/failure_mode"
+      }
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "go_controlled_pilot",
+        "no_go"
+      ]
+    },
+    "recommendation_reasons": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "approval": {
+      "$ref": "#/$defs/approval"
+    }
+  },
+  "$defs": {
+    "failure_mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "failure_mode_id",
+        "stage",
+        "severity",
+        "status",
+        "description",
+        "mitigation"
+      ],
+      "properties": {
+        "failure_mode_id": {
+          "type": "string",
+          "pattern": "^FM-[A-Z0-9_-]{3,32}$"
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "acquisition",
+            "classification",
+            "labor_report",
+            "claim_matrix",
+            "evidence_matrix",
+            "issue_routing",
+            "legal_research",
+            "claim_analysis",
+            "disposition",
+            "drafting",
+            "calculation",
+            "global_gate"
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "controlled",
+            "potential"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mitigation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "approver",
+        "decision_date",
+        "conditions"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approver": {
+          "type": "string"
+        },
+        "decision_date": {
+          "type": "string",
+          "pattern": "^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
