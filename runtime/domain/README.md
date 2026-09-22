@@ -36,21 +36,25 @@ review gap rather than an inferred fact.
 `scripts/extract_pje_labor_report.py` extracts case context, every party qualified in the
 initial pleading, and the knowledge phase from a custodied PJe PDF. It reconciles the PJe
 metadata's primary parties with the initial pleading, obtains the court unit from a classified
-procedural document, consumes the complete timeline, and deliberately emits no claim or
-defense position until those statements have their own bounded extractor.
+procedural document, consumes the complete timeline, and uses
+`scripts/extract_labor_positions.py` to recognize explicit claim-section headings throughout
+the classified initial pleading. Stable position IDs do not depend on page order, every match
+retains its page locator, prose mentions are ignored, and unsupported categories remain
+visible with `unmapped_` labels. Defense statements still require their own bounded extractor.
 
 ```bash
 python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
+  tests.test_labor_position_extraction \
   tests.test_pje_labor_report_extraction \
   -v
 ```
 
 The synthetic suite proves PDF custody, party reconciliation, timeline custody, protected
-output, and deterministic report assembly. DOM-02 still requires claim and defense position
-extraction plus blind review against an approved, authorized multi-case TRT12 fixture before
-acceptance.
+output, exact-heading claim extraction, and deterministic report assembly. DOM-02 still
+requires defense-position extraction plus blind review against an approved, authorized
+multi-case TRT12 fixture before acceptance.
 
 ## Claim and requested-remedy taxonomy
 

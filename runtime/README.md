@@ -226,7 +226,11 @@ missing information is never silently completed.
 classification, and procedural timeline to that builder. Tribunal, instance, and
 confidentiality are explicit inputs so the extraction core remains portable. The extractor
 checks the PDF digest and page count, requires matching document custody, retains every source
-locator, and leaves claims and defenses as review gaps until their dedicated extraction stage.
+locator, and scans the complete classified initial pleading with
+`scripts/extract_labor_positions.py`. Only explicit claim-section headings become positions;
+text mentions are ignored, wrapped headings are reconstructed, supported labels keep their
+taxonomy names, and unsupported categories retain an `unmapped_` label for later human review.
+Defense positions remain an explicit review gap until their dedicated extraction stage.
 
 ```bash
 python3 scripts/extract_pje_labor_report.py \
@@ -244,13 +248,14 @@ python3 scripts/extract_pje_labor_report.py \
 python3 -m unittest \
   tests.test_procedural_timeline_builder \
   tests.test_labor_report_builder \
+  tests.test_labor_position_extraction \
   tests.test_pje_labor_report_extraction \
   -v
 ```
 
 This establishes the deterministic DOM-02 timeline, context, party, and report assembly
-boundary. Position extraction, calibration, and blind review against approved TRT12 fixtures
-remain separate acceptance evidence.
+boundary. Defense-position extraction, multi-case calibration, and blind review against
+approved TRT12 fixtures remain separate acceptance evidence.
 
 ## Build a claim and requested-remedy matrix
 

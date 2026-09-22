@@ -18,10 +18,12 @@ from PyPDF2 import PdfReader
 from build_labor_report import (
     PartyCandidate,
     PhaseAssessment,
+    PositionCandidate,
     SourceReference,
     TimelineEventCandidate,
     build_labor_report,
 )
+from extract_labor_positions import extract_claim_positions
 from schema_validation import load_json, validate_schema_value
 from validate_artifact_contracts import validate_document
 
@@ -287,15 +289,16 @@ def build_partial_labor_report(
     known_document_ids: tuple[str, ...],
     timeline: dict,
     schema_path: Path,
+    positions: tuple[PositionCandidate, ...] = (),
 ) -> dict:
-    """Build a report that abstains from claim and defense extraction."""
+    """Build a report while preserving every position that remains absent."""
     report = build_labor_report(
         context.case_context,
         known_document_ids,
         context.parties,
         context.phase,
         timeline_candidates(timeline),
-        (),
+        positions,
     )
     schema = load_json(schema_path, "labor report schema")
     issues = validate_schema_value(report, schema)
@@ -382,14 +385,20 @@ def extract_pdf_labor_report(
         raise PJeLaborReportExtractionError("PJe PDF title metadata is missing")
     if not isinstance(subject, str) or not subject.strip():
         raise PJeLaborReportExtractionError("PJe PDF subject metadata is missing")
+    initial_pages = tuple(
+        (
+            page_number,
+            _page_text(reader, page_number, "initial pleading"),
+        )
+        for page_number in range(
+            selected.initial["page_start"],
+            selected.initial["page_end"] + 1,
+        )
+    )
     context = extract_context_candidates(
         title=title,
         subject=subject,
-        initial_page_text=_page_text(
-            reader,
-            selected.initial["page_start"],
-            "initial pleading",
-        ),
+        initial_page_text=initial_pages[0][1],
         court_page_text=_page_text(
             reader,
             selected.court["page_start"],
@@ -404,6 +413,10 @@ def extract_pdf_labor_report(
         confidentiality=confidentiality,
         source_manifest=source_manifest,
     )
+    positions = extract_claim_positions(
+        initial_document_id=selected.initial["document_id"],
+        page_texts=initial_pages,
+    )
     return build_partial_labor_report(
         context,
         known_document_ids=tuple(
@@ -411,6 +424,7 @@ def extract_pdf_labor_report(
         ),
         timeline=timeline,
         schema_path=labor_report_schema_path,
+        positions=positions,
     )
 
 
@@ -454,7 +468,7 @@ def write_labor_report_artifact(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Extract a protected partial labor report from one PJe PDF.",
+        description="Extract a protected source-linked labor report from one PJe PDF.",
     )
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--segments", required=True, type=Path)

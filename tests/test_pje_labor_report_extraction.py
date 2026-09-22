@@ -149,7 +149,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             ],
         }
 
-    def synthetic_pdf(self, destination: Path) -> None:
+    def synthetic_pdf(self, destination: Path, claim_heading=None) -> None:
         writer = PdfWriter()
         texts = (
             "ANA EXEMPLO vem propor reclamacao em face de EMPRESA ALFA LTDA, "
@@ -158,7 +158,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             "ATA DE AUDIENCIA referente a acao trabalhista.",
             "AO JUIZO DA VARA DO TRABALHO DE CIDADE-XX.",
         )
-        for text in texts:
+        for index, text in enumerate(texts):
             page = PageObject.create_blank_page(width=612, height=792)
             font = DictionaryObject(
                 {
@@ -176,9 +176,11 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
                 }
             )
             stream = DecodedStreamObject()
-            stream.set_data(
-                f"BT\n/F1 10 Tf\n30 720 Td\n({text}) Tj\nET\n".encode("ascii")
-            )
+            commands = [f"BT\n/F1 10 Tf\n30 720 Td\n({text}) Tj"]
+            if index == 0 and claim_heading is not None:
+                commands.append(f"0 -20 Td\n({claim_heading}) Tj")
+            commands.append("ET\n")
+            stream.set_data("\n".join(commands).encode("ascii"))
             page[NameObject("/Contents")] = stream
             writer.add_page(page)
         writer.add_metadata(
@@ -403,6 +405,58 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             result["review_gaps"],
             ["missing_claim_position", "missing_defense_position"],
         )
+
+    def test_extracts_claim_positions_from_the_complete_initial_document(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            pdf_path = Path(temporary) / "synthetic-process.pdf"
+            self.synthetic_pdf(
+                pdf_path,
+                claim_heading="5. DO INTERVALO INTRAJORNADA",
+            )
+            segments = self.segments()
+            segments["source_pdf"] = {
+                "sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+                "page_count": 3,
+            }
+            for index, document in enumerate(segments["documents"], 1):
+                document["page_start"] = index
+                document["page_end"] = index
+            timeline = self.timeline()
+            timeline["status"] = "complete"
+            timeline["gaps"] = []
+
+            result = api.extract_pdf_labor_report(
+                pdf_path,
+                segments,
+                self.classification(),
+                timeline,
+                tribunal="TRT99",
+                instance=1,
+                confidentiality="public_or_authorized",
+                source_manifest="document-segments.json",
+                segment_schema_path=SEGMENT_SCHEMA,
+                classification_schema_path=CLASSIFICATION_SCHEMA,
+                timeline_schema_path=TIMELINE_SCHEMA,
+                labor_report_schema_path=LABOR_REPORT_SCHEMA,
+            )
+
+        self.assertEqual(
+            result["positions"],
+            [
+                {
+                    "position_id": "POS-004",
+                    "kind": "claim",
+                    "label": "meal_rest_interval",
+                    "summary": (
+                        "Claimant requests payment for an allegedly suppressed meal interval."
+                    ),
+                    "source_document_id": "DOC-001",
+                    "source_locator": "page 1, claim section heading",
+                }
+            ],
+        )
+        self.assertEqual(result["review_gaps"], ["missing_defense_position"])
 
     def test_rejects_pdf_that_does_not_match_segment_custody(self) -> None:
         api = self.api()
