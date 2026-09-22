@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.32.0
+**Version:** 0.33.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -115,12 +115,12 @@ Track A contains exactly 100 points.
 | FND — Foundation hardening | 8 | 6 | `IN_PROGRESS` |
 | ARC — Architecture and contracts | 12 | 12 | `ACCEPTED` |
 | PJE — TRT12 PJe-JT acquisition | 18 | 0 | `IN_PROGRESS` |
-| DOM — Labor domain capabilities | 20 | 0 | `PLANNED` |
+| DOM — Labor domain capabilities | 20 | 0 | `IN_PROGRESS` |
 | JUR — Authoritative research | 15 | 11 | `IN_PROGRESS` |
-| PIP — End-to-end pipeline and gates | 15 | 6 | `IN_PROGRESS` |
-| VAL — Historical validation | 10 | 0 | `PLANNED` |
+| PIP — End-to-end pipeline and gates | 15 | 15 | `ACCEPTED` |
+| VAL — Historical validation | 10 | 2 | `IN_PROGRESS` |
 | OPS — Controlled pilot readiness | 2 | 0 | `PLANNED` |
-| **Total** | **100** | **35** |  |
+| **Total** | **100** | **46** |  |
 
 ### 4.2 Foundation hardening — 8 points
 
@@ -164,7 +164,7 @@ the labor pipeline or either complete runtime is ready.
 | PJE-02 | Session and authentication adapter | 4 | `IN_PROGRESS` | Detects valid, expired, MFA-required, and unauthorized states without leaking secrets | [`runtime/providers/pje-session-contract.json`](../../runtime/providers/pje-session-contract.json), [`scripts/pje_session_adapter.py`](../../scripts/pje_session_adapter.py), and `tests/test_pje_session_adapter.py`; nine synthetic TRT99 tests cover valid, expired, MFA-required, unauthorized, conflicting, and insufficient-evidence states plus capability enforcement and secret-free output. A concrete TRT12 probe and authorized real-state evidence remain required |
 | PJE-03 | Task and process discovery | 3 | `IN_PROGRESS` | Reproducibly lists the authorized target queue and identifies case numbers with no silent pagination loss | [`runtime/providers/pje-task-discovery-contract.json`](../../runtime/providers/pje-task-discovery-contract.json), [`scripts/pje_task_discovery.py`](../../scripts/pje_task_discovery.py), and `tests/test_pje_task_discovery.py`; eight synthetic TRT99 tests cover complete two-level pagination, empty queues, repeated cursors, duplicate cases, CNJ region mismatch, capability enforcement, and secret-free output. A concrete TRT12 adapter and authorized queue rehearsal remain required |
 | PJE-04 | Document index and download | 4 | `IN_PROGRESS` | Produces stable IDs, hashes, metadata, and explicit gaps for the rehearsal set | [`runtime/providers/document-index-contract.json`](../../runtime/providers/document-index-contract.json), [`scripts/acquire_pje_documents.py`](../../scripts/acquire_pje_documents.py), and `tests/test_pje_document_acquisition.py`; eight synthetic TRT99 tests cover deterministic two-page indexing and download, requested subsets, stable metadata, SHA-256 custody, missing requested documents, explicit provider-unavailability gaps, duplicate identifiers, repeated cursors, requested-ID validation, and schema-valid output. A concrete TRT12 adapter bound to the reviewed capture plus an authorized closed document rehearsal remain required |
-| PJE-05 | Recovery and reproducibility | 4 | `PLANNED` | Repeated closed rehearsal succeeds at least 95%; retries are bounded and failures remain resumable | — |
+| PJE-05 | Recovery and reproducibility | 4 | `IN_PROGRESS` | Repeated closed rehearsal succeeds at least 95%; retries are bounded and failures remain resumable | [`runtime/providers/pje-recovery-state.v1.schema.json`](../../runtime/providers/pje-recovery-state.v1.schema.json), [`scripts/recover_pje_acquisition.py`](../../scripts/recover_pje_acquisition.py), [`scripts/acquire_pje_documents.py`](../../scripts/acquire_pje_documents.py), and `tests/test_pje_recovery.py`; nine synthetic TRT99 tests prove atomic checkpoints, bounded immutable retry ceilings, accepted-payload reuse, explicit subsets, request binding, catalog and local-payload custody, semantic checkpoint validation, and deterministic exhaustion. Repeated authorized TRT12 closed rehearsals and the empirical 95% success result remain required |
 
 ### 4.5 Labor domain capabilities — 20 points
 
@@ -384,6 +384,7 @@ Next acceptance target:
 | 2026-09-21 | Cross-runtime acceptance uses one sanitized fixture and one shared artifact graph | `PIP-05` accepted; Claude Code and Codex produce the same 19 pipeline outputs and final gate from clean workspaces while retaining only their declared dispatch bindings |
 | 2026-09-21 | PJe document acquisition separates complete metadata indexing from requested payload download | `PJE-04` can advance on the shared provider interface; downloaded bytes must match the indexed SHA-256, skipped items remain visible, and bounded unavailability becomes an explicit gap instead of silent loss |
 | 2026-09-21 | Historical acceptance thresholds and review fields are frozen before case outcomes are observed | `VAL-01` accepted; development and untouched holdout results must remain separate, unavailable evidence is never imputed as a pass, and critical/high defects have zero acceptance budget |
+| 2026-09-21 | PJe acquisition recovery is bound to immutable request, catalog, payload, and retry evidence | `PJE-05` can advance synthetically without redownloading accepted payloads or treating exhausted retries as success; empirical acceptance remains tied to authorized TRT12 closed rehearsals |
 
 ---
 

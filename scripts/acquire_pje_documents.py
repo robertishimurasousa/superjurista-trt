@@ -44,10 +44,12 @@ def acquire_pje_documents(
     scenario: provider.PJeContractScenario,
     *,
     requested_document_ids: tuple[str, ...] = (),
+    verified_payloads: dict[str, bytes] | None = None,
     index_schema: Path = DEFAULT_INDEX_SCHEMA,
 ) -> AcquisitionResult:
     """List all metadata and download the requested set with SHA-256 custody."""
     requested = _requested_ids(requested_document_ids)
+    recovered = _verified_payload_map(verified_payloads)
     try:
         provider._validate_pje_scenario(scenario)
         descriptor = getattr(adapter, "descriptor", None)
@@ -75,6 +77,12 @@ def acquire_pje_documents(
         raise DocumentAcquisitionError(str(error)) from error
 
     target_ids = requested or set(documents)
+    unknown_recovered = set(recovered) - target_ids
+    if unknown_recovered:
+        raise DocumentAcquisitionError(
+            "verified payload is outside the requested set: "
+            + sorted(unknown_recovered)[0]
+        )
     gaps = [
         {"subject_id": document_id, "reason_code": "not_listed"}
         for document_id in sorted(target_ids - set(documents))
@@ -90,30 +98,42 @@ def acquire_pje_documents(
         status = "not_requested"
         byte_count = 0
         if document_id in target_ids:
-            try:
-                payload = provider._require_method(adapter, "fetch_document")(
-                    provider.DocumentFetchRequest(
-                        tribunal_code=scenario.tribunal_code,
-                        instance=scenario.instance,
-                        case_number=scenario.case_number,
-                        authorization_scope=scenario.authorization_scope,
+            if document_id in recovered:
+                content = _verified_payload(
+                    provider.DocumentPayload(
                         document_id=document_id,
-                    )
+                        content=recovered[document_id],
+                    ),
+                    record,
                 )
-            except DocumentUnavailable as error:
-                _validate_unavailability(error, document_id)
-                status = "unavailable"
-                gaps.append(
-                    {
-                        "subject_id": document_id,
-                        "reason_code": error.reason_code,
-                    }
-                )
-            else:
-                content = _verified_payload(payload, record)
                 payloads[document_id] = content
                 status = "downloaded"
                 byte_count = len(content)
+            else:
+                try:
+                    payload = provider._require_method(adapter, "fetch_document")(
+                        provider.DocumentFetchRequest(
+                            tribunal_code=scenario.tribunal_code,
+                            instance=scenario.instance,
+                            case_number=scenario.case_number,
+                            authorization_scope=scenario.authorization_scope,
+                            document_id=document_id,
+                        )
+                    )
+                except DocumentUnavailable as error:
+                    _validate_unavailability(error, document_id)
+                    status = "unavailable"
+                    gaps.append(
+                        {
+                            "subject_id": document_id,
+                            "reason_code": error.reason_code,
+                        }
+                    )
+                else:
+                    content = _verified_payload(payload, record)
+                    payloads[document_id] = content
+                    status = "downloaded"
+                    byte_count = len(content)
         indexed.append(
             {
                 "document_id": record.document_id,
@@ -154,6 +174,24 @@ def _requested_ids(values: object) -> set[str]:
             raise DocumentAcquisitionError(f"duplicate requested document: {value}")
         requested.add(value)
     return requested
+
+
+def _verified_payload_map(values: object) -> dict[str, bytes]:
+    if values is None:
+        return {}
+    if not isinstance(values, dict):
+        raise DocumentAcquisitionError("verified_payloads must be a dictionary")
+    recovered = {}
+    for document_id, content in values.items():
+        if (
+            not isinstance(document_id, str)
+            or provider.DOCUMENT_ID_PATTERN.fullmatch(document_id) is None
+        ):
+            raise DocumentAcquisitionError("verified payload identifier is invalid")
+        if not isinstance(content, bytes):
+            raise DocumentAcquisitionError("verified payload content must be bytes")
+        recovered[document_id] = content
+    return recovered
 
 
 def _validate_case(case: object, scenario: provider.PJeContractScenario) -> None:

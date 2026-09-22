@@ -200,6 +200,33 @@ without a cursor, duplicate task or case records, and mismatched CNJ regions fai
 TRT99 fake proves shared behavior only; real TRT12 task names, endpoints, payloads, and cursor
 semantics still require the reviewed PJE-01 map.
 
+## Acquire and resume verified documents
+
+`scripts/acquire_pje_documents.py` builds the complete normalized document index before it
+downloads either every document or an explicit subset. Each accepted payload must match the
+SHA-256 published in that index. Missing requested identifiers and bounded provider
+unavailability remain visible as structured gaps.
+
+`scripts/recover_pje_acquisition.py` adds a versioned, atomic checkpoint around that contract.
+It persists only normalized case identity, the digest of the authorization scope, catalog and
+payload hashes, bounded attempt counts, and canonical local payload paths. A resumed run verifies
+every accepted payload before provider access, never downloads an accepted payload again, and
+fails closed if the catalog, request, retry ceiling, or local bytes changed. The retry ceiling is
+one to five attempts and cannot be raised by resuming with different parameters.
+
+Run the network-free acquisition and recovery suites with:
+
+```bash
+python3 -m unittest \
+  tests.test_pje_document_acquisition \
+  tests.test_pje_recovery \
+  -v
+```
+
+These fixtures use TRT99 and prove shared recovery behavior only. `PJE-05` acceptance still
+requires repeated authorized TRT12 closed rehearsals with at least 95% success; no synthetic run
+contributes to that empirical rate.
+
 ## Build a sanitized HAR map
 
 Raw HAR files and extracted sessions remain local and ignored. For an authorized capture,
