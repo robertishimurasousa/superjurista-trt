@@ -34,7 +34,9 @@ python3 scripts/score_historical_reviews.py \
 The report is deterministic and validates against
 `historical-review-report.v1.schema.json`. Development and untouched holdout metrics are emitted
 by separate runs and must never be pooled. Unavailable values require a reason and are reported
-as excluded rather than imputed as passes. Any critical or high defect fails its phase.
+as excluded rather than imputed as passes. Every report binds the evaluated Git revision and
+contains a pseudonymous defect inventory by stage and severity. Any critical or high defect fails
+its phase.
 
 Run the network-free scoring tests with:
 
@@ -43,4 +45,28 @@ python3 -m unittest tests.test_historical_review_scoring -v
 ```
 
 Passing synthetic tests prove the scoring contract only. `VAL-02` remains incomplete until the
-authorized 20-case sample is blindly reviewed by the assigned qualified human reviewer.
+authorized 15-case development sample is blindly reviewed by the assigned qualified human
+reviewer; the remaining five cases belong exclusively to the later `VAL-03` holdout.
+
+## Correction and untouched holdout
+
+After the 15-case development review, record every correction outside the repository using
+`historical-correction-register.v1.schema.json`. Each entry retains the pseudonymous defect ID,
+stage, severity, code, correction commit, remediation summary, and passing regression evidence.
+The five holdout cases must remain unscored until corrections are frozen in a new system
+revision.
+
+Validate the correction boundary and the separate passing holdout with:
+
+```bash
+python3 scripts/validate_historical_rerun.py \
+  --development-report /protected/path/development-report.json \
+  --correction-register /protected/path/correction-register.json \
+  --holdout-report /protected/path/holdout-report.json \
+  --output /protected/path/historical-rerun-report.json
+```
+
+The validator requires a correction for every development critical/high defect, preserves its
+custody fields, rejects open or failing corrections, rechecks the scoring metrics against the
+frozen thresholds, binds baseline and corrected revisions, and accepts only a distinct passing
+five-case holdout.

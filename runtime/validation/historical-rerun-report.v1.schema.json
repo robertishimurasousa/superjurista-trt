@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/historical-rerun-report.v1.schema.json",
+  "title": "Historical correction and untouched-holdout report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "protocol_digest",
+    "status",
+    "development_report_digest",
+    "holdout_report_digest",
+    "baseline_revision",
+    "corrected_revision",
+    "required_correction_count",
+    "closed_correction_count",
+    "development_case_count",
+    "holdout_case_count"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "const": "passed"
+    },
+    "development_report_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "holdout_report_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "baseline_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "corrected_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "required_correction_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "closed_correction_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "development_case_count": {
+      "type": "integer",
+      "const": 15
+    },
+    "holdout_case_count": {
+      "type": "integer",
+      "const": 5
+    }
+  }
+}

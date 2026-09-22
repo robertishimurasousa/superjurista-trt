@@ -107,6 +107,7 @@ def score_review_batch(
         "schema_version": batch["schema_version"],
         "protocol_id": batch["protocol_id"],
         "protocol_digest": batch["protocol_digest"],
+        "system_revision": batch["system_revision"],
         "phase": phase,
         "case_manifest": ordered_manifest,
         "reviews": ordered_reviews,
@@ -116,6 +117,7 @@ def score_review_batch(
         "protocol_id": batch["protocol_id"],
         "protocol_digest": batch["protocol_digest"],
         "review_batch_digest": _digest(canonical_batch),
+        "system_revision": batch["system_revision"],
         "phase": phase,
         "status": "passed" if all(item["accepted"] for item in partitions) else "failed",
         "case_count": len(ordered_manifest),
@@ -292,6 +294,21 @@ def _score_partition(name: str, reviews: list[dict], protocol: dict) -> dict:
         for stage in DEFECT_STAGES
     ]
     defects_by_stage = [item for item in defects_by_stage if item["count"]]
+    defect_inventory = sorted(
+        (
+            {
+                "defect_id": _defect_id(review),
+                "case_id": review["case_id"],
+                "claim_id": review["claim_id"],
+                "severity": review["severity"],
+                "stage": review["defect_stage"],
+                "defect_code": review["defect_code"],
+            }
+            for review in reviews
+            if review["severity"] != "none"
+        ),
+        key=lambda defect: defect["defect_id"],
+    )
     metrics_accepted = all(
         metric["accepted"] is not False
         for metric in metrics.values()
@@ -312,6 +329,7 @@ def _score_partition(name: str, reviews: list[dict], protocol: dict) -> dict:
         "metrics": metrics,
         "defects": defects,
         "defects_by_stage": defects_by_stage,
+        "defect_inventory": defect_inventory,
         "accepted": metrics_accepted and defects_accepted,
     }
 
@@ -396,6 +414,17 @@ def _digest(value: Any) -> str:
         separators=(",", ":"),
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def _defect_id(review: dict) -> str:
+    identity = {
+        "case_id": review["case_id"],
+        "claim_id": review["claim_id"],
+        "reviewer_id": review["reviewer_id"],
+        "stage": review["defect_stage"],
+        "defect_code": review["defect_code"],
+    }
+    return "DEFECT-" + _digest(identity)[:16].upper()
 
 
 def _parser() -> argparse.ArgumentParser:

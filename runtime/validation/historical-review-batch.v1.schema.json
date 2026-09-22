@@ -8,6 +8,7 @@
     "schema_version",
     "protocol_id",
     "protocol_digest",
+    "system_revision",
     "phase",
     "case_manifest",
     "reviews"
@@ -24,6 +25,10 @@
     "protocol_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "system_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
     },
     "phase": {
       "type": "string",

@@ -9,6 +9,7 @@
     "protocol_id",
     "protocol_digest",
     "review_batch_digest",
+    "system_revision",
     "phase",
     "status",
     "case_count",
@@ -31,6 +32,10 @@
     "review_batch_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "system_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
     },
     "phase": {
       "type": "string",
@@ -68,6 +73,7 @@
           "metrics",
           "defects",
           "defects_by_stage",
+          "defect_inventory",
           "accepted"
         ],
         "properties": {
@@ -180,6 +186,65 @@
                 "count": {
                   "type": "integer",
                   "minimum": 1
+                }
+              }
+            }
+          },
+          "defect_inventory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "defect_id",
+                "case_id",
+                "claim_id",
+                "severity",
+                "stage",
+                "defect_code"
+              ],
+              "properties": {
+                "defect_id": {
+                  "type": "string",
+                  "pattern": "^DEFECT-[0-9A-F]{16}$"
+                },
+                "case_id": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+                },
+                "claim_id": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "critical",
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                },
+                "stage": {
+                  "type": "string",
+                  "enum": [
+                    "acquisition",
+                    "classification",
+                    "labor_report",
+                    "claim_matrix",
+                    "evidence_matrix",
+                    "issue_routing",
+                    "legal_research",
+                    "claim_analysis",
+                    "disposition",
+                    "drafting",
+                    "calculation",
+                    "global_gate"
+                  ]
+                },
+                "defect_code": {
+                  "type": "string",
+                  "minLength": 1
                 }
               }
             }

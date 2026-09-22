@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.39.0
+**Version:** 0.40.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -201,8 +201,8 @@ the labor pipeline or either complete runtime is ready.
 | ID | Deliverable | Points | Status | Acceptance gate | Evidence |
 |---|---|---:|---|---|---|
 | VAL-01 | Frozen historical validation protocol | 2 | `ACCEPTED` | Sampling, claim categories, reviewer form, severity scale, and analysis plan are fixed before outcomes | [`runtime/validation/historical-validation-protocol.v1.json`](../../runtime/validation/historical-validation-protocol.v1.json), [`runtime/validation/historical-validation-protocol.v1.schema.json`](../../runtime/validation/historical-validation-protocol.v1.schema.json), [`spec/validation/historical-blind-review-form.md`](../validation/historical-blind-review-form.md), [`scripts/validate_historical_protocol.py`](../../scripts/validate_historical_protocol.py), and `tests/test_historical_validation_protocol.py`; nine deterministic tests freeze a 20-case authorized sample method with 15 development and five untouched holdout cases, claim categories, blind scoring and adjudication, the complete reviewer form, zero critical/high defect budgets, 95% claim recall, 100% claim coverage, quotation support, and source-locator traceability, plus rejection of post-hoc outcomes or threshold drift |
-| VAL-02 | Blind historical review | 4 | `IN_PROGRESS` | The approved 15-case development sample is completed; defects are traceable by stage and severity | [`runtime/validation`](../../runtime/validation), [`scripts/score_historical_reviews.py`](../../scripts/score_historical_reviews.py), [`spec/validation/historical-blind-review-form.md`](../validation/historical-blind-review-form.md), and `tests/test_historical_review_scoring.py`; deterministic tests enforce a 15-case development phase followed only later by a separate five-case untouched holdout, exact frozen claim inventories, protocol-digest and category binding, blind attestations, unavailable-data reasons without pass imputation, deterministic schema-valid output, severity/stage custody, and automatic failure for critical/high defects. The authorized development review and named qualified reviewer remain required before acceptance |
-| VAL-03 | Correction and untouched rerun | 2 | `PLANNED` | Critical/high development defects are corrected and the separate five-case untouched holdout passes without regression | — |
+| VAL-02 | Blind historical review | 4 | `IN_PROGRESS` | The approved 15-case development sample is completed; defects are traceable by stage and severity | [`runtime/validation`](../../runtime/validation), [`scripts/score_historical_reviews.py`](../../scripts/score_historical_reviews.py), [`spec/validation/historical-blind-review-form.md`](../validation/historical-blind-review-form.md), and `tests/test_historical_review_scoring.py`; deterministic tests enforce a 15-case development phase followed only later by a separate five-case untouched holdout, exact frozen claim inventories, protocol-digest, system-revision and category binding, blind attestations, unavailable-data reasons without pass imputation, deterministic schema-valid output, pseudonymous defect custody by severity/stage, and automatic failure for critical/high defects. The authorized development review and named qualified reviewer remain required before acceptance |
+| VAL-03 | Correction and untouched rerun | 2 | `IN_PROGRESS` | Critical/high development defects are corrected and the separate five-case untouched holdout passes without regression | [`runtime/validation/historical-correction-register.v1.schema.json`](../../runtime/validation/historical-correction-register.v1.schema.json), [`runtime/validation/historical-rerun-report.v1.schema.json`](../../runtime/validation/historical-rerun-report.v1.schema.json), [`scripts/validate_historical_rerun.py`](../../scripts/validate_historical_rerun.py), and `tests/test_historical_rerun.py`; eight deterministic tests bind development evidence to its exact baseline revision, require closed passing regression evidence for every critical/high defect, preserve defect ID/severity/stage/code custody, reject tampered metric promotion, require a distinct corrected revision when material defects exist, and accept only a separate five-case holdout that passes the frozen protocol. Real development results, corrections, and untouched holdout evidence remain required |
 | VAL-04 | Acceptance dossier | 2 | `PLANNED` | Results, limitations, failure modes, and go/no-go recommendation are approved | — |
 
 ### 4.9 Controlled pilot readiness — 2 points
@@ -391,6 +391,7 @@ Next acceptance target:
 | 2026-09-21 | A real-case pilot remains prohibited until owners and retention periods are explicitly approved | `OPS-02` enters progress with fail-closed incident, rollback, recovery, and human-review controls; a blank approval record cannot authorize processing |
 | 2026-09-21 | Pilot safety ownership and retention defaults were explicitly approved | `OPS-02` accepted and M7 reached; every real case remains subject to its own `NO-GO` preflight and mandatory human legal review |
 | 2026-09-21 | Historical blind-review scoring is bound to the frozen protocol and executes development before the untouched holdout | `VAL-02` enters progress with deterministic metrics, unavailable-data exclusions, stage/severity custody, and fail-closed critical/high budgets; the 15 development cases are reviewed before correction and the five holdout cases remain unscored until `VAL-03` |
+| 2026-09-21 | Historical corrections are revision-bound and must close every material development defect before holdout scoring | `VAL-03` enters progress with fail-closed correction custody, regression evidence, metric revalidation, and a distinct passing five-case holdout contract; synthetic evidence earns no acceptance points |
 
 ---
 
@@ -422,7 +423,7 @@ The recommended sequence after blueprint approval is:
 3. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 4. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
 5. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
-6. Assemble the authorized 20-case sample and reviewer assignment required to start blind `VAL-02` scoring.
+6. Assemble the authorized 20-case sample and reviewer assignment, freeze all pseudonymous claim inventories, score the 15 development cases for `VAL-02`, and keep the five holdout cases unscored until `VAL-03`.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case
 processing.

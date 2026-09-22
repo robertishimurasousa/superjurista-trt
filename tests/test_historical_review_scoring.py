@@ -90,6 +90,7 @@ class HistoricalReviewScoringTest(unittest.TestCase):
             "schema_version": 1,
             "protocol_id": "TRT12-HISTORICAL-V1",
             "protocol_digest": self.protocol_digest(),
+            "system_revision": "a" * 40,
             "phase": phase,
             "case_manifest": case_manifest,
             "reviews": reviews,
@@ -110,6 +111,7 @@ class HistoricalReviewScoringTest(unittest.TestCase):
 
         self.assertEqual(report["status"], "passed")
         self.assertEqual(report["phase"], "development")
+        self.assertEqual(report["system_revision"], "a" * 40)
         self.assertEqual(report["case_count"], 15)
         self.assertEqual(report["claim_review_count"], 15)
         self.assertEqual(
@@ -220,6 +222,11 @@ class HistoricalReviewScoringTest(unittest.TestCase):
                     {"stage": "claim_analysis", "count": 1},
                     report["partitions"][0]["defects_by_stage"],
                 )
+                defect = report["partitions"][0]["defect_inventory"][0]
+                self.assertEqual(defect["severity"], severity)
+                self.assertEqual(defect["stage"], "claim_analysis")
+                self.assertEqual(defect["defect_code"], "LEGAL-001")
+                self.assertNotIn("defect_description", defect)
 
     def test_defect_fields_must_be_semantically_consistent(self):
         no_defect = self.batch()

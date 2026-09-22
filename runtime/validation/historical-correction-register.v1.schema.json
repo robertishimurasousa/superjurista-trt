@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/historical-correction-register.v1.schema.json",
+  "title": "Historical correction register v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol_id",
+    "protocol_digest",
+    "development_report_digest",
+    "baseline_revision",
+    "corrected_revision",
+    "corrections"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "development_report_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "baseline_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "corrected_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "corrections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "defect_id",
+          "severity",
+          "stage",
+          "defect_code",
+          "correction_commit",
+          "remediation_summary",
+          "regression_test",
+          "regression_result",
+          "status"
+        ],
+        "properties": {
+          "defect_id": {
+            "type": "string",
+            "pattern": "^DEFECT-[0-9A-F]{16}$"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "acquisition",
+              "classification",
+              "labor_report",
+              "claim_matrix",
+              "evidence_matrix",
+              "issue_routing",
+              "legal_research",
+              "claim_analysis",
+              "disposition",
+              "drafting",
+              "calculation",
+              "global_gate"
+            ]
+          },
+          "defect_code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "correction_commit": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          },
+          "remediation_summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "regression_test": {
+            "type": "string",
+            "minLength": 1
+          },
+          "regression_result": {
+            "type": "string",
+            "enum": [
+              "passed",
+              "failed"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
