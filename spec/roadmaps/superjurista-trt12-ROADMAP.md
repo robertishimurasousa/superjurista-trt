@@ -1,7 +1,7 @@
 # Roadmap: SuperJurista TRT12
 
 **Status:** Active and approved
-**Version:** 0.30.0
+**Version:** 0.31.0
 **Date:** 2026-09-21
 **Blueprint:** [`superjurista-trt12-first-instance-BLUEPRINT.md`](../blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
 
@@ -163,7 +163,7 @@ the labor pipeline or either complete runtime is ready.
 | PJE-01 | Authorized, sanitized TRT12 first-instance HAR map | 3 | `IN_PROGRESS` | Endpoint, cookie/header, task, document, and failure-state map reviewed; no credential remains in the fixture | [`runtime/providers`](../../runtime/providers), [`scripts/sanitize_pje_har.py`](../../scripts/sanitize_pje_har.py), [`scripts/validate_pje_har_map.py`](../../scripts/validate_pje_har_map.py), `tests/test_pje_har_sanitizer.py`, and `tests/test_pje_har_map_review.py`; thirteen synthetic tests prove deterministic redaction, endpoint classification, failure mapping, integrity verification, review-gap reporting, target binding, and fail-closed handling. An authorized TRT12 capture and human map review remain required |
 | PJE-02 | Session and authentication adapter | 4 | `IN_PROGRESS` | Detects valid, expired, MFA-required, and unauthorized states without leaking secrets | [`runtime/providers/pje-session-contract.json`](../../runtime/providers/pje-session-contract.json), [`scripts/pje_session_adapter.py`](../../scripts/pje_session_adapter.py), and `tests/test_pje_session_adapter.py`; nine synthetic TRT99 tests cover valid, expired, MFA-required, unauthorized, conflicting, and insufficient-evidence states plus capability enforcement and secret-free output. A concrete TRT12 probe and authorized real-state evidence remain required |
 | PJE-03 | Task and process discovery | 3 | `IN_PROGRESS` | Reproducibly lists the authorized target queue and identifies case numbers with no silent pagination loss | [`runtime/providers/pje-task-discovery-contract.json`](../../runtime/providers/pje-task-discovery-contract.json), [`scripts/pje_task_discovery.py`](../../scripts/pje_task_discovery.py), and `tests/test_pje_task_discovery.py`; eight synthetic TRT99 tests cover complete two-level pagination, empty queues, repeated cursors, duplicate cases, CNJ region mismatch, capability enforcement, and secret-free output. A concrete TRT12 adapter and authorized queue rehearsal remain required |
-| PJE-04 | Document index and download | 4 | `PLANNED` | Produces stable IDs, hashes, metadata, and explicit gaps for the rehearsal set | — |
+| PJE-04 | Document index and download | 4 | `IN_PROGRESS` | Produces stable IDs, hashes, metadata, and explicit gaps for the rehearsal set | [`runtime/providers/document-index-contract.json`](../../runtime/providers/document-index-contract.json), [`scripts/acquire_pje_documents.py`](../../scripts/acquire_pje_documents.py), and `tests/test_pje_document_acquisition.py`; eight synthetic TRT99 tests cover deterministic two-page indexing and download, requested subsets, stable metadata, SHA-256 custody, missing requested documents, explicit provider-unavailability gaps, duplicate identifiers, repeated cursors, requested-ID validation, and schema-valid output. A concrete TRT12 adapter bound to the reviewed capture plus an authorized closed document rehearsal remain required |
 | PJE-05 | Recovery and reproducibility | 4 | `PLANNED` | Repeated closed rehearsal succeeds at least 95%; retries are bounded and failures remain resumable | — |
 
 ### 4.5 Labor domain capabilities — 20 points
@@ -382,6 +382,7 @@ Next acceptance target:
 | 2026-09-21 | Decision artifacts require an independent congruence gate after generation | `PIP-03` accepted; every known claim must have exactly one non-empty analysis, matching disposition, outcome, source link, and exact draft custody before the report can reach 100% |
 | 2026-09-21 | Final acceptance is a machine-readable report followed by mandatory enforcement | `PIP-04` accepted; unsupported long quotations and mismatched calculations fail, source or calculation unavailability blocks with an explicit reason, and no non-passing report can continue |
 | 2026-09-21 | Cross-runtime acceptance uses one sanitized fixture and one shared artifact graph | `PIP-05` accepted; Claude Code and Codex produce the same 19 pipeline outputs and final gate from clean workspaces while retaining only their declared dispatch bindings |
+| 2026-09-21 | PJe document acquisition separates complete metadata indexing from requested payload download | `PJE-04` can advance on the shared provider interface; downloaded bytes must match the indexed SHA-256, skipped items remain visible, and bounded unavailability becomes an explicit gap instead of silent loss |
 
 ---
 
@@ -412,7 +413,7 @@ The recommended sequence after blueprint approval is:
 3. Bind the session-state classifier to one TRT12 probe from the reviewed endpoint map.
 4. Bind task and case discovery to the reviewed TRT12 task and process endpoints.
 5. Re-run one bounded `JUR-02` live sentence/acórdão custody check after the official Falcão rate-limit window expires.
-6. Implement the capture-independent `PJE-04` document-index, download, integrity, and explicit-gap contracts while the authorized TRT12 capture is pending.
+6. Bind `PJE-04` to the reviewed TRT12 document endpoints and run an authorized closed download rehearsal.
 7. Freeze the `VAL-01` historical validation protocol before inspecting outcomes from the future approved sample.
 
 This sequence keeps architecture, security, and objective measurement ahead of real case

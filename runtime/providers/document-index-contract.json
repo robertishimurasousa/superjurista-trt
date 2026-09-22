@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/document-index.v1.schema.json",
+  "title": "PJe document index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case",
+    "status",
+    "page_count",
+    "documents",
+    "gaps"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_number",
+        "tribunal_code",
+        "instance",
+        "court_unit",
+        "task_id"
+      ],
+      "properties": {
+        "case_number": {
+          "type": "string",
+          "pattern": "^[0-9]{7}-[0-9]{2}\\.[0-9]{4}\\.5\\.[0-9]{2}\\.[0-9]{4}$"
+        },
+        "tribunal_code": {
+          "type": "string",
+          "pattern": "^TRT[1-9][0-9]?$"
+        },
+        "instance": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "court_unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "page_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "document_id",
+          "filename",
+          "mime_type",
+          "sha256",
+          "source_locator",
+          "download_status",
+          "byte_count"
+        ],
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "pattern": "^DOC-[0-9]{3,}$"
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mime_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "download_status": {
+            "type": "string",
+            "enum": [
+              "downloaded",
+              "not_requested",
+              "unavailable"
+            ]
+          },
+          "byte_count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject_id",
+          "reason_code"
+        ],
+        "properties": {
+          "subject_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason_code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          }
+        }
+      }
+    }
+  }
+}
