@@ -60,14 +60,18 @@
     },
     "procedural-timeline.json": {
       "schema_version": 1,
+      "status": "complete",
       "events": [
         {
           "event_id": "EVT-001",
           "event_date": "2026-01-10",
           "event_type": "case_filed",
-          "source_document_id": "DOC-001"
+          "summary": "Synthetic case was filed.",
+          "source_document_id": "DOC-001",
+          "source_locator": "page 1"
         }
-      ]
+      ],
+      "gaps": []
     },
     "labor-report.json": {
       "schema_version": 1,

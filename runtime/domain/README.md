@@ -22,6 +22,11 @@ taxonomy is calibrated and reviewed against an approved, authorized TRT12 fixtur
 
 ## Procedural timeline and labor report
 
+`scripts/build_procedural_timeline.py` converts classified PJe PDF segments into the versioned
+`procedural-timeline` artifact. It emits one dated and source-linked event for every segment,
+distinguishes unknown classifications from classification conflicts, and writes protected case
+artifacts only outside the repository.
+
 `scripts/build_labor_report.py` converts already extracted, structured candidates into the
 versioned `labor-report` artifact. Parties, procedural phase, timeline events, claims, and
 defenses retain document IDs and source locators. Stable identifiers and manifest references
@@ -29,11 +34,15 @@ are validated, output order is deterministic, and missing information becomes an
 review gap rather than an inferred fact.
 
 ```bash
-python3 -m unittest tests.test_labor_report_builder -v
+python3 -m unittest \
+  tests.test_procedural_timeline_builder \
+  tests.test_labor_report_builder \
+  -v
 ```
 
-The synthetic suite proves source custody and deterministic assembly. DOM-02 still requires
-blind review against an approved, authorized TRT12 fixture before acceptance.
+The synthetic suite proves timeline custody, protected output, and deterministic report
+assembly. DOM-02 still requires party and position extraction plus blind review against an
+approved, authorized TRT12 fixture before acceptance.
 
 ## Claim and requested-remedy taxonomy
 

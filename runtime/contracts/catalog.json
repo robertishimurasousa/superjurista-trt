@@ -36,6 +36,10 @@
     "labor-report": {
       "current_version": 1,
       "schema": "schemas/labor-report.v1.schema.json"
+    },
+    "procedural-timeline": {
+      "current_version": 1,
+      "schema": "schemas/procedural-timeline.v1.schema.json"
     }
   }
 }

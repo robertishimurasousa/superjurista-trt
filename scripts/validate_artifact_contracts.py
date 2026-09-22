@@ -72,6 +72,54 @@ def validate_document(document: object, schema: dict) -> list[str]:
         issues.extend(validate_issue_route_semantics(document))
     if schema.get("$id", "").endswith("/claim-analysis.v1.schema.json"):
         issues.extend(validate_claim_analysis_semantics(document))
+    if schema.get("$id", "").endswith("/procedural-timeline.v1.schema.json"):
+        issues.extend(validate_procedural_timeline_semantics(document))
+    return issues
+
+
+def validate_procedural_timeline_semantics(document: dict) -> list[str]:
+    """Reject inconsistent completeness and repeated or orphan source custody."""
+    issues: list[str] = []
+    gaps = document["gaps"]
+    expected_status = "partial" if gaps else "complete"
+    if document["status"] != expected_status:
+        issues.append(
+            f"status: must be {expected_status!r} when gaps are "
+            f"{'present' if gaps else 'empty'}"
+        )
+
+    seen_event_ids = set()
+    seen_source_ids = set()
+    unclassified_source_ids = set()
+    for index, event in enumerate(document["events"]):
+        path = f"events[{index}]"
+        if event["event_id"] in seen_event_ids:
+            issues.append(f"{path}.event_id: value must be unique")
+        if event["source_document_id"] in seen_source_ids:
+            issues.append(
+                f"{path}.source_document_id: timeline must contain one event per document"
+            )
+        seen_event_ids.add(event["event_id"])
+        seen_source_ids.add(event["source_document_id"])
+        if event["event_type"] == "unclassified_document_filed":
+            unclassified_source_ids.add(event["source_document_id"])
+
+    seen_gap_ids = set()
+    gap_source_ids = set()
+    for index, gap in enumerate(gaps):
+        path = f"gaps[{index}]"
+        subject_id = gap["subject_id"]
+        if subject_id in seen_gap_ids:
+            issues.append(f"{path}.subject_id: value must be unique")
+        if subject_id not in seen_source_ids:
+            issues.append(f"{path}.subject_id: source document is not present in events")
+        seen_gap_ids.add(subject_id)
+        gap_source_ids.add(subject_id)
+
+    for subject_id in sorted(unclassified_source_ids - gap_source_ids):
+        issues.append(f"gaps: missing review gap for {subject_id}")
+    for subject_id in sorted(gap_source_ids - unclassified_source_ids):
+        issues.append(f"gaps: {subject_id} does not identify an unclassified event")
     return issues
 
 

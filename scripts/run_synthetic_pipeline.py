@@ -33,6 +33,7 @@ ARTIFACT_CONTRACTS = {
     "claim-analysis.json": "claim-analysis",
     "disposition-matrix.json": "disposition-matrix",
     "document-classification.json": "document-classification",
+    "procedural-timeline.json": "procedural-timeline",
     "labor-report.json": "labor-report",
 }
 FIXTURE_ARTIFACTS = {

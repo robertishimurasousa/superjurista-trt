@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "partial",
+  "events": [
+    {
+      "event_id": "EVT-001",
+      "event_date": "2026-01-10",
+      "event_type": "case_filed",
+      "summary": "Initial pleading filed.",
+      "source_document_id": "DOC-001",
+      "source_locator": "pages 1-3"
+    },
+    {
+      "event_id": "EVT-002",
+      "event_date": "2026-01-15",
+      "event_type": "unclassified_document_filed",
+      "summary": "Document event requires human review.",
+      "source_document_id": "DOC-002",
+      "source_locator": "page 4"
+    }
+  ],
+  "gaps": [
+    {
+      "subject_id": "DOC-002",
+      "reason_code": "unclassified_document"
+    }
+  ]
+}

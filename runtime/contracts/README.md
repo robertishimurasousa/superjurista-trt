@@ -3,9 +3,9 @@
 This directory contains the runtime-neutral JSON contracts shared by Claude Code and Codex.
 The catalog maps each logical artifact name to its current immutable schema file.
 
-The catalog currently includes case context, document classification, labor report, claim,
-evidence, route, precedent, analysis, and disposition artifacts. Domain rules that produce
-these artifacts live outside the schemas, such as
+The catalog currently includes case context, document classification, procedural timeline,
+labor report, claim, evidence, route, precedent, analysis, and disposition artifacts. Domain
+rules that produce these artifacts live outside the schemas, such as
 `runtime/domain/labor-document-classification.json`.
 
 ## Validate the canonical fixture suite

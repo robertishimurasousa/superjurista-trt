@@ -176,9 +176,9 @@ present but disabled.
 
 ## Validate legal artifact contracts
 
-The artifact catalog currently covers case context, document classification, labor report,
-claim matrix, evidence matrix, issue routes, precedent corpus, claim analysis, and disposition
-matrix. Each schema has independent positive and negative fixtures.
+The artifact catalog currently covers case context, document classification, procedural
+timeline, labor report, claim matrix, evidence matrix, issue routes, precedent corpus, claim
+analysis, and disposition matrix. Each schema has independent positive and negative fixtures.
 
 ```bash
 python3 scripts/validate_artifact_contracts.py \
@@ -203,7 +203,19 @@ python3 -m unittest tests.test_labor_document_classifier -v
 This proves the versioned baseline and output contract, not calibrated accuracy on TRT12 case
 files. Calibration requires an approved authorized fixture set.
 
-## Build a source-linked labor report
+## Build a source-linked procedural timeline and labor report
+
+`scripts/build_procedural_timeline.py` converts classified PJe PDF segments into one dated,
+source-linked event per document. Unknown and conflicting classifications remain explicit gaps.
+The CLI refuses repository-local output and existing output files, and writes the protected
+artifact with owner-only permissions.
+
+```bash
+python3 scripts/build_procedural_timeline.py \
+  --segments /protected/input/document-segments.json \
+  --classification /protected/input/document-classification.json \
+  --output /protected/output
+```
 
 The report builder consumes structured candidates after document classification and emits a
 deterministic JSON artifact for parties, procedural phase, timeline events, claims, defenses,
@@ -211,11 +223,15 @@ and review gaps. Every asserted item retains its source document and locator; un
 missing information is never silently completed.
 
 ```bash
-python3 -m unittest tests.test_labor_report_builder -v
+python3 -m unittest \
+  tests.test_procedural_timeline_builder \
+  tests.test_labor_report_builder \
+  -v
 ```
 
-This establishes the DOM-02 assembly boundary. Extractor calibration and blind review against
-an approved TRT12 fixture remain separate acceptance evidence.
+This establishes the deterministic DOM-02 timeline and report assembly boundary. Party and
+position extraction, calibration, and blind review against approved TRT12 fixtures remain
+separate acceptance evidence.
 
 ## Build a claim and requested-remedy matrix
 

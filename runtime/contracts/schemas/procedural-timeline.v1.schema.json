@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/procedural-timeline.v1.schema.json",
+  "title": "Procedural timeline v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "events",
+    "gaps"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "event_date",
+          "event_type",
+          "summary",
+          "source_document_id",
+          "source_locator"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^EVT-[0-9]{3,}$"
+          },
+          "event_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "event_type": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_document_id": {
+            "type": "string",
+            "pattern": "^DOC-[0-9]{3,}$"
+          },
+          "source_locator": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject_id",
+          "reason_code"
+        ],
+        "properties": {
+          "subject_id": {
+            "type": "string",
+            "pattern": "^DOC-[0-9]{3,}$"
+          },
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "classification_conflict",
+              "unclassified_document"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

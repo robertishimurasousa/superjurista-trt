@@ -30,7 +30,7 @@ class ArtifactContractsTest(unittest.TestCase):
             check=False,
         )
 
-    def test_canonical_fixture_suite_covers_all_nine_contracts(self) -> None:
+    def test_canonical_fixture_suite_covers_all_ten_contracts(self) -> None:
         result = self.run_validator(
             "--fixtures-root",
             str(FIXTURES),
@@ -53,10 +53,11 @@ class ArtifactContractsTest(unittest.TestCase):
                 "issue-route",
                 "labor-report",
                 "precedent-corpus",
+                "procedural-timeline",
             ],
         )
-        self.assertEqual(report["valid_fixture_count"], 9)
-        self.assertEqual(report["invalid_fixture_count"], 12)
+        self.assertEqual(report["valid_fixture_count"], 10)
+        self.assertEqual(report["invalid_fixture_count"], 13)
 
     def test_each_contract_rejects_its_boundary_violation(self) -> None:
         cases = {
@@ -71,6 +72,10 @@ class ArtifactContractsTest(unittest.TestCase):
             "document-classification": (
                 "unsupported-document-type.json",
                 "documents[0].document_type",
+            ),
+            "procedural-timeline": (
+                "missing-source-locator.json",
+                "events[0].source_locator",
             ),
         }
         for contract, (filename, expected_path) in cases.items():
@@ -120,6 +125,33 @@ class ArtifactContractsTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn("schema_version", result.stderr)
+
+    def test_procedural_timeline_rejects_inconsistent_status_and_custody(self) -> None:
+        document = json.loads(
+            (FIXTURES / "valid" / "procedural-timeline.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        document["status"] = "complete"
+        document["events"].append(
+            {
+                **document["events"][0],
+                "event_id": "EVT-999",
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid-procedural-timeline.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            result = self.run_validator(
+                "--contract",
+                "procedural-timeline",
+                "--document",
+                str(path),
+            )
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("status", result.stderr)
+        self.assertIn("source_document_id", result.stderr)
 
     def test_unknown_contract_fails_as_a_contract_configuration_error(self) -> None:
         result = self.run_validator(
