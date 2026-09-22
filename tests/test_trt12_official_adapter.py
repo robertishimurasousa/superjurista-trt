@@ -368,7 +368,7 @@ class TRT12OfficialAdapterTest(unittest.TestCase):
         )
         opener = SequenceOpener(
             [
-                FakeHTTPResponse(url=notifications_url, body=b'{"content": []}'),
+                FakeHTTPResponse(url=notifications_url, body=b'[{"id": 1}]'),
                 FakeHTTPResponse(url=autocomplete_url, body=b'{"sugestoes": []}'),
             ]
         )

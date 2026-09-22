@@ -86,16 +86,30 @@ class UrllibFalcaoTransport:
         query = _require_text(query, "query")
         _validate_session_id(session_id)
         self.session_id = session_id
-        self.get_json(
+        notifications = self._get_json_value(
             f"{API_BASE_URL}/notificacoes?page=0&size=5",
             max_bytes=max_bytes,
         )
-        self.get_json(
+        if not isinstance(notifications, list):
+            raise TRT12AdapterError(
+                "official Falcão notifications response must be an array"
+            )
+        autocomplete = self._get_json_value(
             f"{API_BASE_URL}/autocompletar?texto={quote(query, safe='')}",
             max_bytes=max_bytes,
         )
+        if not isinstance(autocomplete, dict):
+            raise TRT12AdapterError(
+                "official Falcão autocomplete response must be an object"
+            )
 
     def get_json(self, url: str, *, max_bytes: int) -> dict:
+        response = self._get_json_value(url, max_bytes=max_bytes)
+        if not isinstance(response, dict):
+            raise TRT12AdapterError("official Falcão JSON response must be an object")
+        return response
+
+    def _get_json_value(self, url: str, *, max_bytes: int) -> Any:
         request = Request(
             url,
             headers=self._headers(url),
@@ -106,8 +120,6 @@ class UrllibFalcaoTransport:
             response = json.loads(body)
         except json.JSONDecodeError as error:
             raise TRT12AdapterError("official Falcão response is not valid JSON") from error
-        if not isinstance(response, dict):
-            raise TRT12AdapterError("official Falcão JSON response must be an object")
         return response
 
     def _headers(self, url: str) -> dict[str, str]:

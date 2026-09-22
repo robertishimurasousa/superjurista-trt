@@ -78,7 +78,9 @@ by historical service material are not exposed by the current portal, so this ad
 binding or current precedential status that the official response does not provide.
 
 The public application establishes a short-lived session and enforces a network rate limit. A
-rate-limit response fails closed and must be retried only after the official window expires.
+rate-limit response fails closed and must be retried only after the official window expires. Its
+session bootstrap currently returns an array from the notifications endpoint and an object from
+autocomplete; the transport validates those endpoint-specific shapes before it searches.
 
 Generate a bounded public corpus outside the repository:
 
