@@ -20,6 +20,7 @@ from build_claim_matrix import (
     build_claim_matrix,
     load_claim_taxonomy,
 )
+from extract_labor_remedies import extract_requested_remedies
 from schema_validation import load_json
 from validate_artifact_contracts import validate_document
 
@@ -68,6 +69,7 @@ def extract_claim_matrix(
     segments: dict,
     taxonomy: dict,
     respondent_by_document: dict[str, str],
+    requested_remedies_by_claim: dict[str, tuple[str, ...]] | None = None,
 ) -> dict:
     """Link exact labels only; do not infer parties, remedies, facts, or legal issues."""
     _validate(report, REPORT_SCHEMA, "labor report")
@@ -85,6 +87,10 @@ def extract_claim_matrix(
     defense_positions = [item for item in positions if item["kind"] == "defense"]
     if not claim_positions:
         raise PJeClaimMatrixExtractionError("report has no claim positions")
+    remedies_by_claim = requested_remedies_by_claim or {}
+    claim_ids = {item["position_id"].replace("POS-", "CLM-", 1) for item in claim_positions}
+    if set(remedies_by_claim) - claim_ids:
+        raise PJeClaimMatrixExtractionError("requested remedies reference an unknown claim")
     defense_documents = {item["source_document_id"] for item in defense_positions}
     if set(respondent_by_document) != defense_documents:
         raise PJeClaimMatrixExtractionError(
@@ -106,7 +112,7 @@ def extract_claim_matrix(
                 claim_id=claim_id,
                 label=position["label"],
                 claimant_position=position["summary"],
-                requested_remedies=(),
+                requested_remedies=remedies_by_claim.get(claim_id, ()),
                 contested_facts=(),
                 legal_issues=(),
                 source=source,
@@ -160,22 +166,99 @@ def verify_pdf_custody(pdf_path: Path, segments: dict, report: dict) -> None:
         raise PJeClaimMatrixExtractionError("report case does not match PDF metadata")
 
 
-def write_claim_matrix_artifact(matrix: dict, *, output_dir: Path, repository_root: Path) -> Path:
-    """Write once with restrictive permissions, never into the repository."""
+def _write_protected_artifact(
+    value: dict, *, filename: str, output_dir: Path, repository_root: Path
+) -> Path:
     destination = output_dir.resolve()
     repository = repository_root.resolve()
     if destination == repository or repository in destination.parents:
         raise PJeClaimMatrixExtractionError("claim matrix output must stay outside repository")
     if not destination.is_dir():
         raise PJeClaimMatrixExtractionError("claim matrix output directory must already exist")
-    path = destination / "claim-matrix.json"
+    path = destination / filename
     if path.exists():
         raise PJeClaimMatrixExtractionError("claim matrix output already exists")
-    payload = (json.dumps(matrix, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    payload = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(descriptor, "wb") as stream:
         stream.write(payload)
     return path
+
+
+def write_claim_matrix_artifact(matrix: dict, *, output_dir: Path, repository_root: Path) -> Path:
+    """Write one versioned claim matrix without overwriting prior case data."""
+    return _write_protected_artifact(
+        matrix, filename="claim-matrix.json", output_dir=output_dir,
+        repository_root=repository_root,
+    )
+
+
+def write_remedy_evidence_artifact(
+    evidence: dict, *, output_dir: Path, repository_root: Path
+) -> Path:
+    """Keep prayer excerpts and page locators in the same protected output directory."""
+    return _write_protected_artifact(
+        evidence, filename="requested-remedy-evidence.json", output_dir=output_dir,
+        repository_root=repository_root,
+    )
+
+
+def write_claim_matrix_with_evidence(
+    matrix: dict, evidence: dict, *, output_dir: Path, repository_root: Path
+) -> None:
+    """Refuse a mixed-version output before writing either artifact."""
+    destination = output_dir.resolve()
+    if any(
+        (destination / filename).exists()
+        for filename in ("claim-matrix.json", "requested-remedy-evidence.json")
+    ):
+        raise PJeClaimMatrixExtractionError("claim matrix bundle output already exists")
+    write_remedy_evidence_artifact(
+        evidence, output_dir=output_dir, repository_root=repository_root
+    )
+    write_claim_matrix_artifact(
+        matrix, output_dir=output_dir, repository_root=repository_root
+    )
+
+
+def extract_pdf_remedy_evidence(pdf_path: Path, segments: dict, report: dict) -> dict:
+    """Extract final-prayer evidence only from the single claim source document."""
+    verify_pdf_custody(pdf_path, segments, report)
+    claim_positions = [item for item in report["positions"] if item["kind"] == "claim"]
+    source_ids = {item["source_document_id"] for item in claim_positions}
+    if len(source_ids) != 1:
+        raise PJeClaimMatrixExtractionError("claim positions require one initial pleading")
+    document_id = source_ids.pop()
+    documents = {item["document_id"]: item for item in segments["documents"]}
+    document = documents.get(document_id)
+    if document is None:
+        raise PJeClaimMatrixExtractionError("initial pleading is absent from PDF segments")
+    labels = [item["label"] for item in claim_positions]
+    if len(labels) != len(set(labels)):
+        raise PJeClaimMatrixExtractionError("claim labels are ambiguous for remedy linkage")
+    claim_ids_by_label = {
+        item["label"]: item["position_id"].replace("POS-", "CLM-", 1)
+        for item in claim_positions
+    }
+    reader = PdfReader(str(pdf_path.resolve()))
+    page_texts = tuple(
+        (number, reader.pages[number - 1].extract_text() or "")
+        for number in range(document["page_start"], document["page_end"] + 1)
+    )
+    evidence = extract_requested_remedies(page_texts, document_id, claim_ids_by_label)
+    return {
+        "schema_version": 1,
+        "source_pdf_sha256": segments["source_pdf"]["sha256"],
+        **evidence,
+    }
+
+
+def remedy_codes_by_claim(evidence: dict) -> dict[str, tuple[str, ...]]:
+    """Deduplicate codes while retaining each occurrence in source evidence."""
+    grouped: dict[str, set[str]] = {}
+    for entry in evidence["entries"]:
+        grouped.setdefault(entry["claim_id"], set()).update(entry["remedy_codes"])
+    return {claim_id: tuple(sorted(codes)) for claim_id, codes in grouped.items()}
 
 
 def parse_args() -> argparse.Namespace:
@@ -185,6 +268,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--segments", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path, help="Existing directory outside repository")
     parser.add_argument("--defense-party", action="append", default=[], metavar="DOC-ID=PTY-ID")
+    parser.add_argument("--extract-remedies", action="store_true")
     parser.add_argument("--taxonomy", type=Path, default=TAXONOMY)
     return parser.parse_args()
 
@@ -203,8 +287,20 @@ def main() -> int:
         _validate(report, REPORT_SCHEMA, "labor report")
         _validate(segments, SEGMENT_SCHEMA, "PDF segments")
         verify_pdf_custody(args.input, segments, report)
-        matrix = extract_claim_matrix(report, segments, load_claim_taxonomy(args.taxonomy), bindings)
-        write_claim_matrix_artifact(matrix, output_dir=args.output, repository_root=ROOT)
+        evidence = (
+            extract_pdf_remedy_evidence(args.input, segments, report)
+            if args.extract_remedies else None
+        )
+        matrix = extract_claim_matrix(
+            report, segments, load_claim_taxonomy(args.taxonomy), bindings,
+            remedy_codes_by_claim(evidence) if evidence is not None else None,
+        )
+        if evidence is not None:
+            write_claim_matrix_with_evidence(
+                matrix, evidence, output_dir=args.output, repository_root=ROOT
+            )
+        else:
+            write_claim_matrix_artifact(matrix, output_dir=args.output, repository_root=ROOT)
     except (OSError, KeyError, TypeError, ValueError) as error:
         print(f"[ERROR] PJe claim matrix: {error}", file=sys.stderr)
         return 1
@@ -212,6 +308,7 @@ def main() -> int:
         "[OK] PJe claim matrix: "
         f"claims={len(matrix['claims'])} "
         f"defenses={sum(len(item['respondent_positions']) for item in matrix['claims'])} "
+        f"remedy_entries={len(evidence['entries']) if evidence else 0} "
         f"review_gaps={sum(len(item['review_gaps']) for item in matrix['claims'])}"
     )
     return 0

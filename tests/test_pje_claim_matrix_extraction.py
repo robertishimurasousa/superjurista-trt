@@ -163,3 +163,53 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
                 api.write_claim_matrix_artifact(matrix, output_dir=output, repository_root=ROOT)
             with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "outside repository"):
                 api.write_claim_matrix_artifact(matrix, output_dir=ROOT, repository_root=ROOT)
+
+    def test_applies_source_backed_remedy_codes_without_suppressing_taxonomy_gaps(self):
+        api = self.api()
+        report, segments = self.inputs()
+        remedies = {
+            "CLM-001": ("overtime_payment",),
+            "CLM-002": ("joint_or_subsidiary_liability",),
+        }
+        matrix = api.extract_claim_matrix(
+            report, segments, api.load_claim_taxonomy(TAXONOMY),
+            {"DOC-002": "PTY-002"}, remedies,
+        )
+        self.assertEqual(matrix["claims"][0]["requested_remedies"], ["overtime_payment"])
+        self.assertEqual(matrix["claims"][0]["review_gaps"], [])
+        self.assertEqual(matrix["claims"][1]["review_gaps"], [
+            "missing_respondent_position", "unsupported_claim_label"
+        ])
+        with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "unknown claim"):
+            api.extract_claim_matrix(
+                report, segments, api.load_claim_taxonomy(TAXONOMY),
+                {"DOC-002": "PTY-002"}, {"CLM-999": ("compensation",)},
+            )
+
+    def test_remedy_evidence_writer_is_protected_and_exclusive(self):
+        api = self.api()
+        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        with tempfile.TemporaryDirectory() as directory:
+            path = api.write_remedy_evidence_artifact(
+                evidence, output_dir=Path(directory), repository_root=ROOT
+            )
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), evidence)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "exists"):
+                api.write_remedy_evidence_artifact(
+                    evidence, output_dir=Path(directory), repository_root=ROOT
+                )
+
+    def test_bundle_refuses_existing_matrix_before_writing_evidence(self):
+        api = self.api()
+        report, segments = self.inputs()
+        matrix = self.build(report, segments, {"DOC-002": "PTY-002"})
+        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            api.write_claim_matrix_artifact(matrix, output_dir=output, repository_root=ROOT)
+            with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "exists"):
+                api.write_claim_matrix_with_evidence(
+                    matrix, evidence, output_dir=output, repository_root=ROOT
+                )
+            self.assertFalse((output / "requested-remedy-evidence.json").exists())
