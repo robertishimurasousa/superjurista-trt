@@ -68,8 +68,23 @@ with each label. `scripts/build_claim_matrix.py` validates structured extraction
 keeps claimant and respondent positions separately source-linked, supports multiple defenses,
 and preserves unsupported labels or remedies as review gaps instead of remapping them silently.
 
+`scripts/extract_pje_claim_matrix.py` connects a protected labor report and the original
+PDF segment manifest to that builder. It verifies the original PDF digest, page count,
+case number, and every position's document page range. A defense document must be bound
+explicitly to one respondent party; an exact label match is required and ambiguous or
+orphan defenses fail closed. Requested remedies, contested facts, and legal issues remain
+empty until separately extracted and reviewed; the resulting gaps are explicit. The output
+directory must already exist outside the repository, and the output file is created once
+with mode `0600`.
+
 ```bash
-python3 -m unittest tests.test_claim_matrix_builder -v
+python3 scripts/extract_pje_claim_matrix.py \
+  --input /protected/process.pdf \
+  --report /protected/report/labor-report.json \
+  --segments /protected/segments/document-segments.json \
+  --output /protected/matrix-v1 \
+  --defense-party DOC-002=PTY-002
+python3 -m unittest tests.test_claim_matrix_builder tests.test_pje_claim_matrix_extraction -v
 ```
 
 DOM-03 remains incomplete until blind calibration demonstrates the roadmap recall and final
