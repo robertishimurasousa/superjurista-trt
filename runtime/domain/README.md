@@ -97,6 +97,26 @@ python3 -m unittest tests.test_claim_matrix_builder tests.test_labor_remedy_extr
 DOM-03 remains incomplete until blind calibration demonstrates the roadmap recall and final
 claim-coverage targets on an approved, authorized TRT12 fixture set.
 
+For independent review, `scripts/prepare_claim_blind_review.py` uses only the original PDF
+and its segment map. It verifies PDF custody and creates a blank Portuguese inventory form
+outside the repository with mode `0600`. The command does not read the system's labor report,
+claim matrix, or remedy evidence and does not prefill claim counts, labels, or remedies. A
+qualified reviewer must read the source pages, record every material and ancillary request,
+and freeze the inventory before seeing the system output. Preparing the blank form does not
+constitute a completed review or improve DOM-03 acceptance metrics.
+Anyone already exposed to the system's labels or counts cannot attest that this inventory
+was blind; assign another qualified reviewer or record the check as non-blind feedback.
+
+```bash
+python3 scripts/prepare_claim_blind_review.py \
+  --input /protected/process.pdf \
+  --segments /protected/segments/document-segments.json \
+  --document-id DOC-001 \
+  --case-id PILOT-001 \
+  --output /protected/blind-review-v1
+python3 -m unittest tests.test_claim_blind_review_packet -v
+```
+
 ## Evidence matrix assembly
 
 `scripts/build_evidence_matrix.py` applies the source-custody rules used by the shared
