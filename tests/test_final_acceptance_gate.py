@@ -173,6 +173,10 @@ class FinalAcceptanceGateTest(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["checks"]["citations"], "failed")
         self.assertEqual(report["issues"][0]["code"], "unsupported_quotation")
+        self.assertEqual(
+            report["issues"][0]["detail"],
+            "A citação não consta de nenhuma fonte literal disponível.",
+        )
         with self.assertRaisesRegex(api.FinalGateRejected, "unsupported_quotation"):
             api.require_final_acceptance(report)
 
@@ -186,6 +190,10 @@ class FinalAcceptanceGateTest(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["checks"]["sources"], "failed")
         self.assertEqual(report["issues"][0]["code"], "missing_source_review")
+        self.assertEqual(
+            report["issues"][0]["detail"],
+            "A fonte citada não possui registro de revisão final.",
+        )
 
     def test_source_unavailability_is_explicit_and_blocks_acceptance(self) -> None:
         api = self.api()
@@ -221,7 +229,7 @@ class FinalAcceptanceGateTest(unittest.TestCase):
         )
         for review in cases:
             with self.subTest(review=review):
-                with self.assertRaisesRegex(api.FinalGateContractError, "source"):
+                with self.assertRaisesRegex(api.FinalGateContractError, "Fonte"):
                     self.evaluate(api, review=review)
 
     def test_calculation_criteria_must_match_the_disposition_exactly(self) -> None:
@@ -233,6 +241,10 @@ class FinalAcceptanceGateTest(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["checks"]["calculations"], "failed")
         self.assertEqual(report["issues"][0]["code"], "calculation_mismatch")
+        self.assertEqual(
+            report["issues"][0]["detail"],
+            "Os critérios revisados divergem do dispositivo.",
+        )
 
     def test_claim_without_calculation_criteria_must_be_not_required(self) -> None:
         api = self.api()
@@ -255,6 +267,10 @@ class FinalAcceptanceGateTest(unittest.TestCase):
 
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["issues"][0]["code"], "missing_calculation_review")
+        self.assertEqual(
+            report["issues"][0]["detail"],
+            "O pedido não possui revisão final dos cálculos.",
+        )
 
     def test_calculation_unavailability_is_explicit_and_blocks_acceptance(self) -> None:
         api = self.api()
@@ -289,6 +305,7 @@ class FinalAcceptanceGateTest(unittest.TestCase):
                     report["issues"][0]["code"],
                     "congruence_not_passed",
                 )
+                self.assertIn("relatório anterior", report["issues"][0]["detail"])
 
     def test_duplicate_review_identifiers_are_contract_errors(self) -> None:
         api = self.api()
@@ -304,8 +321,18 @@ class FinalAcceptanceGateTest(unittest.TestCase):
 
         for review in cases:
             with self.subTest(review=review):
-                with self.assertRaisesRegex(api.FinalGateContractError, "duplicate"):
+                with self.assertRaisesRegex(api.FinalGateContractError, "duplicado"):
                     self.evaluate(api, review=review)
+
+    def test_rejection_error_is_in_portuguese_and_preserves_codes(self) -> None:
+        api = self.api()
+        report = self.evaluate(api, draft=f'Fundamentação: "{"X" * 80}"')
+
+        with self.assertRaisesRegex(
+            api.FinalGateRejected,
+            "Controle final reprovado: failed; códigos: unsupported_quotation",
+        ):
+            api.require_final_acceptance(report)
 
     def test_output_satisfies_the_versioned_global_gate_schema(self) -> None:
         api = self.api()

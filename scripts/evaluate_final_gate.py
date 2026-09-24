@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate and enforce the pipeline's deterministic final acceptance gate."""
+"""Avalia e aplica o controle determinístico de aceitação final."""
 
 from __future__ import annotations
 
@@ -31,11 +31,11 @@ MINIMUM_QUOTE_LENGTH = 60
 
 
 class FinalGateContractError(ValueError):
-    """Raised when the final gate inputs or output violate their contracts."""
+    """Indica que entradas ou saídas do controle final violam contratos."""
 
 
 class FinalGateRejected(RuntimeError):
-    """Raised when a valid global-gate report does not authorize continuation."""
+    """Indica que o relatório global válido não autoriza a continuação."""
 
 
 def evaluate_final_gate(
@@ -51,20 +51,20 @@ def evaluate_final_gate(
     final_review_schema: Path = DEFAULT_FINAL_REVIEW_SCHEMA,
     global_gate_schema: Path = DEFAULT_GLOBAL_GATE_SCHEMA,
 ) -> dict:
-    """Produce a deterministic report without silently accepting gate failures."""
-    _validate_contract(claim_analysis, claim_analysis_schema, "claim analysis")
-    _validate_contract(disposition_matrix, disposition_schema, "disposition matrix")
-    _validate_contract(final_review, final_review_schema, "final review")
+    """Produz relatório determinístico sem aceitar falhas silenciosamente."""
+    _validate_contract(claim_analysis, claim_analysis_schema, "análise dos pedidos")
+    _validate_contract(disposition_matrix, disposition_schema, "matriz do dispositivo")
+    _validate_contract(final_review, final_review_schema, "revisão final")
     if not isinstance(judgment_draft, str) or not judgment_draft.strip():
-        raise FinalGateContractError("judgment draft must be a non-empty string")
+        raise FinalGateContractError("a minuta não pode estar vazia")
 
-    analyses = _unique_index(claim_analysis["analyses"], "claim_id", "analysis")
+    analyses = _unique_index(claim_analysis["analyses"], "claim_id", "análise")
     dispositions = _unique_index(
-        disposition_matrix["items"], "claim_id", "disposition"
+        disposition_matrix["items"], "claim_id", "dispositivo"
     )
-    sources = _unique_index(final_review["sources"], "source_id", "source review")
+    sources = _unique_index(final_review["sources"], "source_id", "revisão de fonte")
     calculations = _unique_index(
-        final_review["calculations"], "claim_id", "calculation review"
+        final_review["calculations"], "claim_id", "revisão de cálculo"
     )
     _validate_review_states(sources, calculations)
 
@@ -112,18 +112,20 @@ def evaluate_final_gate(
         "quotation_count": len(quotations),
         "issues": issues,
     }
-    _validate_contract(report, global_gate_schema, "global gate")
+    _validate_contract(report, global_gate_schema, "controle global")
     return report
 
 
 def require_final_acceptance(report: dict) -> None:
-    """Reject pipeline continuation unless a schema-valid report passed."""
-    _validate_contract(report, DEFAULT_GLOBAL_GATE_SCHEMA, "global gate")
+    """Recusa a continuação sem relatório válido e aprovado."""
+    _validate_contract(report, DEFAULT_GLOBAL_GATE_SCHEMA, "controle global")
     if report["status"] != "passed" or any(
         status != "passed" for status in report["checks"].values()
     ):
         codes = ", ".join(issue["code"] for issue in report["issues"])
-        raise FinalGateRejected(f"final gate {report['status']}: {codes}")
+        raise FinalGateRejected(
+            f"Controle final reprovado: {report['status']}; códigos: {codes}"
+        )
 
 
 def _validate_contract(value: object, schema_path: Path, label: str) -> None:
@@ -133,7 +135,7 @@ def _validate_contract(value: object, schema_path: Path, label: str) -> None:
         raise FinalGateContractError(str(error)) from error
     errors = validate_schema_value(value, schema)
     if errors:
-        raise FinalGateContractError(f"{label} contract failed: {'; '.join(errors)}")
+        raise FinalGateContractError(f"Contrato de {label} inválido: {'; '.join(errors)}")
 
 
 def _unique_index(items: list, field: str, label: str) -> dict:
@@ -141,7 +143,7 @@ def _unique_index(items: list, field: str, label: str) -> dict:
     for item in items:
         identifier = item[field]
         if identifier in index:
-            raise FinalGateContractError(f"duplicate {label}: {identifier}")
+            raise FinalGateContractError(f"Registro duplicado em {label}: {identifier}")
         index[identifier] = item
     return index
 
@@ -153,11 +155,11 @@ def _validate_review_states(sources: dict, calculations: dict) -> None:
         reason = source["unavailability_reason"].strip()
         if status == "available" and (not excerpt or reason):
             raise FinalGateContractError(
-                f"source {source_id} available state requires excerpt and no reason"
+                f"Fonte {source_id} disponível exige trecho e proíbe motivo de indisponibilidade"
             )
         if status == "unavailable" and (excerpt or not reason):
             raise FinalGateContractError(
-                f"source {source_id} unavailable state requires reason and no excerpt"
+                f"Fonte {source_id} indisponível exige motivo e proíbe trecho"
             )
     for claim_id, calculation in calculations.items():
         status = calculation["status"]
@@ -170,7 +172,7 @@ def _validate_review_states(sources: dict, calculations: dict) -> None:
         )
         if not valid:
             raise FinalGateContractError(
-                f"calculation {claim_id} state is inconsistent"
+                f"Estado do cálculo do pedido {claim_id} é incoerente"
             )
 
 
@@ -181,18 +183,21 @@ def _congruence_issues(
     dispositions: dict,
 ) -> list[dict]:
     try:
-        schema = load_json(schema_path, "decision congruence report schema")
+        schema = load_json(schema_path, "esquema do relatório de congruência")
         errors = validate_schema_value(report, schema)
     except ContractError as error:
         errors = [str(error)]
     if errors or not isinstance(report, dict) or report.get("status") != "passed":
-        return [_issue("congruence_not_passed", "global", "Upstream report failed")]
+        return [_issue(
+            "congruence_not_passed", "global",
+            "O relatório anterior não passou no controle de congruência.",
+        )]
     if set(analyses) != set(dispositions):
         return [
             _issue(
                 "congruence_not_passed",
                 "global",
-                "Analysis and disposition claims do not match",
+                "Os pedidos da análise e do dispositivo não correspondem.",
             )
         ]
     expected_links = [
@@ -209,7 +214,7 @@ def _congruence_issues(
             _issue(
                 "congruence_not_passed",
                 "global",
-                "Upstream links do not match final artifacts",
+                "Os vínculos do relatório anterior divergem dos artefatos finais.",
             )
         ]
     return []
@@ -238,7 +243,7 @@ def _citation_issues(quotations: list[str], sources: dict) -> list[dict]:
                 _issue(
                     "unsupported_quotation",
                     f"QUOTE-{index:03d}",
-                    "Quotation is absent from every available verbatim source",
+                    "A citação não consta de nenhuma fonte literal disponível.",
                 )
             )
     return issues
@@ -260,7 +265,7 @@ def _source_issues(analyses: dict, sources: dict) -> list[dict]:
                 _issue(
                     "missing_source_review",
                     source_id,
-                    "Referenced source has no final review record",
+                    "A fonte citada não possui registro de revisão final.",
                 )
             )
         elif review["status"] == "unavailable":
@@ -283,7 +288,7 @@ def _calculation_issues(dispositions: dict, calculations: dict) -> list[dict]:
                 _issue(
                     "missing_calculation_review",
                     claim_id,
-                    "Claim has no final calculation review",
+                    "O pedido não possui revisão final dos cálculos.",
                 )
             )
             continue
@@ -302,7 +307,7 @@ def _calculation_issues(dispositions: dict, calculations: dict) -> list[dict]:
                 _issue(
                     "calculation_mismatch",
                     claim_id,
-                    "Review criteria differ from the disposition",
+                    "Os critérios revisados divergem do dispositivo.",
                 )
             )
         expected_status = "completed" if expected else "not_required"
@@ -311,7 +316,7 @@ def _calculation_issues(dispositions: dict, calculations: dict) -> list[dict]:
                 _issue(
                     "calculation_status_mismatch",
                     claim_id,
-                    f"Expected calculation status {expected_status}",
+                    f"Estado esperado do cálculo: {expected_status}.",
                 )
             )
     for claim_id in sorted(set(calculations) - set(dispositions)):
@@ -319,7 +324,7 @@ def _calculation_issues(dispositions: dict, calculations: dict) -> list[dict]:
             _issue(
                 "calculation_status_mismatch",
                 claim_id,
-                "Calculation review references an unknown disposition claim",
+                "A revisão de cálculo cita pedido ausente do dispositivo.",
             )
         )
     return issues
