@@ -186,6 +186,43 @@ nos segmentos; o pseudônimo não deve conter o número CNJ. O revisor deve ler
 o PDF e congelar o inventário antes de comparar com a saída do sistema. Quem
 já viu os pedidos extraídos não pode atestar independência dessa revisão.
 
+Se a extração do **PDF consolidado** também produziu
+`requested-remedy-evidence.json` com `unmatched_items`, não considere esses
+itens cobertos pela matriz. Somente **depois** de um revisor independente
+preencher e congelar `independent-claim-review.md` no diretório privado do
+caso, prepare a conferência, usando o mesmo PDF original:
+
+```bash
+python3 scripts/prepare_unmatched_remedy_review.py \
+  --workspace /protected/path/caso \
+  --pdf /protected/path/caso/processo.pdf
+```
+
+O comando exige diretório `0700` fora do Git, fontes `0600`, hash do PDF
+coerente e localizadores dentro do documento. Publica sem sobrescrita
+`unmatched-remedy-review.md` e `unmatched-remedy-review.json` em `0600`.
+Todas as decisões começam como `pending`. O revisor deve conferir **cada**
+trecho no PDF original e compará-lo com o inventário cego. No JSON, declare
+nome, horário UTC, conferências realizadas e, por item, decisão
+`non_material`, `material_claim` ou `unable_to_assess`, sempre com
+justificativa. Depois, valide:
+
+```bash
+python3 scripts/validate_unmatched_remedy_review.py \
+  --workspace /protected/path/caso \
+  --pdf /protected/path/caso/processo.pdf
+```
+
+`requires_followup` mantém itens materiais ou incertos em aberto;
+`reviewed_for_comparison` significa apenas que todos foram declarados não
+materiais para a comparação. Nenhum resultado promove pedidos para a matriz,
+aprova mérito, autentica a qualificação do revisor ou autoriza ação externa.
+O vínculo de hashes detecta mudanças nas fontes, mas o texto do inventário e
+a identidade declarada não são autenticados pelo programa. A fonte PDF
+prevalece sobre o trecho extraído. Este pacote é específico do caminho de
+PDF consolidado; não é pré-requisito global do fluxo de documentos individuais
+adquiridos do PJe.
+
 Antes de formar a matriz de provas, o inventariador probatório herdado precisa
 de fontes delimitadas por documento. Se o PDF consolidado do PJe e
 `claim-matrix.json` do mesmo caso já estiverem no diretório privado externo
