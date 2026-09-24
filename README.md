@@ -1,6 +1,23 @@
-# superjurista-dev
+# SuperJurista TRT
 
-Plugin de meta-ferramentas para criar e customizar sistemas agenticos judiciais com Claude Code. Inclui ferramentas para criar agentes, orquestradores, skills, teams e um scaffold completo do sistema SuperJurista -- um sistema de inteligencia aumentada para processamento de processos judiciais, construido com arquitetura de pipelines deterministicos.
+Este fork adapta os fluxos, agentes e controles do SuperJurista original para
+processos trabalhistas do primeiro grau do TRT12. Não é uma implementação do
+zero. O segundo grau do TRT12 e outros TRTs estão previstos como extensões,
+mas ainda não foram validados. O uso com autos reais exige autorização
+específica, controles de dados e revisão jurídica humana; ensaios sintéticos
+e testes técnicos não equivalem a uma decisão judicial validada.
+
+O [plano arquitetural](spec/blueprints/superjurista-trt12-first-instance-BLUEPRINT.md)
+descreve o reaproveitamento do fork. O [roteiro de desenvolvimento](spec/roadmaps/superjurista-trt12-ROADMAP.md)
+registra critérios de aceite, evidências, bloqueios e avanço ponderado. Para
+instalação e operação supervisionada do fluxo TRT12, siga o
+[manual do operador](spec/operations/trt12-first-instance-operator-runbook.md).
+
+O repositório também preserva o plugin de meta-ferramentas para Claude Code,
+capaz de criar agentes, orquestradores, habilidades e projetos derivados. As
+instruções de instalação desse plugin, abaixo, descrevem a capacidade herdada;
+instalar o plugin original pelo marketplace **não instala nem valida** a
+adaptação TRT12 deste fork.
 
 ## Idioma do projeto
 
@@ -12,11 +29,12 @@ no repositório e em [`scaffold/project-claude.md`](scaffold/project-claude.md) 
 instalações no Claude Code. Os documentos ativos herdados em inglês estão sendo
 localizados em etapas; esta regra não indica que a tradução retroativa já terminou.
 
-## Instalacao
+## Instalação do plugin herdado
 
-### Opcao 1: Dentro de uma sessao do Claude Code (recomendado)
+### Opção 1: Dentro de uma sessão do Claude Code
 
-Tres comandos e o sistema inteiro esta funcionando:
+Os comandos abaixo instalam o plugin original e seu scaffold no projeto atual.
+Para trabalhar neste fork, use o manual do operador indicado acima.
 
 ```
 /plugin marketplace add georgemarmelstein/superjurista-marketplace
@@ -26,7 +44,7 @@ Tres comandos e o sistema inteiro esta funcionando:
 
 **Passo a passo:**
 
-1. **Adicionar o marketplace** -- registra o repositorio de plugins do SuperJurista:
+1. **Adicionar o marketplace** -- registra o repositório de plugins do SuperJurista:
    ```
    /plugin marketplace add georgemarmelstein/superjurista-marketplace
    ```
@@ -36,27 +54,28 @@ Tres comandos e o sistema inteiro esta funcionando:
    /plugin install superjurista-dev@georgemarmelstein-superjurista-marketplace
    ```
 
-3. **Instalar o sistema no projeto** -- copia agentes, pipelines, skills e MCPs para `.claude/`:
+3. **Instalar o sistema no projeto** -- copia agentes, pipelines, habilidades e MCPs para `.claude/`:
    ```
    /instalar-superjurista
    ```
 
-### Opcao 2: Via interface interativa
+### Opção 2: Via interface interativa
 
 Digite `/plugin` para abrir o gerenciador visual com abas (Discover, Installed, Marketplaces, Errors). Navegue com Tab/Shift+Tab.
 
-### Opcao 3: Desenvolvimento local
+### Opção 3: Desenvolvimento local do plugin original
 
 ```bash
 git clone https://github.com/georgemarmelstein/superjurista-dev.git
 claude --plugin-dir ./superjurista-dev
 ```
 
-Depois, dentro da sessao: `/instalar-superjurista`
+Depois, dentro da sessão: `/instalar-superjurista`. Esse clone aponta para o
+projeto original, não para este fork TRT12.
 
 ## Gerenciamento do plugin
 
-| Acao | Comando |
+| Ação | Comando |
 |------|---------|
 | Abrir gerenciador interativo | `/plugin` |
 | Adicionar marketplace | `/plugin marketplace add owner/repo` |
@@ -65,19 +84,20 @@ Depois, dentro da sessao: `/instalar-superjurista`
 | Desinstalar | `/plugin uninstall superjurista-dev@georgemarmelstein-superjurista-marketplace` |
 | Desativar (sem remover) | `/plugin disable superjurista-dev@georgemarmelstein-superjurista-marketplace` |
 | Reativar | `/plugin enable superjurista-dev@georgemarmelstein-superjurista-marketplace` |
-| Recarregar apos instalar | `/reload-plugins` |
+| Recarregar após instalar | `/reload-plugins` |
 
-### Escopo da instalacao
+### Escopo da instalação
 
-Ao instalar, voce pode escolher o escopo:
+Ao instalar, você pode escolher o escopo:
 
-- **user** -- funciona em todos os seus projetos (padrao)
-- **project** -- salva em `.claude/settings.json` do repo (todos que clonarem terao o plugin)
-- **local** -- so voce, so neste repositorio
+- **user** -- funciona em todos os seus projetos (padrão)
+- **project** -- salva em `.claude/settings.json` do repositório (todos que clonarem terão o plugin)
+- **local** -- só você, só neste repositório
 
-### Pre-requisito
+### Pré-requisito
 
-Versao minima do Claude Code: **1.0.33+**. Se `/plugin` nao aparecer:
+Para o plugin original, a versão mínima documentada do Claude Code é **1.0.33+**.
+Se `/plugin` não aparecer:
 
 ```bash
 npm update -g @anthropic-ai/claude-code
@@ -85,7 +105,7 @@ npm update -g @anthropic-ai/claude-code
 
 ## Comandos
 
-| Comando | Descricao |
+| Comando | Descrição |
 |---------|-----------|
 | `/instalar-superjurista` | Instala o sistema SuperJurista completo no projeto atual |
 | `/criar-agente` | Cria agentes modulares seguindo as SPECs v2.0 |
@@ -94,20 +114,22 @@ npm update -g @anthropic-ai/claude-code
 | `/criar-team` | Cria Agent Teams (paralelo ou debate) |
 | `/planejar-sistema` | Gera blueprint arquitetural antes de criar artefatos |
 
-## Skills
+## Habilidades
 
-- **criar-sistema**: Motor de geracao de sistemas agenticos inteiros (1 orquestrador + N agentes + M skills) a partir de uma descricao de intencao -- blueprint como contrato, geracao em ondas por 5 agentes especializados (geradores + validadores adversariais), staging e commit atomico. Flags: `--revisar`, `--target=PATH`.
-- **criar-skill**: Workflow TDD para criacao de skills -- garante que a skill ensina o comportamento correto ao Claude, com testes de conformidade e otimizacao para busca interna.
-- **criar-mcp-precedente**: Guia para criar servidores MCP de jurisprudencia — tribunais brasileiros e cortes internacionais (comprovado em CJF, TCU, TJSC/eProc e HUDOC/CEDH). Descoberta de endpoints e sintaxe booleana, template com busca compartilhada, registro via `.mcp.json` e roteamento em 3 rotas: MCP de scraping, mcp-builder (REST documentada) ou skill via Chrome MCP (portais com CAPTCHA por requisicao).
-- **criar-pje-download**: Cria skills de download do PJE para qualquer tribunal via engenharia reversa de arquivos HAR -- identifica endpoints, cookies, headers e gera scripts Python parametrizados.
+- **criar-sistema**: Motor de geração de sistemas de agentes inteiros (1 orquestrador + N agentes + M habilidades) a partir de uma descrição de intenção -- plano arquitetural como contrato, geração em ondas por 5 agentes especializados (geradores + validadores adversariais), preparação e commit atômico. Opções: `--revisar`, `--target=PATH`.
+- **criar-skill**: Fluxo TDD para criação de habilidades -- verifica se a habilidade ensina o comportamento correto ao Claude, com testes de conformidade e otimização para busca interna.
+- **criar-mcp-precedente**: Guia para criar servidores MCP de jurisprudência — tribunais brasileiros e cortes internacionais (comprovado em CJF, TCU, TJSC/eProc e HUDOC/CEDH). Descoberta de endpoints e sintaxe booleana, modelo com busca compartilhada, registro via `.mcp.json` e roteamento em 3 rotas: MCP de extração, mcp-builder (REST documentada) ou habilidade via Chrome MCP (portais com CAPTCHA por requisição).
+- **criar-pje-download**: Cria habilidades de download do PJe para qualquer tribunal via engenharia reversa de arquivos HAR -- identifica endpoints, cookies, cabeçalhos e gera scripts Python parametrizados.
 
 ## O que o /instalar-superjurista cria
 
-O comando `/instalar-superjurista` gera um sistema judicial completo no projeto atual:
+No plugin original, o comando `/instalar-superjurista` gera um sistema judicial
+no projeto atual. O inventário abaixo descreve esse scaffold herdado, não
+capacidade trabalhista aceita para o TRT12:
 
-- **16 pipelines e comandos** para processamento judicial (sentenca, embargos, pesquisa, revisao, etc.)
-- **~52 agentes especializados** em 7 categorias (extracao, analise, pesquisa, redacao, revisao, lista-trf, tribunal)
-- **6 skills de dominio** (download PJE, conversao PDF, analise probatoria, captura de sessao, etc.)
+- **16 pipelines e comandos** para processamento judicial (sentença, embargos, pesquisa, revisão, etc.)
+- **~52 agentes especializados** em 7 categorias (extração, análise, pesquisa, redação, revisão, lista-trf, tribunal)
+- **6 habilidades de domínio** (download PJe, conversão PDF, análise probatória, captura de sessão, etc.)
 - **5 servidores MCP** (BNP/CNJ, CJF Unificada, TCU, TJSC eProc, TNU eProc), registrados automaticamente no `.mcp.json` do projeto
 - **Estrutura de dados pronta** (`data/sentenca/`, `data/decisao/`)
 - **CLAUDE.md e README.md** configurados para o projeto
@@ -119,44 +141,50 @@ projeto/
 ├── .claude/
 │   ├── commands/           # 16 pipelines e comandos
 │   ├── agents/
-│   │   ├── analise/        # Marmelstein, Haack, Pearl, embargos, probatoria
+│   │   ├── analise/        # Marmelstein, Haack, Pearl, embargos, probatória
 │   │   ├── extracao/       # Linha do tempo, relator, conversor
 │   │   ├── lista-trf/      # 9 agentes para listas de julgamento
 │   │   ├── pesquisa/       # BNP, CJF, JULIA, consolidador
 │   │   ├── redacao/        # Redator de minutas
-│   │   ├── revisao/        # Verificadores (calculos, honorarios, fontes)
+│   │   ├── revisao/        # Verificadores (cálculos, honorários, fontes)
 │   │   └── tribunal/       # Acusador, defensor, juiz mediador
 │   ├── skills/
 │   │   ├── pje-download/   # API REST do PJE (10 scripts Python)
-│   │   ├── converter-pdf/  # Conversao PDF para TXT com OCR hibrido
-│   │   ├── analise-probatoria/  # Checklists por tipo de prova
-│   │   ├── capturar-sessao-pje/ # Captura sessao via Chrome MCP
-│   │   ├── analisador-erro-medico/ # Analise de erro medico
-│   │   └── fork-terminal/  # Execucao paralela em terminais
+│   │   ├── converter-pdf/  # Conversão PDF para TXT com OCR híbrido
+│   │   ├── analise-probatoria/  # Listas de verificação por tipo de prova
+│   │   ├── capturar-sessao-pje/ # Captura de sessão via Chrome MCP
+│   │   ├── analisador-erro-medico/ # Análise de erro médico
+│   │   └── fork-terminal/  # Execução paralela em terminais
 │   └── mcp-servers/
 │       ├── bnp-api/        # Banco Nacional de Precedentes (STF/STJ)
 │       ├── cjf-jurisprudencia/ # Portal unificado CJF
-│       ├── tcu-jurisprudencia/ # Jurisprudencia TCU (3 bases)
-│       ├── tjsc-eproc/     # Jurisprudencia TJSC
+│       ├── tcu-jurisprudencia/ # Jurisprudência TCU (3 bases)
+│       ├── tjsc-eproc/     # Jurisprudência TJSC
 │       └── tnu-eproc/      # TNU viva com inteiro teor
-├── .mcp.json               # Registro dos 5 MCPs (gerado na instalacao)
-├── scripts/                # Gates deterministicos v3.0 (verificar_pipeline, verificar_sentenca, merge_sentenca)
+├── .mcp.json               # Registro dos 5 MCPs (gerado na instalação)
+├── scripts/                # Controles determinísticos v3.0 (verificar_pipeline, verificar_sentenca, merge_sentenca)
 ├── data/
-│   ├── sentenca/           # Processos para sentenca
-│   └── decisao/            # Processos para decisao
-├── CLAUDE.md               # Configuracao do projeto
-└── README.md               # Documentacao do projeto
+│   ├── sentenca/           # Processos para sentença
+│   └── decisao/            # Processos para decisão
+├── CLAUDE.md               # Configuração do projeto
+└── README.md               # Documentação do projeto
 ```
 
-## Framework
+## Arquitetura herdada
 
-O sistema baseia-se no framework v3.0 de orquestracao agentica com padrao "Orquestrador Cego" e injecao de contexto. Neste padrao, commands (orquestradores) delegam tarefas via Task tool para subagentes que possuem contexto isolado -- cada agente le seu proprio prompt, GRAVA o documento em disco e responde 1 linha de status. A validacao entre etapas e deterministica, por gate de script (`scripts/verificar_<sistema>.py`), e os pipelines sao retomaveis: a varredura inicial lista as etapas PENDENTES e etapa ja valida nao roda de novo. Templates e referencias completas estao disponiveis em `spec/`.
+O sistema original usa o padrão "Orquestrador Cego" com injeção de contexto.
+Os orquestradores delegam tarefas a agentes com contexto isolado; cada agente
+lê suas instruções, grava o documento em disco e devolve uma linha de estado.
+Controles determinísticos verificam as transferências entre etapas, e o
+pipeline permite retomada. Neste fork, o [contrato de execução](runtime/README.md)
+separa as regras compartilhadas dos adaptadores de Claude Code e Codex.
+Modelos e referências herdados permanecem em `spec/`.
 
-## Dependencies
+## Dependências
 
-The core scripts require Python 3.9 or newer. Local MCP servers require Python
-3.10 or newer because the supported MCP SDK line is `mcp>=1.28,<2`. Use a
-Python 3.10+ interpreter when creating the shared local environment:
+Os scripts centrais exigem Python 3.9 ou superior. Os servidores MCP locais
+exigem Python 3.10 ou superior pela versão suportada do SDK (`mcp>=1.28,<2`).
+Crie o ambiente local compartilhado com Python 3.10 ou superior:
 
 ```bash
 /path/to/python3.12 -m venv .venv
@@ -171,36 +199,37 @@ python3 scripts/check_python_contract.py --root . \
   --contract runtime/python-contract.json --mode mcp
 ```
 
-On macOS, OCR also requires Tesseract with Portuguese language data and Poppler:
+No macOS, o OCR também exige Tesseract com dados do idioma português e Poppler:
 
 ```bash
 brew install tesseract tesseract-lang poppler
 python3 scripts/rehearse_target_host.py --root .
 ```
 
-The rehearsal imports every preserved MCP server and runs the preserved PDF converter through
-Poppler and Portuguese OCR. The canonical machine-readable Python contract is
-`runtime/python-contract.json`.
+O ensaio importa os servidores MCP preservados e executa o conversor PDF
+herdado com Poppler e OCR em português. O contrato de Python legível por
+máquina está em `runtime/python-contract.json`.
 
-## Quality gate
+## Controle de qualidade
 
-Local development and CI use the same deterministic entry point:
+O desenvolvimento local usa este ponto de entrada determinístico:
 
 ```bash
 python3 scripts/quality_gate.py --root .
 ```
 
-It validates the Python contracts, source formatting, executable Python syntax,
-credential and case-data hygiene, the TRT12 tribunal profile, legal artifact schemas and
-fixtures, JSON contracts, the generated reuse ledger, and the complete unit-test suite.
-GitHub Actions runs this command on the
-supported Python 3.9 and Python 3.10 boundaries.
+O comando valida os contratos de Python, a formatação e a sintaxe do código,
+a proteção de credenciais e dados processuais, o perfil do TRT12, esquemas e
+amostras de artefatos jurídicos, contratos JSON, o inventário de reuso e a
+suíte de testes. O GitHub Actions está configurado para execução **manual**;
+pushes e solicitações de alteração não o disparam automaticamente neste momento.
 
-## Data hygiene
+## Proteção de dados
 
-The repository rejects commit-ready environment files, authenticated browser
-captures, PJe sessions, cookie/header stores, logs, and local case-data
-directories. Properly ignored local files are not opened by the checker.
+O repositório rejeita arquivos de ambiente preparados para commit, capturas
+autenticadas do navegador, sessões do PJe, depósitos de cookies e cabeçalhos,
+logs e diretórios locais de autos. O verificador não abre arquivos locais
+devidamente ignorados.
 
 ```bash
 python3 scripts/check_data_hygiene.py \
@@ -208,10 +237,10 @@ python3 scripts/check_data_hygiene.py \
   --contract runtime/data-hygiene-contract.json
 ```
 
-Findings report only the path, line number, and rule identifier; matched secret
-values are never printed. Sanitized HAR fixtures may be stored only under
-`tests/fixtures/sanitized/` and must remain below the contract size limit.
+Os achados mostram apenas caminho, número da linha e identificador da regra;
+valores de segredos não são impressos. Amostras HAR sanitizadas só podem ficar
+em `tests/fixtures/sanitized/` e devem respeitar o limite de tamanho do contrato.
 
-## Licenca
+## Licença
 
 [MIT](LICENSE)
