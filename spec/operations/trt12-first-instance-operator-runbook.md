@@ -639,14 +639,27 @@ python3 scripts/prepare_final_human_review.py \
 ```
 
 O comando reaplica o controle técnico de fusão, registra os resumos SHA-256
-dos insumos e cria `final-human-review.md` em modo `0600`, sem sobrescrever
-arquivo existente. O revisor deve ter congelado antes o inventário cego dos
-pedidos e confrontar cada item com o PDF original, as provas, fontes e
-cálculos. O roteiro contém campos vazios: não autentica o revisor, não
-registra decisão jurídica no pipeline e não converte
-`pending_human_review` em aceite. Um `global-gate.json` sintético aprovado
-também não dispensa essa revisão. Guarde o roteiro preenchido fora do Git e
-confira novamente os hashes se qualquer artefato mudar.
+dos insumos e cria `final-human-review.md` e `final-human-review.json` em modo
+`0600`, sem sobrescrever arquivos existentes. O JSON começa com todos os
+pedidos em `pending`. O revisor deve ter congelado antes o inventário cego
+dos pedidos e confrontar cada item com o PDF original, as provas, fontes e
+cálculos. Depois de preencher sua identidade declarada, data, conferências,
+decisão e justificativa por pedido no JSON, execute:
+
+```bash
+python3 scripts/validate_final_human_review.py \
+  --workspace /protected/path/caso
+```
+
+O validador confere a cobertura, os vínculos e os hashes atuais. Se houver
+correção ou impossibilidade de avaliar, retorna `requires_followup`; se todas
+as declarações forem completas e concordantes, retorna apenas
+`reviewed_for_consideration`. Nenhum estado autentica o revisor, certifica a
+qualidade jurídica, altera o checkpoint `review-and-gate`, converte
+`pending_human_review` em decisão, ou autoriza assinatura, publicação ou outro
+ato externo. Um `global-gate.json` sintético aprovado também não dispensa a
+revisão. Guarde os dois arquivos fora do Git e refaça a conferência se algum
+insumo mudar.
 
 ## 9. Registrar o ensaio
 

@@ -5,18 +5,21 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import stat
 import sys
 from pathlib import Path
 
 from run_draft_judgment_stage import _write_once
-from schema_validation import load_json
+from schema_validation import load_json, validate_schema_value
 from trt12_initial_gate import TRT12_NUMBER
 from trt12_merge_gate import make_merge_gate
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKET_NAME = "final-human-review.md"
+REVIEW_NAME = "final-human-review.json"
+REVIEW_SCHEMA = ROOT / "runtime/operations/final-human-review.v1.schema.json"
 SOURCE_NAMES = (
     "case-context.json",
     "document-index.json",
@@ -48,8 +51,8 @@ def _render_packet(hashes: dict[str, str], claims: dict, analysis: dict, disposi
         "Antes de usá-lo, congele a revisão cega dos pedidos sem consultar as saídas",
         "do sistema. Se isso não ocorreu, interrompa esta etapa.",
         "",
-        "Revisor(a): [preencher]",
-        "Data e hora: [preencher]",
+        "Revisor(a): [preencher em `final-human-review.json`]",
+        "Data e hora: [preencher em `final-human-review.json`]",
         "PDF original e custódia consultados: [preencher]",
         "",
         "## Custódia das saídas apresentadas",
@@ -81,8 +84,8 @@ def _render_packet(hashes: dict[str, str], claims: dict, analysis: dict, disposi
             "- [ ] Conferi fatos, norma, fundamentação, cálculos e resultado proposto.",
             "- [ ] Comparei o dispositivo e a minuta com o pedido e as conclusões revisadas.",
             "- [ ] Registrei omissões, divergências, abstenções e correções necessárias.",
-            "Conclusão jurídica do revisor: [preencher; não inferir do resultado proposto]",
-            "Justificativa e correções: [preencher]",
+            "Conclusão jurídica: [preencher em `final-human-review.json`; não inferir]",
+            "Justificativa e correções: [preencher em `final-human-review.json`]",
             "",
         ))
     lines.extend((
@@ -91,17 +94,17 @@ def _render_packet(hashes: dict[str, str], claims: dict, analysis: dict, disposi
         "- [ ] Todos os pedidos e subitens foram conferidos por revisor qualificado.",
         "- [ ] Revisei as citações, os cálculos e a congruência da minuta integral.",
         "- [ ] Registrei identidade, data, divergências e versão dos arquivos examinados.",
-        "- [ ] Entendi que este roteiro não alimenta automaticamente o controle final.",
+        "- [ ] Registrei as decisões no JSON e executei o validador de revisão.",
         "",
-        "A revisão preenchida deve permanecer em local protegido e ser verificada",
-        "por procedimento próprio antes de qualquer aceitação técnica posterior.",
+        "O registro preenchido deve permanecer em local protegido. A validação",
+        "confere declarações e custódia, mas não autentica o revisor nem aprova a minuta.",
         "",
     ))
     return "\n".join(lines)
 
 
-def prepare_final_human_review(workspace: Path) -> Path:
-    """Confere a minuta e grava um roteiro privado sem conclusões automáticas."""
+def current_review_sources(workspace: Path) -> tuple[Path, dict[str, str], dict, dict, dict]:
+    """Revalida o controle herdado e reúne a custódia atual dos arquivos."""
     if not isinstance(workspace, Path) or workspace.is_symlink() or not workspace.is_dir():
         raise FinalHumanReviewPacketError("espaço do processo inválido")
     target = workspace.resolve()
@@ -109,9 +112,6 @@ def prepare_final_human_review(workspace: Path) -> Path:
         raise FinalHumanReviewPacketError("o roteiro deve ficar fora do repositório")
     if stat.S_IMODE(target.stat().st_mode) & 0o077:
         raise FinalHumanReviewPacketError("espaço do processo deve ser privado")
-    output = target / PACKET_NAME
-    if output.exists() or output.is_symlink():
-        raise FinalHumanReviewPacketError("roteiro já existe e não será sobrescrito")
     try:
         context_path = target / "case-context.json"
         if context_path.is_symlink() or not context_path.is_file():
@@ -136,13 +136,70 @@ def prepare_final_human_review(workspace: Path) -> Path:
         claims = load_json(target / "claim-matrix.json", "matriz de pedidos")
         analysis = load_json(target / "claim-analysis.json", "análise dos pedidos")
         dispositions = load_json(target / "disposition-matrix.json", "dispositivo")
-        content = _render_packet(hashes, claims, analysis, dispositions).encode("utf-8")
-        _write_once(output, content)
-        return output
+        return target, hashes, claims, analysis, dispositions
     except (OSError, ValueError, TypeError, KeyError, UnicodeError) as error:
         if isinstance(error, FinalHumanReviewPacketError):
             raise
         raise FinalHumanReviewPacketError("preparo do roteiro de revisão recusado") from error
+
+
+def review_template(hashes: dict[str, str], claims: dict, analysis: dict,
+                    dispositions: dict) -> dict:
+    """Cria decisões explicitamente pendentes para cada pedido atual."""
+    analyses = {item["claim_id"]: item for item in analysis["analyses"]}
+    dispositive = {item["claim_id"]: item for item in dispositions["items"]}
+    return {
+        "schema_version": 1,
+        "source_hashes": [
+            {"name": name, "sha256": digest} for name, digest in hashes.items()
+        ],
+        "reviewer_name": "",
+        "reviewed_at": "",
+        "blind_inventory_frozen": False,
+        "original_pdf_checked": False,
+        "claims": [
+            {
+                "claim_id": claim["claim_id"],
+                "analysis_id": analyses[claim["claim_id"]]["analysis_id"],
+                "disposition_id": dispositive[claim["claim_id"]]["disposition_id"],
+                "proposed_outcome": analyses[claim["claim_id"]]["proposed_outcome"],
+                "source_checked": False,
+                "law_checked": False,
+                "draft_checked": False,
+                "decision": "pending",
+                "reason": "",
+            }
+            for claim in claims["claims"]
+        ],
+    }
+
+
+def prepare_final_human_review(workspace: Path) -> Path:
+    """Publica roteiro e registro pendente sem conclusão jurídica automática."""
+    target, hashes, claims, analysis, dispositions = current_review_sources(workspace)
+    packet = target / PACKET_NAME
+    record = target / REVIEW_NAME
+    if any(path.exists() or path.is_symlink() for path in (packet, record)):
+        raise FinalHumanReviewPacketError("roteiro ou revisão já existe; arquivos preservados")
+    try:
+        template = review_template(hashes, claims, analysis, dispositions)
+        if validate_schema_value(template, load_json(REVIEW_SCHEMA, "esquema da revisão final")):
+            raise FinalHumanReviewPacketError("modelo de revisão final inválido")
+        packet_bytes = _render_packet(hashes, claims, analysis, dispositions).encode("utf-8")
+        record_bytes = (json.dumps(template, ensure_ascii=False, indent=2) + "\n").encode(
+            "utf-8"
+        )
+        _write_once(packet, packet_bytes)
+        try:
+            _write_once(record, record_bytes)
+        except Exception:
+            packet.unlink(missing_ok=True)
+            raise
+        return packet
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError) as error:
+        if isinstance(error, FinalHumanReviewPacketError):
+            raise
+        raise FinalHumanReviewPacketError("publicação do roteiro de revisão recusada") from error
 
 
 def main() -> int:
@@ -156,7 +213,7 @@ def main() -> int:
     except FinalHumanReviewPacketError as error:
         print(f"[ERRO] Roteiro de revisão final: {error}", file=sys.stderr)
         return 2
-    print("[OK] Roteiro privado criado; nenhuma conclusão jurídica registrada.")
+    print("[OK] Roteiro e registro privado pendente criados; nenhuma conclusão jurídica registrada.")
     return 0
 
 

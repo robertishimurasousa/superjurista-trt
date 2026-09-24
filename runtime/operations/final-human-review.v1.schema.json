@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/final-human-review.v1.schema.json",
+  "title": "Registro protegido de revisão jurídica final v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "source_hashes", "reviewer_name", "reviewed_at",
+    "blind_inventory_frozen", "original_pdf_checked", "claims"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "source_hashes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sha256"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "reviewer_name": {"type": "string", "maxLength": 200},
+    "reviewed_at": {
+      "type": "string",
+      "pattern": "^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "blind_inventory_frozen": {"type": "boolean"},
+    "original_pdf_checked": {"type": "boolean"},
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id", "analysis_id", "disposition_id", "proposed_outcome",
+          "source_checked", "law_checked", "draft_checked", "decision", "reason"
+        ],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^CLM-[0-9]{3,}$"},
+          "analysis_id": {"type": "string", "pattern": "^ANL-[0-9]{3,}$"},
+          "disposition_id": {"type": "string", "pattern": "^DSP-[0-9]{3,}$"},
+          "proposed_outcome": {
+            "type": "string",
+            "enum": [
+              "granted", "denied", "granted_in_part", "dismissed_without_merits",
+              "procedural_resolution", "pending_human_review", "abstained"
+            ]
+          },
+          "source_checked": {"type": "boolean"},
+          "law_checked": {"type": "boolean"},
+          "draft_checked": {"type": "boolean"},
+          "decision": {
+            "type": "string",
+            "enum": ["pending", "agree", "requires_correction", "unable_to_assess"]
+          },
+          "reason": {"type": "string", "maxLength": 4000}
+        }
+      }
+    }
+  }
+}
