@@ -629,6 +629,25 @@ vencimento do GO, mas **não** renova autorização nem substitui a revisão
 jurídica. Se retornar `NO-GO`, preserve os arquivos para diagnóstico e não
 aprove a triagem ou qualquer minuta derivada.
 
+Se o fluxo supervisionado chegou à minuta consolidada no mesmo espaço privado
+do processo, prepare um roteiro para o revisor jurídico sem alterar o estado
+do pipeline:
+
+```bash
+python3 scripts/prepare_final_human_review.py \
+  --workspace /protected/path/caso
+```
+
+O comando reaplica o controle técnico de fusão, registra os resumos SHA-256
+dos insumos e cria `final-human-review.md` em modo `0600`, sem sobrescrever
+arquivo existente. O revisor deve ter congelado antes o inventário cego dos
+pedidos e confrontar cada item com o PDF original, as provas, fontes e
+cálculos. O roteiro contém campos vazios: não autentica o revisor, não
+registra decisão jurídica no pipeline e não converte
+`pending_human_review` em aceite. Um `global-gate.json` sintético aprovado
+também não dispensa essa revisão. Guarde o roteiro preenchido fora do Git e
+confira novamente os hashes se qualquer artefato mudar.
+
 ## 9. Registrar o ensaio
 
 Para cada execução controlada, mantenha registro local sem segredos com:
