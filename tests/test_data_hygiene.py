@@ -206,6 +206,44 @@ class DataHygieneTest(unittest.TestCase):
             self.assertNotIn(bearer, output)
             self.assertNotIn(cookie, output)
 
+    def test_repository_policy_rejects_process_pdf_filename_without_printing_it(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            contract = self.initialize_repository(root)
+            (root / ".gitignore").write_text("", encoding="utf-8")
+            policy = json.loads(REPOSITORY_CONTRACT.read_text(encoding="utf-8"))
+            local = json.loads(contract.read_text(encoding="utf-8"))
+            local["content_rules"] = policy["content_rules"]
+            contract.write_text(json.dumps(local) + "\n", encoding="utf-8")
+            filename = "Processo_" + "9999999-99.2099.5.99.9999" + ".pdf"
+            (root / "notes.md").write_text(filename + "\n", encoding="utf-8")
+
+            result = self.run_checker(root, contract)
+
+            output = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 1, output)
+            self.assertIn("process-pdf-filename", output)
+            self.assertNotIn(filename, output)
+
+    def test_repository_policy_rejects_process_pdf_basename_without_extension(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            contract = self.initialize_repository(root)
+            (root / ".gitignore").write_text("", encoding="utf-8")
+            policy = json.loads(REPOSITORY_CONTRACT.read_text(encoding="utf-8"))
+            local = json.loads(contract.read_text(encoding="utf-8"))
+            local["content_rules"] = policy["content_rules"]
+            contract.write_text(json.dumps(local) + "\n", encoding="utf-8")
+            basename = "Processo_" + "9999999-99.2099.5.99.9999"
+            (root / "notes.py").write_text(repr(basename) + "\n", encoding="utf-8")
+
+            result = self.run_checker(root, contract)
+
+            output = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 1, output)
+            self.assertIn("process-pdf-filename", output)
+            self.assertNotIn(basename, output)
+
     def test_dynamic_and_redacted_placeholders_are_not_treated_as_secrets(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

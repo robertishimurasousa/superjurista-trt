@@ -103,6 +103,10 @@
     {
       "id": "secret-assignment",
       "pattern": "(?i)\\b(?:api[_-]?key|client[_-]?secret|password|senha|token)\\s*[:=]\\s*[\\\"']?[A-Za-z0-9._~+/=-]{16,}"
+    },
+    {
+      "id": "process-pdf-filename",
+      "pattern": "(?i)\\bProcesso_[0-9]{7}-[0-9]{2}\\.[0-9]{4}\\.[0-9]\\.[0-9]{2}\\.[0-9]{4}\\b"
     }
   ],
   "scan_filenames": [
