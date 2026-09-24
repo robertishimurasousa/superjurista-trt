@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "source_pdf_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "entries": [
+    {
+      "request_id": "A",
+      "claim_id": "CLM-001",
+      "remedy_codes": ["legal_aid"],
+      "source_document_id": "DOC-001",
+      "source_locator": "página 11, pedido A",
+      "text": "A concessão da gratuidade de justiça;",
+      "review_gaps": []
+    }
+  ],
+  "unmatched_item_ids": ["I"],
+  "unmatched_items": [
+    {
+      "request_id": "I",
+      "source_document_id": "DOC-001",
+      "source_locator": "página 12, pedido I",
+      "text": "Seja citada a reclamada para defesa;"
+    }
+  ]
+}

@@ -62,6 +62,12 @@ Fls.: 12"""),
         )
         self.assertEqual(len(result["entries"]), 16)
         self.assertEqual(result["unmatched_item_ids"], ["I"])
+        self.assertEqual(result.get("unmatched_items"), [{
+            "request_id": "I",
+            "source_document_id": "DOC-001",
+            "source_locator": "página 12, pedido I",
+            "text": "Seja citada a reclamada para defesa;",
+        }])
         by_id = {item["request_id"]: item for item in result["entries"]}
         self.assertEqual(by_id["A"]["remedy_codes"], ["legal_aid"])
         self.assertEqual(by_id["B"]["claim_id"], "CLM-002")

@@ -98,9 +98,11 @@ providências requeridas ficam vazias e suas lacunas são explícitas. Com essa
 opção, `scripts/extract_labor_remedies.py` lê a seção final de pedidos, vincula
 itens identificados por letras e subitens numerados aos pedidos do relatório e
 registra páginas e trechos exatos da fonte em um
-`requested-remedy-evidence.json` protegido e separado. Itens por letra não
-reconhecidos permanecem em `unmatched_item_ids`; subitens numerados ambíguos
-são rejeitados. Alternativas condicionais são marcadas para revisão humana.
+`requested-remedy-evidence.json` protegido e separado. Na versão 2, itens por
+letra não reconhecidos conservam ID, documento, página e trecho extraído em
+`unmatched_items`, além de `unmatched_item_ids`; não recebem pedido ou
+providência presumidos. Subitens numerados ambíguos são rejeitados.
+Alternativas condicionais são marcadas para revisão humana.
 Códigos de providência sem suporte permanecem na matriz com lacuna explícita da
 taxonomia, sem serem forçados a uma categoria conhecida. Fatos controvertidos
 e questões jurídicas ainda não são extraídos. O diretório de saída deve existir

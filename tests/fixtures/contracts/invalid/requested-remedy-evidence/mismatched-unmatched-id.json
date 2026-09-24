@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "source_pdf_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "entries": [],
+  "unmatched_item_ids": ["J"],
+  "unmatched_items": [
+    {
+      "request_id": "I",
+      "source_document_id": "DOC-001",
+      "source_locator": "página 12, pedido I",
+      "text": "Seja citada a reclamada para defesa;"
+    }
+  ]
+}

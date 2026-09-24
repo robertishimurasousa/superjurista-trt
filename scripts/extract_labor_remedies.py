@@ -200,6 +200,7 @@ def extract_requested_remedies(
         raise LaborRemedyExtractionError("claim label map is invalid")
     entries = []
     unmatched = []
+    unmatched_items = []
     parent_label = None
     for item in _prayer_items(page_texts):
         request_id = item["request_id"]
@@ -215,6 +216,12 @@ def extract_requested_remedies(
             parent_label = label
             if label is None:
                 unmatched.append(request_id)
+                unmatched_items.append({
+                    "request_id": request_id,
+                    "source_document_id": document_id,
+                    "source_locator": f"página {item['page']}, pedido {request_id}",
+                    "text": text,
+                })
                 continue
             remedies, gaps = _remedies_for_item(label, normalized)
         claim_id = claim_ids_by_label.get(label)
@@ -231,4 +238,8 @@ def extract_requested_remedies(
                 "review_gaps": gaps,
             }
         )
-    return {"entries": entries, "unmatched_item_ids": unmatched}
+    return {
+        "entries": entries,
+        "unmatched_item_ids": unmatched,
+        "unmatched_items": unmatched_items,
+    }

@@ -40,6 +40,10 @@
     "procedural-timeline": {
       "current_version": 1,
       "schema": "schemas/procedural-timeline.v1.schema.json"
+    },
+    "requested-remedy-evidence": {
+      "current_version": 2,
+      "schema": "schemas/requested-remedy-evidence.v2.schema.json"
     }
   }
 }

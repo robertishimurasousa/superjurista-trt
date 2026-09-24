@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT_SCHEMA = ROOT / "runtime/contracts/schemas/labor-report.v1.schema.json"
 SEGMENT_SCHEMA = ROOT / "runtime/providers/pje-pdf-segments.v1.schema.json"
 MATRIX_SCHEMA = ROOT / "runtime/contracts/schemas/claim-matrix.v1.schema.json"
+REMEDY_EVIDENCE_SCHEMA = ROOT / "runtime/contracts/schemas/requested-remedy-evidence.v2.schema.json"
 TAXONOMY = ROOT / "runtime/domain/labor-claim-taxonomy.json"
 PAGE_LOCATOR = re.compile(r"^(?:pages?|páginas?) ([0-9]+)(?:-([0-9]+))?(?:,.*)?$")
 CASE_NUMBER = re.compile(r"[0-9]{7}-[0-9]{2}\.[0-9]{4}\.[0-9]\.[0-9]{2}\.[0-9]{4}")
@@ -216,6 +217,7 @@ def write_remedy_evidence_artifact(
     evidence: dict, *, output_dir: Path, repository_root: Path
 ) -> Path:
     """Keep prayer excerpts and page locators in the same protected output directory."""
+    _validate(evidence, REMEDY_EVIDENCE_SCHEMA, "evidência das providências")
     return _write_protected_artifact(
         evidence, filename="requested-remedy-evidence.json", output_dir=output_dir,
         repository_root=repository_root,
@@ -226,6 +228,7 @@ def write_claim_matrix_with_evidence(
     matrix: dict, evidence: dict, *, output_dir: Path, repository_root: Path
 ) -> None:
     """Refuse a mixed-version output before writing either artifact."""
+    _validate(evidence, REMEDY_EVIDENCE_SCHEMA, "evidência das providências")
     _write_protected_artifacts(
         (
             ("requested-remedy-evidence.json", evidence),
@@ -261,11 +264,13 @@ def extract_pdf_remedy_evidence(pdf_path: Path, segments: dict, report: dict) ->
         for number in range(document["page_start"], document["page_end"] + 1)
     )
     evidence = extract_requested_remedies(page_texts, document_id, claim_ids_by_label)
-    return {
-        "schema_version": 1,
+    result = {
+        "schema_version": 2,
         "source_pdf_sha256": segments["source_pdf"]["sha256"],
         **evidence,
     }
+    _validate(result, REMEDY_EVIDENCE_SCHEMA, "evidência das providências")
+    return result
 
 
 def remedy_codes_by_claim(evidence: dict) -> dict[str, tuple[str, ...]]:

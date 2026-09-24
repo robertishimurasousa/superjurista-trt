@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from PyPDF2 import PdfWriter
 
@@ -63,6 +64,12 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
     def build(self, report, segments, bindings):
         api = self.api()
         return api.extract_claim_matrix(report, segments, api.load_claim_taxonomy(TAXONOMY), bindings)
+
+    def empty_remedy_evidence(self):
+        return {
+            "schema_version": 2, "source_pdf_sha256": "0" * 64,
+            "entries": [], "unmatched_item_ids": [], "unmatched_items": [],
+        }
 
     def test_links_only_explicitly_bound_defense_and_marks_missing_information(self):
         report, segments = self.inputs()
@@ -203,9 +210,39 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
                 {"DOC-002": "PTY-002"}, {"CLM-999": ("compensation",)},
             )
 
+    def test_remedy_evidence_preserves_unmatched_text_and_page_in_version_two(self):
+        api = self.api()
+        report, segments = self.inputs()
+        report["positions"] = [report["positions"][0]]
+        report["positions"][0]["label"] = "unmapped_legal_aid"
+        class SyntheticPage:
+            def __init__(self, text):
+                self.text = text
+
+            def extract_text(self):
+                return self.text
+
+        pages = [SyntheticPage("Fls.: 5") for _ in range(6)]
+        pages[3] = SyntheticPage(
+            "DOS PEDIDOS\nA. Gratuidade de justiça\n"
+            "I. Seja citada a reclamada para defesa"
+        )
+        reader = type("Reader", (), {"pages": pages})()
+
+        with patch.object(api, "verify_pdf_custody"), patch.object(api, "PdfReader", return_value=reader):
+            evidence = api.extract_pdf_remedy_evidence(Path("synthetic.pdf"), segments, report)
+
+        self.assertEqual(evidence["schema_version"], 2)
+        self.assertEqual(evidence["unmatched_items"], [{
+            "request_id": "I",
+            "source_document_id": "DOC-001",
+            "source_locator": "página 4, pedido I",
+            "text": "Seja citada a reclamada para defesa",
+        }])
+
     def test_remedy_evidence_writer_is_protected_and_exclusive(self):
         api = self.api()
-        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        evidence = self.empty_remedy_evidence()
         with tempfile.TemporaryDirectory() as directory:
             path = api.write_remedy_evidence_artifact(
                 evidence, output_dir=Path(directory), repository_root=ROOT
@@ -217,11 +254,45 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
                     evidence, output_dir=Path(directory), repository_root=ROOT
                 )
 
+    def test_remedy_evidence_writer_refuses_old_version_without_publication(self):
+        api = self.api()
+        evidence = {
+            "schema_version": 1, "source_pdf_sha256": "0" * 64,
+            "entries": [], "unmatched_item_ids": [],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "evidência"):
+                api.write_remedy_evidence_artifact(
+                    evidence, output_dir=output, repository_root=ROOT
+                )
+            self.assertEqual(list(output.iterdir()), [])
+
+    def test_bundle_refuses_unmatched_id_divergence_before_writing_matrix(self):
+        api = self.api()
+        report, segments = self.inputs()
+        matrix = self.build(report, segments, {"DOC-002": "PTY-002"})
+        evidence = {
+            "schema_version": 2, "source_pdf_sha256": "0" * 64,
+            "entries": [], "unmatched_item_ids": ["I"],
+            "unmatched_items": [{
+                "request_id": "J", "source_document_id": "DOC-001",
+                "source_locator": "página 4, pedido J", "text": "Item sintético",
+            }],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            with self.assertRaisesRegex(api.PJeClaimMatrixExtractionError, "evidência"):
+                api.write_claim_matrix_with_evidence(
+                    matrix, evidence, output_dir=output, repository_root=ROOT
+                )
+            self.assertEqual(list(output.iterdir()), [])
+
     def test_bundle_refuses_existing_matrix_before_writing_evidence(self):
         api = self.api()
         report, segments = self.inputs()
         matrix = self.build(report, segments, {"DOC-002": "PTY-002"})
-        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        evidence = self.empty_remedy_evidence()
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory)
             api.write_claim_matrix_artifact(matrix, output_dir=output, repository_root=ROOT)
@@ -235,7 +306,7 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
         api = self.api()
         report, segments = self.inputs()
         matrix = self.build(report, segments, {"DOC-002": "PTY-002"})
-        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        evidence = self.empty_remedy_evidence()
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory)
             dangling_link = output / "claim-matrix.json"
@@ -251,7 +322,7 @@ class PJeClaimMatrixExtractionTest(unittest.TestCase):
 
     def test_second_output_serialization_error_does_not_leave_partial_bundle(self):
         api = self.api()
-        evidence = {"schema_version": 1, "entries": [], "unmatched_item_ids": []}
+        evidence = self.empty_remedy_evidence()
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory)
 

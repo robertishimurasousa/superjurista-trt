@@ -30,7 +30,7 @@ class ArtifactContractsTest(unittest.TestCase):
             check=False,
         )
 
-    def test_canonical_fixture_suite_covers_all_ten_contracts(self) -> None:
+    def test_canonical_fixture_suite_covers_all_eleven_contracts(self) -> None:
         result = self.run_validator(
             "--fixtures-root",
             str(FIXTURES),
@@ -54,10 +54,11 @@ class ArtifactContractsTest(unittest.TestCase):
                 "labor-report",
                 "precedent-corpus",
                 "procedural-timeline",
+                "requested-remedy-evidence",
             ],
         )
-        self.assertEqual(report["valid_fixture_count"], 10)
-        self.assertEqual(report["invalid_fixture_count"], 13)
+        self.assertEqual(report["valid_fixture_count"], 11)
+        self.assertEqual(report["invalid_fixture_count"], 15)
 
     def test_each_contract_rejects_its_boundary_violation(self) -> None:
         cases = {
@@ -76,6 +77,10 @@ class ArtifactContractsTest(unittest.TestCase):
             "procedural-timeline": (
                 "missing-source-locator.json",
                 "events[0].source_locator",
+            ),
+            "requested-remedy-evidence": (
+                "missing-unmatched-locator.json",
+                "unmatched_items[0].source_locator",
             ),
         }
         for contract, (filename, expected_path) in cases.items():
@@ -107,6 +112,37 @@ class ArtifactContractsTest(unittest.TestCase):
         self.assertEqual(report["contract"], "claim-matrix")
         self.assertEqual(report["schema_version"], 1)
         self.assertEqual(len(report["contract_digest"]), 64)
+
+    def test_unmatched_remedy_ids_must_match_source_linked_items(self) -> None:
+        result = self.run_validator(
+            "--contract", "requested-remedy-evidence",
+            "--document",
+            str(FIXTURES / "invalid" / "requested-remedy-evidence" / "mismatched-unmatched-id.json"),
+        )
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("unmatched_item_ids", result.stderr)
+
+    def test_historical_remedy_evidence_v1_remains_valid_for_custody(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from schema_validation import load_json
+        from validate_artifact_contracts import validate_document
+
+        schema = load_json(
+            ROOT / "runtime/contracts/schemas/requested-remedy-evidence.v1.schema.json",
+            "contrato histórico",
+        )
+        historical = {
+            "schema_version": 1, "source_pdf_sha256": "0" * 64,
+            "entries": [], "unmatched_item_ids": ["I"],
+        }
+
+        self.assertEqual(validate_document(historical, schema), [])
+        self.assertTrue(validate_document(historical, load_json(
+            ROOT / "runtime/contracts/schemas/requested-remedy-evidence.v2.schema.json",
+            "contrato vigente",
+        )))
 
     def test_current_classification_contract_accepts_procedural_types(self) -> None:
         if str(ROOT / "scripts") not in sys.path:

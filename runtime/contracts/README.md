@@ -5,8 +5,9 @@ compartilhados por Claude Code e Codex. O catálogo relaciona cada nome lógico 
 artefato ao arquivo imutável de seu esquema vigente.
 
 O catálogo abrange contexto processual, classificação documental, linha do
-tempo, relatório trabalhista, pedidos, provas, encaminhamento, precedentes,
-análise e dispositivo. As regras de domínio que produzem esses artefatos ficam
+tempo, relatório trabalhista, pedidos, evidências de providências requeridas,
+provas, encaminhamento, precedentes, análise e dispositivo. As regras de
+domínio que produzem esses artefatos ficam
 fora dos esquemas, por exemplo em
 `runtime/domain/labor-document-classification.json`.
 
@@ -60,3 +61,18 @@ da implementação e SHA-256 canônicos da entrada e da saída. Para obter os no
 tipos de certidão e comunicação, é necessário reclassificar a fonte autorizada
 e regenerar a linha do tempo e o relatório dependentes; migrar v1 não produz
 essa nova interpretação.
+
+## Evidência das providências requeridas v2
+
+O catálogo valida `requested-remedy-evidence.v2.schema.json`. A versão 1
+histórica guardava somente os IDs dos itens finais sem associação; a versão 2
+também exige documento, localizador de página e trecho extraído para cada um,
+sem deduzir seu pedido ou sua providência. O validador confere a correspondência
+entre as duas listas e recusa IDs conflitantes. Os gravadores protegidos
+recusam a versão anterior antes de publicar o pacote.
+
+Não há migração segura de v1 para v2 usando apenas o JSON antigo: texto e
+página não estavam presentes. Regenere o artefato com o PDF autorizado, o
+manifesto de segmentos e o relatório vinculados à mesma fonte; mantenha o
+arquivo antigo para custódia, sem sobrescrevê-lo. A associação dos itens
+permanece sujeita à revisão jurídica cega.

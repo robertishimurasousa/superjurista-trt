@@ -76,6 +76,24 @@ def validate_document(document: object, schema: dict) -> list[str]:
         issues.extend(validate_procedural_timeline_semantics(document))
     if schema.get("$id", "").endswith("/document-classification.v2.schema.json"):
         issues.extend(validate_document_classification_semantics(document))
+    if schema.get("$id", "").endswith("/requested-remedy-evidence.v2.schema.json"):
+        issues.extend(validate_requested_remedy_evidence_semantics(document))
+    return issues
+
+
+def validate_requested_remedy_evidence_semantics(document: dict) -> list[str]:
+    """Exige cobertura e localizadores coerentes para itens sem associação."""
+    unmatched_ids = document["unmatched_item_ids"]
+    unmatched = document["unmatched_items"]
+    issues = []
+    if unmatched_ids != [item["request_id"] for item in unmatched]:
+        issues.append("unmatched_item_ids: deve corresponder aos itens sem associação")
+    entry_ids = [item["request_id"] for item in document["entries"]]
+    if len(entry_ids) != len(set(entry_ids)) or set(entry_ids) & set(unmatched_ids):
+        issues.append("entries: identificadores de pedidos devem ser únicos")
+    for index, item in enumerate(unmatched):
+        if not item["source_locator"].endswith(f"pedido {item['request_id']}"):
+            issues.append(f"unmatched_items[{index}].source_locator: pedido divergente")
     return issues
 
 
