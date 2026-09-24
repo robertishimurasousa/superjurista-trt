@@ -652,9 +652,10 @@ python3 scripts/validate_final_human_review.py \
 ```
 
 O validador confere a cobertura, os vínculos e os hashes atuais. Se houver
-correção ou impossibilidade de avaliar, retorna `requires_followup`; se todas
-as declarações forem completas e concordantes, retorna apenas
-`reviewed_for_consideration`. Nenhum estado autentica o revisor, certifica a
+correção, impossibilidade de avaliar ou resultado proposto ainda em
+`pending_human_review` ou `abstained`, retorna `requires_followup`. Somente
+declarações completas e concordantes sobre resultados propostos já resolvidos
+retornam `reviewed_for_consideration`. Nenhum estado autentica o revisor, certifica a
 qualidade jurídica, altera o checkpoint `review-and-gate`, converte
 `pending_human_review` em decisão, ou autoriza assinatura, publicação ou outro
 ato externo. Um `global-gate.json` sintético aprovado também não dispensa a

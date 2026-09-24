@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from build_claim_decisions import UNRESOLVED_OUTCOMES
 from prepare_final_human_review import (
     REVIEW_NAME, REVIEW_SCHEMA, FinalHumanReviewPacketError,
     current_review_sources, review_template,
@@ -65,7 +66,11 @@ def validate_final_human_review(workspace: Path) -> dict[str, int | str | bool]:
                 raise FinalHumanReviewError("revisão de pedido ainda pendente")
         status = (
             "reviewed_for_consideration"
-            if all(item["decision"] == "agree" for item in reviewed)
+            if all(
+                item["decision"] == "agree"
+                and item["proposed_outcome"] not in UNRESOLVED_OUTCOMES
+                for item in reviewed
+            )
             else "requires_followup"
         )
         return {

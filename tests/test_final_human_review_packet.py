@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,6 +85,21 @@ class FinalHumanReviewPacketTest(unittest.TestCase):
             claim["reason"] = "Justificativa sintética para conferência do contrato."
         record_path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
         return record
+
+    def validate_with_synthetic_outcome(self, outcome: str) -> dict:
+        """Isola a classificação do estado sem simular aprovação jurídica."""
+        self.packet_api().prepare_final_human_review(self.workspace)
+        self.complete_review()
+        api = self.review_api()
+        sources = self.packet_api().current_review_sources(self.workspace)
+        analysis = json.loads(json.dumps(sources[3]))
+        analysis["analyses"][0]["proposed_outcome"] = outcome
+        record_path = self.workspace / "final-human-review.json"
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+        record["claims"][0]["proposed_outcome"] = outcome
+        record_path.write_text(json.dumps(record, ensure_ascii=False), encoding="utf-8")
+        with patch.object(api, "current_review_sources", return_value=(*sources[:3], analysis, sources[4])):
+            return api.validate_final_human_review(self.workspace)
 
     def test_packet_binds_current_artifacts_without_approving_judgment(self) -> None:
         api = self.packet_api()
@@ -193,15 +209,27 @@ class FinalHumanReviewPacketTest(unittest.TestCase):
         with self.assertRaisesRegex(api.FinalHumanReviewError, "pendente"):
             api.validate_final_human_review(self.workspace)
 
-    def test_completed_record_is_only_reviewed_for_consideration(self) -> None:
+    def test_agreement_cannot_resolve_pending_proposed_outcome(self) -> None:
         self.packet_api().prepare_final_human_review(self.workspace)
         self.complete_review()
         api = self.review_api()
 
         result = api.validate_final_human_review(self.workspace)
 
-        self.assertEqual(result["status"], "reviewed_for_consideration")
+        self.assertEqual(result["status"], "requires_followup")
         self.assertEqual(result["claim_count"], 1)
+        self.assertFalse(result["authorizes_external_action"])
+
+    def test_agreement_on_abstention_still_requires_followup(self) -> None:
+        result = self.validate_with_synthetic_outcome("abstained")
+
+        self.assertEqual(result["status"], "requires_followup")
+        self.assertFalse(result["authorizes_external_action"])
+
+    def test_agreement_on_resolved_outcome_is_only_for_consideration(self) -> None:
+        result = self.validate_with_synthetic_outcome("denied")
+
+        self.assertEqual(result["status"], "reviewed_for_consideration")
         self.assertFalse(result["authorizes_external_action"])
 
     def test_correction_remains_followup_not_acceptance(self) -> None:
