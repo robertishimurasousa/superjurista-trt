@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import stat
 import sys
 from pathlib import Path
 
@@ -100,7 +102,9 @@ def run_synthetic_pipeline(runtime: str, fixture_path: Path, workspace: Path) ->
     _require_manifest_outputs(plan["contract"], files, case_number)
     shared_digest = _shared_digest(files)
     for name, content in sorted(files.items()):
-        (workspace / name).write_bytes(content)
+        descriptor = os.open(workspace / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, "wb") as output:
+            output.write(content)
     return {
         "schema_version": 1,
         "runtime": runtime,
@@ -113,10 +117,14 @@ def run_synthetic_pipeline(runtime: str, fixture_path: Path, workspace: Path) ->
 
 
 def _require_clean_workspace(workspace: Path) -> None:
+    if workspace.is_symlink():
+        raise SyntheticPipelineError("diretório de execução não pode ser vínculo simbólico")
     if not workspace.is_dir():
-        raise SyntheticPipelineError("workspace must exist and be a directory")
+        raise SyntheticPipelineError("diretório de execução deve existir")
+    if stat.S_IMODE(workspace.stat().st_mode) & 0o077:
+        raise SyntheticPipelineError("diretório de execução deve ser privado")
     if any(workspace.iterdir()):
-        raise SyntheticPipelineError("workspace must be empty")
+        raise SyntheticPipelineError("diretório de execução deve estar vazio")
 
 
 def _load_fixture(path: Path) -> dict:
@@ -230,7 +238,7 @@ def main() -> int:
         summary = run_synthetic_pipeline(
             args.runtime,
             args.fixture.resolve(),
-            args.workspace.resolve(),
+            args.workspace,
         )
     except (ContractError, SyntheticPipelineError, ValueError, RuntimeError) as error:
         print(f"[ERRO] {error}", file=sys.stderr)

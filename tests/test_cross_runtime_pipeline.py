@@ -61,7 +61,7 @@ class CrossRuntimePipelineTest(unittest.TestCase):
             summaries = {}
             for runtime in ("claude", "codex"):
                 workspace = base / runtime
-                workspace.mkdir()
+                workspace.mkdir(mode=0o700)
                 result = self.run_fixture(runtime, workspace)
                 results[runtime] = (workspace, result)
                 self.assertEqual(
@@ -95,7 +95,7 @@ class CrossRuntimePipelineTest(unittest.TestCase):
             workspaces = {}
             for runtime in ("claude", "codex"):
                 workspace = base / runtime
-                workspace.mkdir()
+                workspace.mkdir(mode=0o700)
                 result = self.run_fixture(runtime, workspace)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 workspaces[runtime] = workspace
@@ -125,7 +125,7 @@ class CrossRuntimePipelineTest(unittest.TestCase):
             result = self.run_fixture("codex", workspace)
 
             self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
-            self.assertIn("workspace must be empty", result.stderr)
+            self.assertIn("diretório de execução deve estar vazio", result.stderr)
             self.assertEqual((workspace / "keep.txt").read_text(), "preserve")
 
     def test_contract_or_gate_tampering_fails_closed(self) -> None:
@@ -136,7 +136,7 @@ class CrossRuntimePipelineTest(unittest.TestCase):
             tampered = base / "tampered.json"
             tampered.write_text(json.dumps(fixture), encoding="utf-8")
             workspace = base / "workspace"
-            workspace.mkdir()
+            workspace.mkdir(mode=0o700)
 
             result = self.run_fixture("claude", workspace, tampered)
 
