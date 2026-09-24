@@ -6,14 +6,19 @@ agent: general-purpose
 allowed-tools: Bash, Read, Write
 ---
 
-# PJE Download
+# Download do PJe — fluxo legado do TRF5
 
-> **Legacy boundary:** the scripts below implement the original TRF5 workflow and are retained
-> as reuse evidence. They are not the TRT12 adapter. TRT12 task and process listing must bind
-> reviewed provider evidence to `scripts/pje_task_discovery.py`; do not reuse TRF5 endpoints,
-> task names, pagination behavior, or payload fields as TRT12 facts.
+> **Não execute a listagem nem o download legados para o TRT12.** Os scripts
+> `.claude/skills/pje-download/scripts/` implementam o funcionamento original
+> do TRF5 e são preservados apenas como referência de reuso. Os comandos de
+> sanitização e validação do mapa HAR são auxiliares do TRT12, mas não são o
+> adaptador de obtenção. A listagem de tarefas e processos do TRT12 depende
+> de evidências do provedor revisadas e vinculadas a
+> `scripts/pje_task_discovery.py`. Não trate endpoints, nomes de tarefas,
+> paginação ou campos do TRF5 como fatos sobre o TRT12.
 
-REGRA ABSOLUTA: Execute os scripts existentes. NAO crie codigo novo.
+REGRA PARA O FLUXO LEGADO AUTORIZADO DO TRF5: execute os scripts existentes;
+não crie código novo. Esta regra não autoriza executar esses scripts no TRT12.
 
 ## Scripts Disponiveis
 
@@ -39,11 +44,11 @@ python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --output pje_session.json
 ```
 
-### Create a reviewable HAR evidence map
+### Criar um mapa HAR sanitizado para revisão
 
-Keep the raw authorized HAR outside the repository. The command below removes values and
-bodies while preserving the endpoint, capability, and failure-state structure needed by the
-TRT adapter work:
+Mantenha o HAR bruto autorizado fora do repositório. O comando abaixo remove
+valores e corpos das requisições, mas preserva a estrutura de endpoints,
+capacidades e estados de falha necessária ao trabalho no adaptador TRT12:
 
 ```bash
 python3 scripts/sanitize_pje_har.py \
@@ -54,8 +59,8 @@ python3 scripts/sanitize_pje_har.py \
   --authorized-capture
 ```
 
-Review the generated JSON before committing it. Never commit the raw HAR or
-`pje_session.json`.
+Revise o JSON gerado antes de incluí-lo em um commit. Nunca inclua o HAR bruto
+nem `pje_session.json` em um commit.
 
 ```bash
 python3 scripts/validate_pje_har_map.py \
@@ -64,7 +69,8 @@ python3 scripts/validate_pje_har_map.py \
   --instance 1
 ```
 
-Resolve every reported gap before requesting human review.
+Resolva todas as lacunas funcionais apontadas antes de solicitar a revisão
+humana do mapa.
 
 ### Listar processos de uma fila
 ```bash

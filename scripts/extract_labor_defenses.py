@@ -28,43 +28,43 @@ DEFENSE_SECTION_RULES = (
     DefenseSectionRule(
         slot=1,
         label="termination_payments",
-        summary="Respondent contests the requested termination-related payments.",
+        summary="A parte reclamada impugna o pedido de verbas rescisórias.",
         headings=("DAS VERBAS RESCISORIAS",),
     ),
     DefenseSectionRule(
         slot=2,
         label="meal_rest_interval",
-        summary="Respondent contests the requested meal-interval payment.",
+        summary="A parte reclamada impugna o pedido relativo ao intervalo intrajornada.",
         headings=("DO INTERVALO INTRAJORNADA",),
     ),
     DefenseSectionRule(
         slot=3,
         label="moral_damages",
-        summary="Respondent contests the alleged non-pecuniary harm and compensation.",
+        summary="A parte reclamada impugna o alegado dano extrapatrimonial e a indenização requerida.",
         headings=("DO DANO MORAL",),
     ),
     DefenseSectionRule(
         slot=4,
         label="unmapped_statutory_penalty_article_467",
-        summary="Respondent contests the statutory penalty under CLT article 467.",
+        summary="A parte reclamada impugna a multa do art. 467 da CLT.",
         headings=("DA MULTA DO ARTIGO 467 E 477 DA CLT",),
     ),
     DefenseSectionRule(
         slot=5,
         label="unmapped_statutory_penalty_article_477",
-        summary="Respondent contests the statutory penalty under CLT article 477.",
+        summary="A parte reclamada impugna a multa do art. 477 da CLT.",
         headings=("DA MULTA DO ARTIGO 467 E 477 DA CLT",),
     ),
     DefenseSectionRule(
         slot=6,
         label="unmapped_legal_aid",
-        summary="Respondent contests eligibility for legal-aid relief.",
+        summary="A parte reclamada impugna o pedido de assistência judiciária gratuita.",
         headings=("DA JUSTICA GRATUITA",),
     ),
     DefenseSectionRule(
         slot=7,
         label="attorney_fees",
-        summary="Respondent contests the claimant's requested attorney-fee award.",
+        summary="A parte reclamada impugna o pedido de honorários advocatícios da parte autora.",
         headings=(
             "DOS HONORARIOS DE SUCUMBENCIA EM FAVOR DO PROCURADOR DO DEMANDANTE",
         ),
@@ -115,7 +115,7 @@ def extract_defense_positions(
                 summary=rule.summary,
                 source=SourceReference(
                     document_id=defense_document_id,
-                    locator=f"page {source_page}, defense section heading",
+                    locator=f"página {source_page}, título da seção de defesa",
                 ),
             )
         )

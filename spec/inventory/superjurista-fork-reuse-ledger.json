@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "locale": "pt-BR",
   "scope": [
     "agents/**/*.md",
     "commands/*.md",
@@ -10,12 +11,12 @@
     "scaffold/scripts/*.py",
     "scaffold/mcp-servers/*/server.py"
   ],
-  "component_count": 107,
+  "component_count": 113,
   "unclassified_count": 0,
   "unclassified": [],
   "summary": {
     "preserve": 1,
-    "adapt": 82,
+    "adapt": 88,
     "replace": 6,
     "retire": 18
   },
@@ -24,7 +25,7 @@
       "path": "agents/gerador-de-agente.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",
@@ -36,7 +37,7 @@
       "path": "agents/gerador-de-orquestrador.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",
@@ -48,7 +49,7 @@
       "path": "agents/gerador-de-skill.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",
@@ -60,7 +61,7 @@
       "path": "agents/validador-de-artefato.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",
@@ -72,7 +73,7 @@
       "path": "agents/validador-de-coerencia.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",
@@ -84,7 +85,7 @@
       "path": "commands/criar-agente.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -97,7 +98,7 @@
       "path": "commands/criar-orquestrador.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -110,7 +111,7 @@
       "path": "commands/criar-skill.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -123,7 +124,7 @@
       "path": "commands/criar-team.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths"
@@ -134,7 +135,7 @@
       "path": "commands/instalar-superjurista.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths"
@@ -145,7 +146,7 @@
       "path": "commands/planejar-sistema.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -157,15 +158,23 @@
       "path": "scaffold/agents/analise/analisador-hootly.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "2210277a6dc899144ef3487691df0921c21a045060d84f57673e8124e606c58f"
+    },
+    {
+      "path": "scaffold/agents/analise/analisador-marmelstein-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "2c5c5e95accb8f4a92c7359112bf738b2d0ea9ad66ca1acca0561801bf4d31f4"
     },
     {
       "path": "scaffold/agents/analise/analisador-marmelstein.md",
       "kind": "agent",
       "disposition": "replace",
-      "rationale": "Federal merits or review assumptions require a labor-specific contract.",
+      "rationale": "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "4eac6f10c55b73cc84cfba4a87ee807f8c4526210ede4da83b4644281e1589ef"
     },
@@ -173,7 +182,7 @@
       "path": "scaffold/agents/analise/analise-hootly.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "47532b3c7965853d7407db359897b41725e5b0aba250dfb48272ce6f59ac3257"
     },
@@ -181,7 +190,7 @@
       "path": "scaffold/agents/analise/analista-confissao.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "3e75821003ea261854ae6bb8a6f2c1ef4827d94a76952911ef62ce8e84c36b4e"
     },
@@ -189,17 +198,25 @@
       "path": "scaffold/agents/analise/analista-digital.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
       "source_sha256": "fb008cfbcbf973bf71c0cb16a3c6391af8a69e294466b5ed96355bbbb5f12dd2"
     },
     {
+      "path": "scaffold/agents/analise/analista-documental-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "ff89f272ba096ff3819b4b8f79017a0066939ffc0c706bb9c73b7258d6130893"
+    },
+    {
       "path": "scaffold/agents/analise/analista-documental.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -209,7 +226,7 @@
       "path": "scaffold/agents/analise/analista-embargos.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "06647c5c3555e61028ec50578724e90cc2183ddf4aa0608767e6c46a6b194431"
     },
@@ -217,7 +234,7 @@
       "path": "scaffold/agents/analise/analista-pericial.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "611bb02c5e7fc3486ca6106bfefe26aa613cf88c02132c8aee34f5375aa8333b"
     },
@@ -225,7 +242,7 @@
       "path": "scaffold/agents/analise/analista-reconhecimento.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -235,7 +252,7 @@
       "path": "scaffold/agents/analise/analista-testemunhal.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "e04b8ccd642c017a6ffc7bb634d5ace54c5da39fa9a43aeca638ef3d505b7106"
     },
@@ -243,7 +260,7 @@
       "path": "scaffold/agents/analise/consolidador-epistemico.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "11ca2105c527abbc7abb7e81ced80118ed0052d452d125d0c02a2487071a7894"
     },
@@ -251,7 +268,7 @@
       "path": "scaffold/agents/analise/consolidador-probatica.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "73de53937c52a3fe6a07593d9b66af0c586dcee46f46c0cb5184a97c26b0013f"
     },
@@ -259,7 +276,7 @@
       "path": "scaffold/agents/analise/detector-lacunas.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "bcb80b050c1b82d216a3787241e8687f85c55da9fef08b3dc601c6f4e62a5ffe"
     },
@@ -267,23 +284,39 @@
       "path": "scaffold/agents/analise/embargos-decisao.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "9be36dde95ef9c754dc17393875f6a447c6d7c440d50bdb54ae6327be0af37cb"
+    },
+    {
+      "path": "scaffold/agents/analise/fundamentador-marmelstein-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "0a6198f113bcc3a76fdaf3e26743af58639a5a8a69be2cb1c19917fbfcef1c7f"
     },
     {
       "path": "scaffold/agents/analise/fundamentador-marmelstein.md",
       "kind": "agent",
       "disposition": "replace",
-      "rationale": "Federal merits or review assumptions require a labor-specific contract.",
+      "rationale": "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "00db749be0e12664d64339033f2bc801cbc9b6cd75300453cc8fb00a76623547"
+    },
+    {
+      "path": "scaffold/agents/analise/inventariador-probatica-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "fc6b2789050ee55f2aca9c4cedda354833ec0a5f5c9dea0dc03187f6ea10db7c"
     },
     {
       "path": "scaffold/agents/analise/inventariador-probatica.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "a38c940eea812399e2a832bb47bc6146aa4b28156012fea8c35ff0ffc54f0e1f"
     },
@@ -291,7 +324,7 @@
       "path": "scaffold/agents/analise/mapeador-qualidade.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "409b67120cb9212124c006f9345ae8216abefd29ff7dc3ad10565e0bc8096a72"
     },
@@ -299,7 +332,7 @@
       "path": "scaffold/agents/analise/probatica-fbd.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "6c6e3eab1a929bf4bdb16e3e74d04d8b32c4d97ec38243255cbc691f78c02837"
     },
@@ -307,7 +340,7 @@
       "path": "scaffold/agents/analise/probatica-haack.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "7a0a0f66ed5d2655d1da8f3369d2fe0eb35a242457d9c7c9df0e5e2b156d4e27"
     },
@@ -315,15 +348,23 @@
       "path": "scaffold/agents/analise/probatica-pearl.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "7ef93fb42f58e6706bad955445829c13c5a8ff07668731c0bb8036bcfe18508d"
+    },
+    {
+      "path": "scaffold/agents/analise/triador-processual-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "27ece15b45e327accd96ce8bbf807876a0b6966209de22c763c0a8e78c602152"
     },
     {
       "path": "scaffold/agents/analise/triador-processual.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -333,7 +374,7 @@
       "path": "scaffold/agents/extracao/linha-tempo-processual.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "fd927487b4a180576d9b906816779baa9f0384cb9dac3391ca86aae59e1bb416"
     },
@@ -341,7 +382,7 @@
       "path": "scaffold/agents/extracao/planejador-download.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "b98a12a3db65fa076f57930c32aa3d3f0b9997f0b366cc4547abdeee602dfe0d"
     },
@@ -349,15 +390,23 @@
       "path": "scaffold/agents/extracao/planejador-epistemico.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "eeb427eb7ab08a90100dfd88aca5f88c78ccae7995ca9856aaf18705233a3d29"
+    },
+    {
+      "path": "scaffold/agents/extracao/relator-marmelstein-trt12.md",
+      "kind": "agent",
+      "disposition": "adapt",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
+      "runtime_dependencies": [],
+      "source_sha256": "b6e10b1eb7f7333256dc846d9f245dea118992c983eabed70f108341fd7fc7a6"
     },
     {
       "path": "scaffold/agents/extracao/relator-marmelstein.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "c38b43f3b969ed47c49115feed288a5225a0647f493b14f41e4cc2d40c4710f5"
     },
@@ -365,7 +414,7 @@
       "path": "scaffold/agents/extracao/seletor-documentos.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "a1f600f729b617cb0520e377800b1f92b4c085f6af6adada59e7afb3a3f9857f"
     },
@@ -373,7 +422,7 @@
       "path": "scaffold/agents/extracao/super-conversor-pdf.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -383,7 +432,7 @@
       "path": "scaffold/agents/lista-trf/01-extracao.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "e8ab7f50c3366f8c2cef65f85a38b4052004daf0b8f766c0133c0a081738198c"
     },
@@ -391,7 +440,7 @@
       "path": "scaffold/agents/lista-trf/02-consistencia-interna.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "5edf16e8074797ad68802ae528c3298fadab6c9d4ab30bdceb220a8f8eb96c21"
     },
@@ -399,7 +448,7 @@
       "path": "scaffold/agents/lista-trf/03-precedentes-vinculantes.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -409,7 +458,7 @@
       "path": "scaffold/agents/lista-trf/04-jurisprudencia-trf5.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -419,7 +468,7 @@
       "path": "scaffold/agents/lista-trf/05-jurisprudencia-turma.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -429,7 +478,7 @@
       "path": "scaffold/agents/lista-trf/06-sensibilidade.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "15f30f49fece8615462a1a3632e3e7dcd2283a6fbff96938eca6e76dae4a9747"
     },
@@ -437,7 +486,7 @@
       "path": "scaffold/agents/lista-trf/07-consolidacao-processo.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "e613441cdaa2a157c8b381c48f8ec368b5b53dd6e55a1661313810ca06631368"
     },
@@ -445,7 +494,7 @@
       "path": "scaffold/agents/lista-trf/08-consistencia-cruzada.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "9b1dbe5d38b5e70ce2a5cd546e24df75451763f7755612c5e160ae6110c13fb6"
     },
@@ -453,7 +502,7 @@
       "path": "scaffold/agents/lista-trf/09-relatorio-final.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "TRF judgment-list behavior is outside the TRT12 first-instance executable path.",
+      "rationale": "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "5eef04cd034615bd310387be0c30effcb33478f69dbd4e2bd34add24dc6adade"
     },
@@ -461,7 +510,7 @@
       "path": "scaffold/agents/pesquisa/consolidador-pesquisa.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "ae17c578b912c1c4e7af06980a7dd4e10d87b59c4ac4ccc7b16dd5ffd8b400d7"
     },
@@ -469,7 +518,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-bnp.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "5174a53487f58afecf5c1d2f186aade4fddfae3c18bfa5a0c31c9bc45d5eb997"
     },
@@ -477,7 +526,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-cjf.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "Federal Justice research route is replaced by TST and TRT12 authority sources.",
+      "rationale": "A pesquisa da Justiça Federal é substituída por fontes de autoridade do TST e do TRT12 para a Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "e9c28188a6376e0c32af53ad0e1280e33d876451842db2c4a867a2fe6e6291c9"
     },
@@ -485,7 +534,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-epistemico.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "70a4e4a6e09e7349b460a2dfe0e8399531b3685fc38f2ed452ac93080d9495b2"
     },
@@ -493,7 +542,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-julia.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "Federal Justice research route is replaced by TST and TRT12 authority sources.",
+      "rationale": "A pesquisa da Justiça Federal é substituída por fontes de autoridade do TST e do TRT12 para a Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "ba8378b90ea10a0416b0aa894ccbaa5ade68bbcd0e5fd4bbed5f516842750e00"
     },
@@ -501,7 +550,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-stj.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "Federal Justice research route is replaced by TST and TRT12 authority sources.",
+      "rationale": "A pesquisa da Justiça Federal é substituída por fontes de autoridade do TST e do TRT12 para a Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "184088496068e1c3e6cdbc17b4855fd617f301225f289ee545054b365203ffcf"
     },
@@ -509,7 +558,7 @@
       "path": "scaffold/agents/pesquisa/pesquisador-tnu.md",
       "kind": "agent",
       "disposition": "retire",
-      "rationale": "Federal Justice research route is replaced by TST and TRT12 authority sources.",
+      "rationale": "A pesquisa da Justiça Federal é substituída por fontes de autoridade do TST e do TRT12 para a Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "ac40c17bfdd6885ab22152c255fe2dd285680319b5287e337cd5884326c73770"
     },
@@ -517,7 +566,7 @@
       "path": "scaffold/agents/redacao/redator-minuta-robustecida.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "8c343b506d6adad3c5d3dc43e526155a68b7247c6e908cea47701e60ae717434"
     },
@@ -525,7 +574,7 @@
       "path": "scaffold/agents/revisao/analista-embargabilidade.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "7dc791005824a6a77909c6993a98d6dfdcdcce71f81dc74e6b6ba518cbea0ed5"
     },
@@ -533,7 +582,7 @@
       "path": "scaffold/agents/revisao/references/playbook-honorarios.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "266f53fb4d307167f69230c00abf258f616c9c42b0831b3e5048ad1dce6f2f58"
     },
@@ -541,7 +590,7 @@
       "path": "scaffold/agents/revisao/references/playbook-remessa-necessaria.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "6a9c4def8e725e4934492e1f1cc4818a80ae1750bfb3262acd5aef5deda1e516"
     },
@@ -549,7 +598,7 @@
       "path": "scaffold/agents/revisao/references/resumo-manual-calculos.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "80ca6c1e5fd904d455e1b43e197cc44ecb006340a324ba5dccb0307ca4688c7a"
     },
@@ -557,7 +606,7 @@
       "path": "scaffold/agents/revisao/verificador-calculos.md",
       "kind": "agent",
       "disposition": "replace",
-      "rationale": "Federal merits or review assumptions require a labor-specific contract.",
+      "rationale": "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "aa01bd8af0cc1c5f47dc8389976e1e8bb8d59d1c29e397ff6d701e5f5242aec3"
     },
@@ -565,7 +614,7 @@
       "path": "scaffold/agents/revisao/verificador-fontes.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [],
       "source_sha256": "8ea58018f77b58bf1032a1dd7434936f7032b967a22ee983ba1a8db82092db54"
     },
@@ -573,7 +622,7 @@
       "path": "scaffold/agents/revisao/verificador-honorarios.md",
       "kind": "agent",
       "disposition": "replace",
-      "rationale": "Federal merits or review assumptions require a labor-specific contract.",
+      "rationale": "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "4d3af1fad7297b26a4af3b4d63d34c883d5bc67c120b3c5f876a60d688036e85"
     },
@@ -581,7 +630,7 @@
       "path": "scaffold/agents/revisao/verificador-remessa.md",
       "kind": "agent",
       "disposition": "replace",
-      "rationale": "Federal merits or review assumptions require a labor-specific contract.",
+      "rationale": "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho.",
       "runtime_dependencies": [],
       "source_sha256": "b28b4b3497c75b9283ac2309a628ea7db899e4369d88ae2cbf2b069dc4baa368"
     },
@@ -589,7 +638,7 @@
       "path": "scaffold/agents/tribunal/acusador-probatico.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -599,7 +648,7 @@
       "path": "scaffold/agents/tribunal/defensor-probatico.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -609,7 +658,7 @@
       "path": "scaffold/agents/tribunal/juiz-mediador.md",
       "kind": "agent",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_progress_tool"
       ],
@@ -619,7 +668,7 @@
       "path": "scaffold/commands/analisar-lista.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -632,7 +681,7 @@
       "path": "scaffold/commands/baixar-converter.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter",
@@ -644,7 +693,7 @@
       "path": "scaffold/commands/baixar-inteligente.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter",
@@ -657,7 +706,7 @@
       "path": "scaffold/commands/baixar-pje.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter",
@@ -669,7 +718,7 @@
       "path": "scaffold/commands/fork-terminal.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths"
@@ -680,7 +729,7 @@
       "path": "scaffold/commands/pipeline-embargos.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -693,7 +742,7 @@
       "path": "scaffold/commands/pipeline-minutar-pdf.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -706,7 +755,7 @@
       "path": "scaffold/commands/pipeline-pesquisa.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -719,7 +768,7 @@
       "path": "scaffold/commands/pipeline-probatica.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -732,7 +781,7 @@
       "path": "scaffold/commands/pipeline-revisao-minuta.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -745,7 +794,7 @@
       "path": "scaffold/commands/pipeline-sentenca-team.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -758,7 +807,7 @@
       "path": "scaffold/commands/pipeline-sentenca.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -771,7 +820,7 @@
       "path": "scaffold/commands/planejamento-epistemico.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -784,7 +833,7 @@
       "path": "scaffold/commands/relatar-processo.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -797,7 +846,7 @@
       "path": "scaffold/commands/skill-probatica.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -810,7 +859,7 @@
       "path": "scaffold/commands/tribunal-probatico.md",
       "kind": "command",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -822,7 +871,7 @@
       "path": "scaffold/mcp-servers/bnp-api/server.py",
       "kind": "provider",
       "disposition": "adapt",
-      "rationale": "BNP remains applicable after authority-policy and runtime-interface adaptation.",
+      "rationale": "O BNP continua aplicável após adaptação da política de autoridades e da interface de execução.",
       "runtime_dependencies": [],
       "source_sha256": "c1a792df1c20b3a1c3f9ff31d59277709a8bd0fdcb2cbc448e1f10e072cbfb5e"
     },
@@ -830,7 +879,7 @@
       "path": "scaffold/mcp-servers/cjf-jurisprudencia/server.py",
       "kind": "provider",
       "disposition": "retire",
-      "rationale": "Provider is not part of the approved TRT12 first-instance source set.",
+      "rationale": "O provedor não integra o conjunto aprovado de fontes para o primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "edd91bbfceafc5b0f2dd16178896058b5882ece459bf494e9755fe06729f6504"
     },
@@ -838,7 +887,7 @@
       "path": "scaffold/mcp-servers/tcu-jurisprudencia/server.py",
       "kind": "provider",
       "disposition": "retire",
-      "rationale": "Provider is not part of the approved TRT12 first-instance source set.",
+      "rationale": "O provedor não integra o conjunto aprovado de fontes para o primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "d0e82b64fc32f56fbd7d1a41faa05938ad5185d590d084322102ebedc4ee5173"
     },
@@ -846,7 +895,7 @@
       "path": "scaffold/mcp-servers/tjsc-eproc/server.py",
       "kind": "provider",
       "disposition": "retire",
-      "rationale": "Provider is not part of the approved TRT12 first-instance source set.",
+      "rationale": "O provedor não integra o conjunto aprovado de fontes para o primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "a16a13772b306d40994505db0ca62b0ce767858a3815cd1a7bf5bd9d122bc956"
     },
@@ -854,7 +903,7 @@
       "path": "scaffold/mcp-servers/tnu-eproc/server.py",
       "kind": "provider",
       "disposition": "retire",
-      "rationale": "Provider is not part of the approved TRT12 first-instance source set.",
+      "rationale": "O provedor não integra o conjunto aprovado de fontes para o primeiro grau do TRT12.",
       "runtime_dependencies": [],
       "source_sha256": "3bf2e4a3480216d4c31f7bc45cc8a15fc9c42fde8989b2c9f8e2474e2a4fee9b"
     },
@@ -862,7 +911,7 @@
       "path": "scaffold/scripts/ingerir_kanban.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "dfd685d1b88d789bcdf0c385869169efda86b062ac21292a14e7bccc8281d2b3"
     },
@@ -870,7 +919,7 @@
       "path": "scaffold/scripts/merge_fontes.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "fdf34c4bf3f78dc0d747f570ab2b0744ca7c04d4c4b68fbb65ba3f45828f0405"
     },
@@ -878,7 +927,7 @@
       "path": "scaffold/scripts/merge_sentenca.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "691b25a3e83896f560837f9a12fe14ca4046a9e8f12481e86dc3941fe97e1075"
     },
@@ -886,7 +935,7 @@
       "path": "scaffold/scripts/verificar_citacoes.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "13e6b80a3f589d01024f71d3052447ce4f9d7b2ac31602592d2dfd402350d98f"
     },
@@ -894,7 +943,7 @@
       "path": "scaffold/scripts/verificar_pesquisa.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "24b3ce45395047568376c3a7d622c1698bc6c2576ee6375fcdf70cd368d4f595"
     },
@@ -902,7 +951,7 @@
       "path": "scaffold/scripts/verificar_pipeline.py",
       "kind": "script",
       "disposition": "preserve",
-      "rationale": "Court-agnostic deterministic gate engine is the shared runtime baseline.",
+      "rationale": "O motor determinístico de verificações, independente do tribunal, é a base compartilhada de execução.",
       "runtime_dependencies": [],
       "source_sha256": "7cd4a15da6d6b8a6d8b0fb741e42a9f7defdfa3bd064eb947f47da14f15192e7"
     },
@@ -910,7 +959,7 @@
       "path": "scaffold/scripts/verificar_probatica.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -920,7 +969,7 @@
       "path": "scaffold/scripts/verificar_revisao.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "8943343c9cccd092b0befa91a4ed620fccd5589b8c7a6ef2435d13245007632d"
     },
@@ -928,7 +977,7 @@
       "path": "scaffold/scripts/verificar_sentenca.py",
       "kind": "script",
       "disposition": "adapt",
-      "rationale": "Deterministic script is reusable after portability and labor-contract review.",
+      "rationale": "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas.",
       "runtime_dependencies": [],
       "source_sha256": "bac468d5f6275cbfc6bd47dde27af78e3ba9834a5e8089fc764adbe5eaaa1bbe"
     },
@@ -936,7 +985,7 @@
       "path": "scaffold/skills/analisador-erro-medico/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -946,7 +995,7 @@
       "path": "scaffold/skills/analise-probatoria/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_paths"
       ],
@@ -956,19 +1005,19 @@
       "path": "scaffold/skills/capturar-sessao-pje/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter",
         "claude_paths"
       ],
-      "source_sha256": "b89c38357f67e6c120fa131a0b399725572d0356304a7975452979d343335a78"
+      "source_sha256": "1a8f7d1ce7e298a95a8ffe8b3570fdb32d0d86b02f58cf8e64c9442def252036"
     },
     {
       "path": "scaffold/skills/converter-pdf/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths"
@@ -979,7 +1028,7 @@
       "path": "scaffold/skills/fork-terminal/SKILL.md",
       "kind": "skill",
       "disposition": "replace",
-      "rationale": "Claude terminal forking is replaced by runtime-neutral dispatch.",
+      "rationale": "A bifurcação de terminais do Claude é substituída por despacho independente do ambiente de execução.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_task_tool"
@@ -990,7 +1039,7 @@
       "path": "scaffold/skills/jurisprudencia-eleitoral/SKILL.md",
       "kind": "skill",
       "disposition": "retire",
-      "rationale": "Electoral jurisprudence is outside the TRT12 first-instance scope.",
+      "rationale": "A jurisprudência eleitoral está fora do escopo do primeiro grau do TRT12.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter"
@@ -1001,18 +1050,18 @@
       "path": "scaffold/skills/pje-download/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Capability has reusable behavior that requires labor-domain or runtime adaptation.",
+      "rationale": "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths"
       ],
-      "source_sha256": "5fc8ebdd0087f9a852ac45a59162dc680ee2bace60d5ab85644dd09834dbe29f"
+      "source_sha256": "5cc4db92d989255d54decd9b2e8a6a93e1e78951185bd13adf3f3b65dd56f38c"
     },
     {
       "path": "skills/criar-mcp-precedente/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_paths"
@@ -1023,7 +1072,7 @@
       "path": "skills/criar-pje-download/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_browser_mcp",
         "claude_frontmatter",
@@ -1035,7 +1084,7 @@
       "path": "skills/criar-sistema/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_frontmatter",
         "claude_paths",
@@ -1048,7 +1097,7 @@
       "path": "skills/criar-skill/SKILL.md",
       "kind": "skill",
       "disposition": "adapt",
-      "rationale": "Meta-tooling is valuable but currently emits Claude-specific paths or tools.",
+      "rationale": "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude.",
       "runtime_dependencies": [
         "claude_paths",
         "claude_progress_tool",

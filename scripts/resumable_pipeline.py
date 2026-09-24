@@ -169,6 +169,11 @@ def plan_resume(
         else:
             pending.append(stage["id"])
             stale_reasons[stage["id"]] = reason
+    next_stage = pending[0] if pending else None
+    next_agent = next(
+        (stage.get("agent") for stage in plan["contract"]["stages"] if stage["id"] == next_stage),
+        None,
+    )
     return {
         "schema_version": 1,
         "runtime": plan["runtime"],
@@ -177,7 +182,8 @@ def plan_resume(
         "reused_stages": reused,
         "pending_stages": pending,
         "stale_reasons": stale_reasons,
-        "next_stage": pending[0] if pending else None,
+        "next_stage": next_stage,
+        "next_agent": next_agent,
     }
 
 
@@ -203,6 +209,23 @@ def save_execution_state(path: Path, state: dict) -> None:
     except Exception:
         if temporary.exists():
             temporary.unlink()
+        raise
+
+
+def save_execution_state_once(path: Path, state: dict) -> None:
+    """Grava checkpoint protegido uma única vez, sem substituir outro estado."""
+    _validate_state(state)
+    if not isinstance(path, Path):
+        raise ResumeContractError("destino do estado deve ser um caminho")
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+            json.dump(state, output, ensure_ascii=False, indent=2, sort_keys=True)
+            output.write("\n")
+            output.flush()
+            os.fsync(output.fileno())
+    except Exception:
+        path.unlink(missing_ok=True)
         raise
 
 
@@ -397,11 +420,14 @@ def _resolve_outputs(
             raise ResumeContractError(
                 f"output context is missing placeholder {error.args[0]}"
             ) from error
-        path = Path(rendered).resolve()
+        declared = Path(rendered)
+        path = declared.resolve()
         try:
             path.relative_to(workspace)
         except ValueError as error:
             raise ResumeContractError("stage output resolves outside the workspace") from error
+        if declared.absolute() != path:
+            raise ResumeContractError("a saída da etapa não pode ser um vínculo simbólico")
         outputs.append(path)
     return tuple(outputs)
 

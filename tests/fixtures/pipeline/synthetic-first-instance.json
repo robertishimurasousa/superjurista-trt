@@ -10,13 +10,13 @@
       "instance": 1,
       "phase": "knowledge",
       "procedure": "ordinary",
-      "court_unit": "Synthetic Labor Court",
+      "court_unit": "Vara do Trabalho sintética",
       "confidentiality": "public_or_authorized",
       "source_manifest": "document-index.json"
     },
     "document-index.json": {
       "schema_version": 1,
-      "fixture_notice": "Synthetic sanitized documents only.",
+      "fixture_notice": "Somente documentos sintéticos sem dados pessoais.",
       "documents": [
         {
           "document_id": "DOC-001",
@@ -66,9 +66,9 @@
           "event_id": "EVT-001",
           "event_date": "2026-01-10",
           "event_type": "case_filed",
-          "summary": "Synthetic case was filed.",
+          "summary": "Ação sintética ajuizada.",
           "source_document_id": "DOC-001",
-          "source_locator": "page 1"
+          "source_locator": "página 1"
         }
       ],
       "gaps": []
@@ -82,7 +82,7 @@
         "instance": 1,
         "phase": "knowledge",
         "procedure": "ordinary",
-        "court_unit": "Synthetic Labor Court",
+        "court_unit": "Vara do Trabalho sintética",
         "confidentiality": "public_or_authorized",
         "source_manifest": "document-index.json"
       },
@@ -90,32 +90,32 @@
         {
           "party_id": "PTY-001",
           "role": "claimant",
-          "display_name": "Synthetic Claimant",
+          "display_name": "Parte autora sintética",
           "source_document_id": "DOC-001",
-          "source_locator": "page 1, header"
+          "source_locator": "página 1, cabeçalho"
         },
         {
           "party_id": "PTY-002",
           "role": "respondent",
-          "display_name": "Synthetic Respondent",
+          "display_name": "Parte reclamada sintética",
           "source_document_id": "DOC-002",
-          "source_locator": "page 1, header"
+          "source_locator": "página 1, cabeçalho"
         }
       ],
       "procedural_phase": {
         "phase": "knowledge",
         "status": "identified",
         "source_document_id": "DOC-001",
-        "source_locator": "page 1, case metadata"
+        "source_locator": "página 1, dados do processo"
       },
       "timeline": [
         {
           "event_id": "EVT-001",
           "event_date": "2026-01-10",
           "event_type": "case_filed",
-          "summary": "Synthetic case was filed.",
+          "summary": "Ação sintética ajuizada.",
           "source_document_id": "DOC-001",
-          "source_locator": "page 1"
+          "source_locator": "página 1"
         }
       ],
       "positions": [
@@ -123,21 +123,24 @@
           "position_id": "POS-001",
           "kind": "claim",
           "label": "overtime",
-          "summary": "Synthetic allegation of unpaid overtime.",
+          "summary": "A parte autora afirma ter prestado horas extras sem pagamento integral.",
           "source_document_id": "DOC-001",
-          "source_locator": "pages 4-5"
+          "source_locator": "páginas 4-5"
         },
         {
           "position_id": "POS-002",
           "kind": "defense",
           "label": "overtime",
-          "summary": "Synthetic denial of unpaid overtime.",
+          "summary": "A parte reclamada afirma ter quitado todas as horas extras registradas.",
           "source_document_id": "DOC-002",
-          "source_locator": "pages 2-3"
+          "source_locator": "páginas 2-3"
         }
       ],
       "review_gaps": []
     },
+    "report-narrative.md": "RELATÓRIO\n\nProcesso: 0000000-00.2026.5.12.0000\nInsumo SHA-256: ea2c24c3b59d9c390c0b0709ae1fa0478be8abfa0bac4a9b331f202b32670748\n\nEste relatório descreve exclusivamente um processo sintético de teste, sem partes ou documentos reais. A fase de conhecimento consta do registro estruturado do processo (DOC-001, página 1, dados do processo). A linha do tempo registra o ajuizamento em 10 de janeiro de 2026 (DOC-001, página 1).\n\nNo pedido CLM-001, a parte autora afirma que prestou horas extras sem pagamento integral, segundo a posição atribuída ao documento inicial (DOC-001, páginas 4-5). A parte reclamada identificada como PTY-002 apresenta a defesa DEF-001 e sustenta que todas as horas extras registradas foram pagas (DOC-002, páginas 2-3). Essas afirmações são posições das partes e não conclusões sobre fatos, prova, direito ou resultado.\n\nNão há outro pedido ou defesa vinculada nesta amostra. A narrativa não substitui os artefatos estruturados e não autoriza inferir procedência, improcedência ou concordância.\n\nREFERÊNCIAS DE COBERTURA\n\n```json\n{\"events\":[{\"event_id\":\"EVT-001\",\"source_document_id\":\"DOC-001\",\"source_locator\":\"página 1\"}],\"claims\":[{\"claim_id\":\"CLM-001\",\"source_document_id\":\"DOC-001\",\"source_locator\":\"páginas 4-5\"}],\"defenses\":[{\"defense_id\":\"DEF-001\",\"claim_id\":\"CLM-001\",\"respondent_party_id\":\"PTY-002\",\"source_document_id\":\"DOC-002\",\"source_locator\":\"páginas 2-3\"}],\"unanswered_claim_ids\":[]}\n```\n\nÉ o que havia de relevante a relatar.\n",
+    "triage.md": "# Triagem Cognitiva do Processo\n\n**Processo**: 0000000-00.2026.5.12.0000\n**Data**: 24/09/2026\n**Insumo**: triage-input.md\n**Insumo SHA-256**: ea2c24c3b59d9c390c0b0709ae1fa0478be8abfa0bac4a9b331f202b32670748\n\n## QUESTÕES IDENTIFICADAS\n\nO pedido sintético CLM-001 registra alegação de horas extras não quitadas integralmente (DOC-001, páginas 4-5) e defesa de pagamento das horas registradas (DOC-002, páginas 2-3). A divergência sustenta uma pergunta jurídica sobre o ônus da prova e uma pergunta probatória sobre os registros de horário. A triagem não decide fatos nem mérito.\n\n## EVIDÊNCIAS\n\nAs referências DOC-001 e DOC-002 apenas localizam as posições registradas na entrada. Nenhuma fonte jurídica externa foi consultada e nenhuma autoridade foi presumida. A pesquisa e o exame probatório permanecem pendentes em trilhas separadas, sem conclusão sobre a procedência do pedido.\n\n## ROTA\n\n```json\n{\"rota\":[\"pesquisa\",\"probatica\"],\"temas_pesquisa\":[\"Qual regra de ônus da prova se aplica ao pedido sintético CLM-001?\"],\"fatos_probatorios\":[\"Os registros de horário sintéticos esclarecem a jornada alegada no CLM-001?\"],\"justificativa_rotina\":null,\"rotas_por_pedido\":[{\"claim_id\":\"CLM-001\",\"requires_legal_research\":true,\"requires_evidence_analysis\":true,\"requires_calculation_review\":false,\"requires_procedural_review\":false,\"research_questions\":[\"Qual regra de ônus da prova se aplica ao pedido sintético CLM-001?\"],\"evidence_questions\":[\"Os registros de horário sintéticos esclarecem a jornada alegada no CLM-001?\"],\"route_reason\":\"A controvérsia sintética exige pesquisa jurídica e exame dos registros de horário.\",\"abstention_reasons\":[]}]}\n```\n\nTriagem concluída.\n",
+    "fontes-triagem.json": {"fontes": []},
     "claim-matrix.json": {
       "schema_version": 1,
       "taxonomy_version": 1,
@@ -146,17 +149,17 @@
           "claim_id": "CLM-001",
           "label": "overtime",
           "claimant_position": {
-            "summary": "Overtime was worked and not fully paid.",
+            "summary": "A parte autora afirma ter prestado horas extras sem pagamento integral.",
             "source_document_id": "DOC-001",
-            "source_locator": "pages 4-5"
+            "source_locator": "páginas 4-5"
           },
           "respondent_positions": [
             {
               "defense_id": "DEF-001",
               "respondent_party_id": "PTY-002",
-              "summary": "All recorded overtime was paid.",
+              "summary": "A parte reclamada afirma ter quitado todas as horas extras registradas.",
               "source_document_id": "DOC-002",
-              "source_locator": "pages 2-3"
+              "source_locator": "páginas 2-3"
             }
           ],
           "requested_remedies": [
@@ -184,11 +187,11 @@
           ],
           "type": "time_record",
           "source_document_id": "DOC-002",
-          "source_locator": "pages 3-8",
-          "proposition": "The synthetic time records contain uniform entries.",
+          "source_locator": "páginas 3-8",
+          "proposition": "Os cartões de ponto sintéticos contêm registros uniformes.",
           "relation": "supports_claim",
           "limitations": [
-            "Synthetic fixture contains no witness testimony."
+            "A amostra sintética não contém depoimentos de testemunhas."
           ],
           "analysis_status": "pending",
           "conflicts_with_evidence_ids": []
@@ -207,12 +210,12 @@
           "requires_calculation_review": false,
           "requires_procedural_review": false,
           "research_questions": [
-            "Which synthetic burden-of-proof rule applies?"
+            "Qual regra de ônus da prova se aplica ao pedido sintético CLM-001?"
           ],
           "evidence_questions": [
-            "Do the synthetic records support the proposition?"
+            "Os registros de horário sintéticos esclarecem a jornada alegada no CLM-001?"
           ],
-          "route_reason": "Synthetic claim requires legal and evidence review.",
+          "route_reason": "A controvérsia sintética exige pesquisa jurídica e exame dos registros de horário.",
           "abstention_reasons": []
         }
       ]
@@ -224,13 +227,13 @@
           "source_id": "TST-001",
           "origin": "TST",
           "type": "qualified_precedent",
-          "reference": "Synthetic official-source fixture reference",
+          "reference": "Referência sintética de fonte oficial para validação do contrato",
           "status": "current",
           "status_notes": [],
           "binding_scope": "national_labor_justice",
-          "legal_question": "Synthetic question used only for contract validation.",
-          "holding": "Synthetic holding used only for contract validation.",
-          "verbatim_excerpt": "Synthetic excerpt; not a quotation from a real decision.",
+          "legal_question": "Questão sintética usada apenas para validar o contrato.",
+          "holding": "Tese sintética usada apenas para validar o contrato.",
+          "verbatim_excerpt": "Trecho sintético; não é citação de decisão real.",
           "official_url": "https://www.tst.jus.br/jurisprudencia",
           "retrieved_at": "2026-09-21T12:00:00-03:00"
         }
@@ -238,10 +241,14 @@
     },
     "evidence-review.json": {
       "schema_version": 1,
-      "claim_id": "CLM-001",
-      "status": "pending_human_review",
-      "limitations": [
-        "Synthetic fixture only."
+      "reviews": [
+        {
+          "claim_id": "CLM-001",
+          "status": "pending_human_review",
+          "evidence_ids": ["EVD-001"],
+          "assessment": "",
+          "limitations": ["A avaliação probatória depende de revisão humana."]
+        }
       ]
     },
     "calculation-review.json": {
@@ -255,20 +262,39 @@
         }
       ]
     },
+    "conditional-work-results.json": {
+      "schema_version": 1,
+      "results": [
+        {
+          "work_id": "WRK-CLM-001-LEGAL",
+          "claim_id": "CLM-001",
+          "track": "legal_research",
+          "custody_status": "linked",
+          "source_ids": ["TST-001"],
+          "limitations": ["Fonte sintética; não representa pesquisa real."]
+        },
+        {
+          "work_id": "WRK-CLM-001-EVIDENCE",
+          "claim_id": "CLM-001",
+          "track": "evidence_analysis",
+          "custody_status": "linked",
+          "source_ids": ["EVD-001"],
+          "limitations": ["A prova exige revisão humana."]
+        }
+      ]
+    },
     "claim-analysis.json": {
       "schema_version": 1,
       "analyses": [
         {
           "analysis_id": "ANL-001",
           "claim_id": "CLM-001",
-          "facts_found": [
-            "The submitted synthetic time records cover the reviewed period."
-          ],
+          "facts_found": [],
           "evidence_ids": [
             "EVD-001"
           ],
           "evidence_assessment": [
-            "EVD-001 requires human review before a factual conclusion."
+            "EVD-001 exige revisão humana antes de uma conclusão fática."
           ],
           "applicable_rules": [
             "RULE-001"
@@ -276,10 +302,10 @@
           "precedent_source_ids": [
             "TST-001"
           ],
-          "reasoning": "The fixture preserves reasoning without asserting a real outcome.",
+          "reasoning": "A amostra preserva a fundamentação sem afirmar resultado para um processo real.",
           "proposed_outcome": "pending_human_review",
           "limitations": [
-            "Synthetic fixture only."
+            "Amostra sintética; revisão jurídica pendente."
           ]
         }
       ]
@@ -291,7 +317,7 @@
           "disposition_id": "DSP-001",
           "claim_id": "CLM-001",
           "outcome": "pending_human_review",
-          "command": "No operative command may be emitted before human review.",
+          "command": "Nenhum comando dispositivo pode ser emitido antes da revisão humana.",
           "period": "not_applicable",
           "effects": [],
           "calculation_criteria": [],
@@ -299,14 +325,14 @@
         }
       ]
     },
-    "judgment-draft.md": "# Minuta de sentença trabalhista\n\n## Fundamentação\n\n### CLM-001\n\nAnálise: ANL-001\n\nFundamentação: The fixture preserves reasoning without asserting a real outcome.\n\nResultado proposto: pending_human_review\n\n## Dispositivo\n\n### DSP-001 — CLM-001\n\nResultado: pending_human_review\nComando: No operative command may be emitted before human review.\nPeríodo: not_applicable\n\nAnálise de origem: ANL-001\n",
+    "judgment-draft.md": "# Minuta de sentença trabalhista\n\n## Fundamentação\n\n### CLM-001\n\nAnálise: ANL-001\n\nFatos reconhecidos:\n- Nenhum item registrado.\n\nProvas consideradas:\n- EVD-001\n\nAvaliação probatória:\n- EVD-001 exige revisão humana antes de uma conclusão fática.\n\nRegras aplicáveis:\n- RULE-001\n\nFundamentação: A amostra preserva a fundamentação sem afirmar resultado para um processo real.\n\nResultado proposto: revisão humana pendente\n\nLimitações:\n- Amostra sintética; revisão jurídica pendente.\n\n## Dispositivo\n\n### DSP-001 — CLM-001\n\nResultado: revisão humana pendente\nComando: Nenhum comando dispositivo pode ser emitido antes da revisão humana.\nPeríodo: não se aplica\nEfeitos:\n- Nenhum item registrado.\n\nCritérios de cálculo:\n- Nenhum item registrado.\n\nAnálise de origem: ANL-001\n",
     "review-report.json": {
       "schema_version": 1,
       "sources": [
         {
           "source_id": "TST-001",
           "status": "available",
-          "verbatim_excerpt": "Synthetic excerpt; not a quotation from a real decision.",
+          "verbatim_excerpt": "Trecho sintético; não é citação de decisão real.",
           "unavailability_reason": ""
         }
       ],

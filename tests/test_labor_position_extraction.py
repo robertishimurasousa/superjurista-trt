@@ -58,8 +58,21 @@ class LaborPositionExtractionTest(unittest.TestCase):
             ],
         )
         self.assertTrue(all(item.kind == "claim" for item in result))
+        self.assertEqual(
+            [item.summary for item in result],
+            [
+                "A parte autora requer assistência judiciária gratuita.",
+                "A parte autora requer responsabilidade solidária ou subsidiária.",
+                "A parte autora requer verbas rescisórias.",
+                "A parte autora requer pagamento pelo intervalo intrajornada alegadamente suprimido.",
+                "A parte autora requer indenização por alegado dano extrapatrimonial.",
+                "A parte autora requer multa do art. 467 da CLT.",
+                "A parte autora requer multa do art. 477 da CLT.",
+                "A parte autora requer honorários advocatícios.",
+            ],
+        )
         self.assertEqual(result[3].source.document_id, "DOC-001")
-        self.assertEqual(result[3].source.locator, "page 6, claim section heading")
+        self.assertEqual(result[3].source.locator, "página 6, título da seção de pedido")
 
     def test_uses_the_first_heading_and_does_not_duplicate_final_requests(self) -> None:
         api = self.api()
@@ -74,7 +87,7 @@ class LaborPositionExtractionTest(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].position_id, "POS-004")
-        self.assertEqual(result[0].source.locator, "page 3, claim section heading")
+        self.assertEqual(result[0].source.locator, "página 3, título da seção de pedido")
 
     def test_handles_wrapped_headings_and_portuguese_ordinal_markers(self) -> None:
         api = self.api()

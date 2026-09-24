@@ -1,50 +1,54 @@
-# Artifact Contract Versioning and Migration Policy
+# Política de versionamento e migração dos contratos de artefatos
 
-## Version identity
+## Identificação da versão
 
-- Every artifact carries an integer `schema_version`.
-- Every catalog entry declares exactly one `current_version` and points to a versioned,
-  immutable schema filename such as `claim-matrix.v1.schema.json`.
-- Readers validate the artifact against the explicitly selected logical contract. They reject
-  unknown contracts, unknown future versions, and versions that do not match the selected
-  schema.
-- The pipeline may reuse an artifact only when its version is current and its deterministic
-  content and freshness gates also pass.
+- Cada artefato contém um inteiro `schema_version`.
+- Cada entrada do catálogo declara exatamente um `current_version` e aponta
+  para um arquivo versionado e imutável, como `claim-matrix.v1.schema.json`.
+- Os leitores validam o artefato pelo contrato lógico selecionado
+  explicitamente. Rejeitam contratos desconhecidos, versões futuras e versões
+  divergentes do esquema selecionado.
+- O pipeline só reutiliza artefatos na versão vigente que também passem nos
+  controles determinísticos de conteúdo e atualização.
 
-## Change policy
+## Política de alterações
 
-While a work item is `IN_REVIEW`, a contract may be corrected if its digest and acceptance
-evidence are regenerated. After acceptance, an existing versioned schema is immutable.
+Enquanto um item estiver `IN_REVIEW`, o contrato pode ser corrigido se o
+resumo criptográfico e a evidência de aceite forem regenerados. Após o aceite,
+o esquema versionado existente torna-se imutável.
 
-Any accepted-schema change that alters required fields, allowed values, meaning, identifier
-rules, or validation behavior requires all of the following:
+Qualquer alteração em esquema aceito que modifique campos obrigatórios,
+valores permitidos, significado, regras de identificadores ou validação exige:
 
-1. add a new `vN` schema file instead of editing the accepted file;
-2. add independent valid and invalid fixtures for the new version;
-3. add a deterministic migration when an older artifact can be upgraded safely;
-4. update the catalog only after the new schema and migration tests pass; and
-5. document compatibility and custody implications in the roadmap evidence.
+1. adicionar novo arquivo de esquema `vN`, sem editar o aceito;
+2. adicionar casos válidos e inválidos independentes para a nova versão;
+3. adicionar migração determinística se o artefato antigo puder ser atualizado
+   com segurança;
+4. atualizar o catálogo somente após aprovação dos testes do esquema e da
+   migração; e
+5. documentar consequências para compatibilidade e custódia no roadmap.
 
-## Migration rules
+## Regras de migração
 
-- Migrations are explicit, one-version steps named `vN_to_vNplus1`; no implicit or multi-hop
-  rewrite is allowed.
-- A migration must be deterministic, offline, and free of provider or model calls.
-- It writes a new artifact and never overwrites the source artifact.
-- Stable claim, evidence, source, analysis, and disposition identifiers must be preserved.
-- Source locators, verbatim excerpts, retrieval timestamps, and limitation records must not be
-  discarded or weakened.
-- The migration output records the logical contract, source and target versions, source digest,
-  output digest, and migration implementation version.
-- If safe conversion is impossible, the migration fails closed and requires regeneration from
-  authorized source material plus human review.
+- Migrações são etapas explícitas de uma versão, chamadas `vN_to_vNplus1`;
+  não há reescrita implícita nem salto de versões.
+- A migração deve ser determinística, local e sem chamadas a provedores ou
+  modelos.
+- Ela grava novo artefato e nunca sobrescreve a origem.
+- IDs estáveis de pedidos, provas, fontes, análises e dispositivos são preservados.
+- Localizadores das fontes, trechos literais, datas de consulta e registros de
+  limitações não podem ser descartados nem enfraquecidos.
+- A saída registra contrato lógico, versões de origem e destino, resumos
+  criptográficos da entrada e saída e versão da implementação da migração.
+- Se a conversão segura for impossível, a migração bloqueia e exige nova
+  geração a partir da fonte autorizada, seguida de revisão humana.
 
-## Required evidence
+## Evidências exigidas
 
-A migration is eligible for acceptance only when tests prove:
+A migração só pode ser aceita quando os testes comprovarem:
 
-- valid old-version input produces valid new-version output;
-- malformed or semantically unsupported input is rejected;
-- repeated execution produces byte-equivalent canonical output;
-- the source artifact remains unchanged; and
-- custody-critical fields and stable identifiers are preserved.
+- entrada válida na versão antiga gera saída válida na versão nova;
+- entrada malformada ou sem suporte semântico é rejeitada;
+- execuções repetidas geram saída canônica idêntica em bytes;
+- o artefato de origem permanece inalterado; e
+- campos essenciais à custódia e identificadores estáveis são preservados.

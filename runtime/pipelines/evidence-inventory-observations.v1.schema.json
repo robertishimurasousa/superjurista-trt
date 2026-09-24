@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/evidence-inventory-observations.v1.schema.json",
+  "title": "Observações descritivas do inventário probatório TRT12 v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_document_id", "source_packet_sha256", "status", "coverage_status", "items", "limitations"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "source_document_id": {"type": "string", "pattern": "^DOC-[0-9]{3,}$"},
+    "source_packet_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "status": {"type": "string", "enum": ["pending_human_review", "insufficient"]},
+    "coverage_status": {"type": "string", "enum": ["items_identified", "no_item_identified"]},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "claim_ids", "type", "excerpt", "description", "limitations"],
+        "properties": {
+          "item_id": {"type": "string", "pattern": "^INV-DOC-[0-9]{3,}-[0-9]{3,}$"},
+          "claim_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^CLM-[0-9]{3,}$"}
+          },
+          "type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "excerpt": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["pdf_page", "text"],
+            "properties": {
+              "pdf_page": {"type": "integer", "minimum": 1},
+              "text": {"type": "string", "minLength": 1, "maxLength": 2000}
+            }
+          },
+          "description": {"type": "string", "minLength": 1, "maxLength": 4000},
+          "limitations": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1000}
+    }
+  }
+}

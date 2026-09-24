@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/evidence-matrix-promotion.v1.schema.json",
+  "title": "Recibo técnico da promoção da matriz de provas v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "candidate_matrix_sha256", "provenance_sha256",
+    "approval_sha256", "review_sha256", "source_pdf_sha256", "evidence_count",
+    "uncovered_claim_count"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "status": {"type": "string", "const": "declared_approval"},
+    "candidate_matrix_sha256": {"$ref": "#/$defs/sha256"},
+    "provenance_sha256": {"$ref": "#/$defs/sha256"},
+    "approval_sha256": {"$ref": "#/$defs/sha256"},
+    "review_sha256": {"$ref": "#/$defs/sha256"},
+    "source_pdf_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_count": {"type": "integer", "minimum": 0},
+    "uncovered_claim_count": {"type": "integer", "minimum": 0}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

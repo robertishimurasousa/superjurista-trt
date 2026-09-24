@@ -1,6 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Este arquivo orienta o Claude Code ao trabalhar com o código deste repositório.
+
+## Idioma
+
+Use português brasileiro em respostas, instruções de agentes, relatórios, minutas,
+formulários, exemplos explicativos e documentos gerados. Preserve literalmente
+identificadores técnicos, chaves JSON, comandos e citações dos autos quando sua
+tradução alteraria o contrato ou a fidelidade à fonte.
 
 ## Propósito do Projeto
 

@@ -237,14 +237,14 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
         )
         self.assertTrue(
             all(
-                party.source.locator == "page 1, party qualification"
+                party.source.locator == "página 1, qualificação das partes"
                 for party in result.parties
             )
         )
         self.assertEqual(result.phase.phase, "knowledge")
         self.assertEqual(result.phase.status, "identified")
         self.assertEqual(result.phase.source.document_id, "DOC-003")
-        self.assertEqual(result.phase.source.locator, "page 20, procedural document")
+        self.assertEqual(result.phase.source.locator, "página 20, documento processual")
 
     def test_rejects_tribunal_mismatch_or_missing_primary_respondent(self) -> None:
         api = self.api()
@@ -269,7 +269,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             "source_manifest": "document-segments.json",
         }
 
-        with self.assertRaisesRegex(api.PJeLaborReportExtractionError, "primary respondent"):
+        with self.assertRaisesRegex(api.PJeLaborReportExtractionError, "reclamada principal"):
             api.extract_context_candidates(**arguments)
 
         arguments["initial_page_text"] = (
@@ -332,7 +332,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             self.assertEqual(written.name, "labor-report.json")
             self.assertEqual(written.stat().st_mode & 0o777, 0o600)
             self.assertEqual(json.loads(written.read_text()), report)
-            with self.assertRaisesRegex(api.PJeLaborReportExtractionError, "already exists"):
+            with self.assertRaisesRegex(api.PJeLaborReportExtractionError, "já existe"):
                 api.write_labor_report_artifact(
                     report,
                     output_dir=output,
@@ -343,7 +343,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             repository_output.mkdir()
             with self.assertRaisesRegex(
                 api.PJeLaborReportExtractionError,
-                "outside repository",
+                "fora do repositório",
             ):
                 api.write_labor_report_artifact(
                     report,
@@ -497,10 +497,11 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
                     "kind": "claim",
                     "label": "meal_rest_interval",
                     "summary": (
-                        "Claimant requests payment for an allegedly suppressed meal interval."
+                        "A parte autora requer pagamento pelo intervalo intrajornada "
+                        "alegadamente suprimido."
                     ),
                     "source_document_id": "DOC-001",
-                    "source_locator": "page 1, claim section heading",
+                    "source_locator": "página 1, título da seção de pedido",
                 }
             ],
         )
@@ -559,7 +560,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
 
             with self.assertRaisesRegex(
                 api.PJeLaborReportExtractionError,
-                "PDF custody",
+                "custódia do PDF",
             ):
                 api.extract_pdf_labor_report(
                     pdf_path,
@@ -575,6 +576,28 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
                     timeline_schema_path=TIMELINE_SCHEMA,
                     labor_report_schema_path=LABOR_REPORT_SCHEMA,
                 )
+
+    def test_missing_pdf_error_is_presented_in_portuguese_without_path(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            missing_pdf = Path(temporary) / "private-case.pdf"
+            with self.assertRaises(api.PJeLaborReportExtractionError) as caught:
+                api.extract_pdf_labor_report(
+                    missing_pdf,
+                    self.segments(),
+                    self.classification(),
+                    self.timeline(),
+                    tribunal="TRT99",
+                    instance=1,
+                    confidentiality="public_or_authorized",
+                    source_manifest="document-segments.json",
+                    segment_schema_path=SEGMENT_SCHEMA,
+                    classification_schema_path=CLASSIFICATION_SCHEMA,
+                    timeline_schema_path=TIMELINE_SCHEMA,
+                    labor_report_schema_path=LABOR_REPORT_SCHEMA,
+                )
+            self.assertIn("PDF do PJe não encontrado", str(caught.exception))
+            self.assertNotIn(str(missing_pdf), str(caught.exception))
 
     def test_cli_writes_protected_partial_report_and_reports_only_counts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -637,7 +660,7 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertEqual(
                 completed.stdout.strip(),
-                "[OK] PJe labor report: parties=3 events=2 positions=0 gaps=2",
+                "[OK] Relatório trabalhista do PJe: partes=3 eventos=2 posições=0 lacunas=2",
             )
             self.assertNotIn("ANA EXEMPLO", completed.stdout)
             self.assertTrue((output / "labor-report.json").is_file())

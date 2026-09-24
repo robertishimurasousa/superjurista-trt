@@ -123,6 +123,74 @@ class ClaimDecisionBuilderTest(unittest.TestCase):
         self.assertLess(first_draft.index("CLM-001"), first_draft.index("CLM-002"))
         self.assertIn("## Dispositivo", first_draft)
 
+    def test_draft_displays_outcomes_and_non_applicable_period_in_portuguese(self) -> None:
+        api = self.api()
+        labels = (
+            ("granted", "procedente"),
+            ("denied", "improcedente"),
+            ("granted_in_part", "parcialmente procedente"),
+            ("dismissed_without_merits", "extinto sem resolução do mérito"),
+            ("procedural_resolution", "resolução processual"),
+            ("pending_human_review", "revisão humana pendente"),
+            ("abstained", "abstenção"),
+        )
+        for code, label in labels:
+            with self.subTest(code=code):
+                analysis = {
+                    "schema_version": 1,
+                    "analyses": [{
+                        "analysis_id": "ANL-001", "claim_id": "CLM-001",
+                        "proposed_outcome": code, "facts_found": [],
+                        "evidence_ids": [], "evidence_assessment": [],
+                        "applicable_rules": [], "reasoning": "Análise sintética.",
+                        "limitations": [],
+                    }],
+                }
+                dispositions = {
+                    "schema_version": 1,
+                    "items": [{
+                        "disposition_id": "DSP-001", "claim_id": "CLM-001",
+                        "source_analysis_id": "ANL-001", "outcome": code,
+                        "command": "Comando sintético.", "period": "not_applicable",
+                        "effects": [], "calculation_criteria": [],
+                    }],
+                }
+
+                draft = api.render_judgment_draft(analysis, dispositions)
+
+                self.assertIn(f"Resultado proposto: {label}\n", draft)
+                self.assertIn(f"Resultado: {label}\n", draft)
+                self.assertIn("Período: não se aplica\n", draft)
+                self.assertNotIn(f"Resultado: {code}\n", draft)
+
+    def test_draft_rejects_unknown_disposition_outcome(self) -> None:
+        api = self.api()
+        analysis = {
+            "schema_version": 1,
+            "analyses": [{
+                "analysis_id": "ANL-001", "claim_id": "CLM-001",
+                "proposed_outcome": "pending_human_review", "facts_found": [],
+                "evidence_ids": [], "evidence_assessment": [],
+                "applicable_rules": [], "reasoning": "Revisão pendente.",
+                "limitations": [],
+            }],
+        }
+        dispositions = {
+            "schema_version": 1,
+            "items": [{
+                "disposition_id": "DSP-001", "claim_id": "CLM-001",
+                "source_analysis_id": "ANL-001", "outcome": "pending_human_review",
+                "command": "Sem comando.", "period": "not_applicable",
+                "effects": [], "calculation_criteria": [],
+            }],
+        }
+
+        for code in ("unexpected_outcome", ["granted"]):
+            with self.subTest(code=code):
+                dispositions["items"][0]["outcome"] = code
+                with self.assertRaisesRegex(api.ClaimDecisionContractViolation, "resultado"):
+                    api.render_judgment_draft(analysis, dispositions)
+
     def test_analysis_must_cover_every_known_claim(self) -> None:
         api = self.api()
 

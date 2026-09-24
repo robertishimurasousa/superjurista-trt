@@ -23,6 +23,14 @@
       "kind": "contract",
       "target": "claim-and-evidence-matrices"
     },
+    "triage-input-custody": {
+      "kind": "deterministic",
+      "target": "triage-input"
+    },
+    "report-narrative-coverage": {
+      "kind": "deterministic",
+      "target": "report-narrative"
+    },
     "route-coverage": {
       "kind": "contract",
       "target": "issue-route"
@@ -101,13 +109,41 @@
       "gate": "decision-unit-coverage"
     },
     {
-      "id": "route-claims",
-      "capability": "route-claim-work",
+      "id": "prepare-triage-input",
+      "capability": "build-source-linked-agent-input",
       "depends_on": [
         "build-decision-units"
       ],
       "condition": "always",
       "outputs": [
+        "{workspace}/triage-input.md"
+      ],
+      "gate": "triage-input-custody"
+    },
+    {
+      "id": "narrate-record",
+      "agent": "scaffold/agents/extracao/relator-marmelstein-trt12.md",
+      "capability": "narrate-source-linked-record",
+      "depends_on": [
+        "prepare-triage-input"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/report-narrative.md"
+      ],
+      "gate": "report-narrative-coverage"
+    },
+    {
+      "id": "route-claims",
+      "agent": "scaffold/agents/analise/triador-processual-trt12.md",
+      "capability": "route-claim-work",
+      "depends_on": [
+        "narrate-record"
+      ],
+      "condition": "always",
+      "outputs": [
+        "{workspace}/{case_number}-triagem.md",
+        "{workspace}/fontes-triagem.json",
         "{workspace}/issue-route.json"
       ],
       "gate": "route-coverage"
@@ -118,17 +154,19 @@
       "depends_on": [
         "route-claims"
       ],
-      "condition": "routed",
+      "condition": "always",
       "outputs": [
         "{workspace}/precedent-corpus.json",
         "{workspace}/evidence-review.json",
-        "{workspace}/calculation-review.json"
+        "{workspace}/calculation-review.json",
+        "{workspace}/conditional-work-results.json"
       ],
       "gate": "conditional-track-custody"
     },
     {
       "id": "analyze-claims",
       "capability": "analyze-each-claim",
+      "agent": "scaffold/agents/analise/analisador-marmelstein-trt12.md",
       "depends_on": [
         "execute-conditional-tracks"
       ],
@@ -141,6 +179,7 @@
     {
       "id": "draft-judgment",
       "capability": "draft-labor-judgment",
+      "agent": "scaffold/agents/analise/fundamentador-marmelstein-trt12.md",
       "depends_on": [
         "analyze-claims"
       ],

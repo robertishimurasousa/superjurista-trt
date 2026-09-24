@@ -13,15 +13,16 @@ ANALYSIS_ID_PATTERN = re.compile(r"ANL-[0-9]{3,}")
 EVIDENCE_ID_PATTERN = re.compile(r"EVD-[0-9]{3,}")
 DISPOSITION_ID_PATTERN = re.compile(r"DSP-[0-9]{3,}")
 SOURCE_ID_PATTERN = re.compile(r"[A-Z0-9]+-[0-9]{3,}")
-OUTCOMES = {
-    "granted",
-    "denied",
-    "granted_in_part",
-    "dismissed_without_merits",
-    "procedural_resolution",
-    "pending_human_review",
-    "abstained",
+OUTCOME_LABELS = {
+    "granted": "procedente",
+    "denied": "improcedente",
+    "granted_in_part": "parcialmente procedente",
+    "dismissed_without_merits": "extinto sem resolução do mérito",
+    "procedural_resolution": "resolução processual",
+    "pending_human_review": "revisão humana pendente",
+    "abstained": "abstenção",
 }
+OUTCOMES = set(OUTCOME_LABELS)
 MERITS_OUTCOMES = {"granted", "denied", "granted_in_part"}
 PROCEDURAL_OUTCOMES = {"dismissed_without_merits", "procedural_resolution"}
 UNRESOLVED_OUTCOMES = {"pending_human_review", "abstained"}
@@ -313,6 +314,12 @@ def _markdown_list(values: list) -> list:
     return [f"- {value}" for value in values]
 
 
+def _outcome_label(code: object) -> str:
+    if not isinstance(code, str) or code not in OUTCOME_LABELS:
+        raise ClaimDecisionContractViolation("resultado não reconhecido na minuta")
+    return OUTCOME_LABELS[code]
+
+
 def render_judgment_draft(claim_analysis: dict, disposition_matrix: dict) -> str:
     """Render a deterministic review draft from linked structured artifacts."""
     analyses = _analysis_index(claim_analysis)["by_claim"]
@@ -349,7 +356,7 @@ def render_judgment_draft(claim_analysis: dict, disposition_matrix: dict) -> str
                 "",
                 f"Fundamentação: {item['reasoning']}",
                 "",
-                f"Resultado proposto: {item['proposed_outcome']}",
+                f"Resultado proposto: {_outcome_label(item['proposed_outcome'])}",
                 "",
                 "Limitações:",
                 *_markdown_list(item["limitations"]),
@@ -363,9 +370,9 @@ def render_judgment_draft(claim_analysis: dict, disposition_matrix: dict) -> str
             [
                 f"### {item['disposition_id']} — {claim_id}",
                 "",
-                f"Resultado: {item['outcome']}",
+                f"Resultado: {_outcome_label(item['outcome'])}",
                 f"Comando: {item['command']}",
-                f"Período: {item['period']}",
+                f"Período: {'não se aplica' if item['period'] == 'not_applicable' else item['period']}",
                 "Efeitos:",
                 *_markdown_list(item["effects"]),
                 "",

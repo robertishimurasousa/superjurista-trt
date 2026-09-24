@@ -5,6 +5,7 @@ import sys
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 
 
@@ -403,6 +404,31 @@ class TRT12OfficialAdapterTest(unittest.TestCase):
             transport.get_json("https://example.test/source", max_bytes=4)
         with self.assertRaisesRegex(module.TRT12AdapterError, "size limit"):
             transport.get_json(official_url, max_bytes=4)
+
+    def test_transport_reports_forbidden_search_without_retry(self) -> None:
+        module = self.api()
+        official_url = (
+            "https://jurisprudencia.jt.jus.br/jurisprudencia-nacional-backend/"
+            "api/no-auth/pesquisa"
+        )
+
+        class DeniedOpener:
+            def __init__(self):
+                self.requests = []
+
+            def open(self, request, *, timeout):
+                self.requests.append((request, timeout))
+                raise HTTPError(official_url, 403, "Forbidden", {}, None)
+
+        opener = DeniedOpener()
+        transport = module.UrllibFalcaoTransport(opener=opener)
+
+        with self.assertRaisesRegex(
+            module.TRT12AdapterError, "acesso ao Falcão negado.*403"
+        ):
+            transport.get_json(official_url, max_bytes=1024)
+
+        self.assertEqual(len(opener.requests), 1)
 
 
 if __name__ == "__main__":

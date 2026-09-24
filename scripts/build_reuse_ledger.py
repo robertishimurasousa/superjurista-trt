@@ -44,15 +44,15 @@ def component_kind(relative: str) -> str:
 
 def classify(relative: str) -> tuple[str, str]:
     if relative == "scaffold/scripts/verificar_pipeline.py":
-        return "preserve", "Court-agnostic deterministic gate engine is the shared runtime baseline."
+        return "preserve", "O motor determinístico de verificações, independente do tribunal, é a base compartilhada de execução."
     if relative.startswith("scaffold/scripts/"):
-        return "adapt", "Deterministic script is reusable after portability and labor-contract review."
+        return "adapt", "O script determinístico pode ser reutilizado após revisão de portabilidade e dos contratos trabalhistas."
     if relative.startswith("scaffold/agents/lista-trf/"):
-        return "retire", "TRF judgment-list behavior is outside the TRT12 first-instance executable path."
+        return "retire", "O tratamento de listas de julgamento dos TRFs não integra o fluxo executável do primeiro grau do TRT12."
     if relative.startswith("scaffold/agents/pesquisa/pesquisador-") and any(
         source in relative for source in ("cjf", "julia", "stj", "tnu")
     ):
-        return "retire", "Federal Justice research route is replaced by TST and TRT12 authority sources."
+        return "retire", "A pesquisa da Justiça Federal é substituída por fontes de autoridade do TST e do TRT12 para a Justiça do Trabalho."
     if relative in {
         "scaffold/agents/analise/analisador-marmelstein.md",
         "scaffold/agents/analise/fundamentador-marmelstein.md",
@@ -60,19 +60,19 @@ def classify(relative: str) -> tuple[str, str]:
         "scaffold/agents/revisao/verificador-honorarios.md",
         "scaffold/agents/revisao/verificador-remessa.md",
     }:
-        return "replace", "Federal merits or review assumptions require a labor-specific contract."
+        return "replace", "Premissas federais sobre mérito ou revisão exigem contrato específico da Justiça do Trabalho."
     if relative.startswith("scaffold/mcp-servers/"):
         if "/bnp-api/" in relative:
-            return "adapt", "BNP remains applicable after authority-policy and runtime-interface adaptation."
-        return "retire", "Provider is not part of the approved TRT12 first-instance source set."
+            return "adapt", "O BNP continua aplicável após adaptação da política de autoridades e da interface de execução."
+        return "retire", "O provedor não integra o conjunto aprovado de fontes para o primeiro grau do TRT12."
     if relative == "scaffold/skills/jurisprudencia-eleitoral/SKILL.md":
-        return "retire", "Electoral jurisprudence is outside the TRT12 first-instance scope."
+        return "retire", "A jurisprudência eleitoral está fora do escopo do primeiro grau do TRT12."
     if relative == "scaffold/skills/fork-terminal/SKILL.md":
-        return "replace", "Claude terminal forking is replaced by runtime-neutral dispatch."
+        return "replace", "A bifurcação de terminais do Claude é substituída por despacho independente do ambiente de execução."
     if relative.startswith(("agents/", "commands/", "skills/")):
-        return "adapt", "Meta-tooling is valuable but currently emits Claude-specific paths or tools."
+        return "adapt", "As metaferramentas são úteis, mas ainda emitem caminhos ou ferramentas específicos do Claude."
     if relative.startswith("scaffold/"):
-        return "adapt", "Capability has reusable behavior that requires labor-domain or runtime adaptation."
+        return "adapt", "A capacidade possui comportamento reutilizável, mas exige adaptação ao domínio trabalhista ou ao ambiente de execução."
     raise ValueError(f"unclassified component: {relative}")
 
 
@@ -117,6 +117,7 @@ def build_ledger(root: Path) -> dict:
     counts = Counter(item["disposition"] for item in components)
     return {
         "schema_version": 1,
+        "locale": "pt-BR",
         "scope": list(COMPONENT_GLOBS),
         "component_count": len(components),
         "unclassified_count": len(unclassified),

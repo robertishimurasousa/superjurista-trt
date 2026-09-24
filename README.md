@@ -2,6 +2,16 @@
 
 Plugin de meta-ferramentas para criar e customizar sistemas agenticos judiciais com Claude Code. Inclui ferramentas para criar agentes, orquestradores, skills, teams e um scaffold completo do sistema SuperJurista -- um sistema de inteligencia aumentada para processamento de processos judiciais, construido com arquitetura de pipelines deterministicos.
 
+## Idioma do projeto
+
+Documentação interna, instruções dos agentes, modelos, formulários, relatórios e
+documentos gerados para pessoas devem usar português brasileiro com acentuação.
+Nomes de comandos, arquivos, chaves de contratos e citações literais dos autos
+permanecem inalterados. A regra está em [`AGENTS.md`](AGENTS.md) para os trabalhos
+no repositório e em [`scaffold/project-claude.md`](scaffold/project-claude.md) para
+instalações no Claude Code. Os documentos ativos herdados em inglês estão sendo
+localizados em etapas; esta regra não indica que a tradução retroativa já terminou.
+
 ## Instalacao
 
 ### Opcao 1: Dentro de uma sessao do Claude Code (recomendado)

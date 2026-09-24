@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -102,6 +103,8 @@ class PipelineResolutionTest(unittest.TestCase):
                 "acquire-case",
                 "extract-record",
                 "build-decision-units",
+                "prepare-triage-input",
+                "narrate-record",
                 "route-claims",
                 "execute-conditional-tracks",
                 "analyze-claims",
@@ -112,7 +115,7 @@ class PipelineResolutionTest(unittest.TestCase):
         )
         self.assertEqual(
             [stage["max_attempts"] for stage in contract["stages"]],
-            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            [2] * 12,
         )
 
         stages = {stage["id"]: stage for stage in contract["stages"]}
@@ -142,11 +145,76 @@ class PipelineResolutionTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
+            stages["prepare-triage-input"]["depends_on"],
+            ["build-decision-units"],
+        )
+        self.assertEqual(
+            stages["prepare-triage-input"]["outputs"],
+            ["{workspace}/triage-input.md"],
+        )
+        self.assertEqual(stages["narrate-record"]["depends_on"], ["prepare-triage-input"])
+        self.assertEqual(
+            stages["narrate-record"]["agent"],
+            "scaffold/agents/extracao/relator-marmelstein-trt12.md",
+        )
+        self.assertEqual(stages["narrate-record"]["outputs"], ["{workspace}/report-narrative.md"])
+        self.assertEqual(stages["route-claims"]["depends_on"], ["narrate-record"])
+        self.assertEqual(
+            stages["route-claims"]["outputs"],
+            [
+                "{workspace}/{case_number}-triagem.md",
+                "{workspace}/fontes-triagem.json",
+                "{workspace}/issue-route.json",
+            ],
+        )
+        self.assertEqual(
             stages["merge-judgment"]["outputs"],
             ["{workspace}/{case_number}-labor-judgment.md"],
         )
         self.assertEqual(stages["route-claims"]["gate"], "route-coverage")
+        self.assertEqual(
+            stages["route-claims"]["agent"],
+            "scaffold/agents/analise/triador-processual-trt12.md",
+        )
+        self.assertEqual(
+            stages["route-claims"]["agent_digest"],
+            hashlib.sha256((ROOT / stages["route-claims"]["agent"]).read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            stages["analyze-claims"].get("agent"),
+            "scaffold/agents/analise/analisador-marmelstein-trt12.md",
+        )
+        self.assertEqual(
+            stages["analyze-claims"]["agent_digest"],
+            hashlib.sha256((ROOT / stages["analyze-claims"]["agent"]).read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            stages["draft-judgment"].get("agent"),
+            "scaffold/agents/analise/fundamentador-marmelstein-trt12.md",
+        )
+        self.assertEqual(
+            stages["draft-judgment"]["agent_digest"],
+            hashlib.sha256((ROOT / stages["draft-judgment"]["agent"]).read_bytes()).hexdigest(),
+        )
+        self.assertNotIn("agent", stages["build-decision-units"])
         self.assertEqual(stages["review-and-gate"]["gate"], "global-acceptance")
+
+    def test_agent_binding_rejects_missing_or_escaping_files(self) -> None:
+        for agent in (
+            "scaffold/agents/analise/missing-agent.md",
+            "../scaffold/agents/analise/triador-processual-trt12.md",
+            "/tmp/triador-processual-trt12.md",
+        ):
+            with self.subTest(agent=agent), tempfile.TemporaryDirectory() as directory:
+                manifest = self.minimal_manifest()
+                manifest["stages"][1]["agent"] = agent
+                invalid = Path(directory) / "invalid-agent.json"
+                invalid.write_text(json.dumps(manifest), encoding="utf-8")
+
+                result = self.resolve("codex", invalid)
+
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn("agent", result.stderr)
 
     def test_manifest_rejects_dependency_cycles(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

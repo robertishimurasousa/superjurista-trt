@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import tests.test_pje_har_map_review as har_fixtures
@@ -15,7 +16,7 @@ import tests.test_pje_har_map_review as har_fixtures
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 VALIDATOR = SCRIPTS / "validate_pilot_preflight.py"
-SCHEMA = ROOT / "runtime" / "operations" / "pilot-preflight.v1.schema.json"
+SCHEMA = ROOT / "runtime" / "operations" / "pilot-preflight.v4.schema.json"
 SANITIZATION_CONTRACT = (
     ROOT / "runtime" / "providers" / "har-sanitization-contract.json"
 )
@@ -47,21 +48,28 @@ class PilotPreflightTest(unittest.TestCase):
         return fixture.seal(report)
 
     def runtime_summary(self) -> dict:
+        if str(SCRIPTS) not in sys.path:
+            sys.path.insert(0, str(SCRIPTS))
+        plan = importlib.import_module("run_synthetic_pipeline")._resolve_plan("codex")
         return {
-            "artifact_count": 19,
+            "artifact_count": sum(
+                len(stage["outputs"]) for stage in plan["contract"]["stages"]
+            ),
             "global_gate_status": "passed",
-            "contract_digest": "d" * 64,
+            "contract_digest": plan["contract_digest"],
             "shared_artifact_digest": "e" * 64,
         }
 
     def preflight(self, endpoint_map: dict) -> dict:
         return {
-            "schema_version": 1,
+            "schema_version": 4,
             "pilot_id": "PILOT-001",
             "created_at": "2026-09-21T12:00:00Z",
+            "valid_until": "2026-09-30T12:00:00Z",
             "tribunal_code": "TRT12",
             "instance": 1,
             "case": {
+                "case_number": "0000000-00.2026.5.12.0000",
                 "reference_digest": "a" * 64,
                 "authorization_scope_digest": "b" * 64,
                 "authorized": True,
@@ -98,6 +106,8 @@ class PilotPreflightTest(unittest.TestCase):
                 "one_case_only": True,
                 "external_actions_allowed": False,
                 "global_gate_enforced": True,
+                "model_providers_authorized": ["codex"],
+                "codex_model_id": "test-codex-model",
                 "requested_operations": [
                     "acquire",
                     "classify",
@@ -110,7 +120,10 @@ class PilotPreflightTest(unittest.TestCase):
             },
         }
 
-    def validate(self, preflight: dict, endpoint_map: dict, workspace: Path, output: Path):
+    def validate(
+        self, preflight: dict, endpoint_map: dict, workspace: Path, output: Path,
+        now: datetime = datetime(2026, 9, 21, 12, tzinfo=timezone.utc),
+    ):
         return self.api().validate_pilot_preflight(
             preflight=preflight,
             endpoint_map=endpoint_map,
@@ -123,6 +136,7 @@ class PilotPreflightTest(unittest.TestCase):
             current_branch="development",
             current_commit=self.current_commit(),
             working_tree_clean=True,
+            now=now,
         )
 
     def test_complete_preflight_authorizes_only_a_local_controlled_pilot(self) -> None:
@@ -141,6 +155,38 @@ class PilotPreflightTest(unittest.TestCase):
         self.assertFalse(result["external_actions_allowed"])
         self.assertEqual(result["case_reference_digest"], "a" * 64)
         self.assertNotIn(str(workspace), json.dumps(result))
+        self.assertNotIn("0000000-00.2026.5.12.0000", json.dumps(result))
+
+    def test_protected_case_number_must_be_a_trt12_first_instance_number(self) -> None:
+        endpoint_map = self.endpoint_map()
+        invalid = self.preflight(endpoint_map)
+        invalid["case"]["case_number"] = "0000000-00.2026.5.02.0000"
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workspace = base / "workspace"
+            output = base / "output"
+            workspace.mkdir()
+            output.mkdir()
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "case_number"):
+                self.validate(invalid, endpoint_map, workspace, output)
+
+    def test_expired_or_future_preflight_is_no_go(self) -> None:
+        endpoint_map = self.endpoint_map()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workspace = base / "workspace"
+            output = base / "output"
+            workspace.mkdir()
+            output.mkdir()
+            preflight = self.preflight(endpoint_map)
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "vencida"):
+                self.validate(
+                    preflight, endpoint_map, workspace, output,
+                    now=datetime(2026, 10, 1, tzinfo=timezone.utc),
+                )
+            preflight["created_at"] = "2026-09-22T12:00:00Z"
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "futura"):
+                self.validate(preflight, endpoint_map, workspace, output)
 
     def test_sealed_or_exceptional_access_case_is_no_go(self) -> None:
         endpoint_map = self.endpoint_map()
@@ -154,7 +200,7 @@ class PilotPreflightTest(unittest.TestCase):
             output = base / "output"
             workspace.mkdir()
             output.mkdir()
-            for document, expected in ((sealed, "sealed"), (exceptional, "exceptional")):
+            for document, expected in ((sealed, "sigilo"), (exceptional, "acesso excepcional")):
                 with self.subTest(expected=expected):
                     with self.assertRaisesRegex(self.api().PilotPreflightError, expected):
                         self.validate(document, endpoint_map, workspace, output)
@@ -162,10 +208,10 @@ class PilotPreflightTest(unittest.TestCase):
     def test_retention_deadlines_cannot_exceed_approved_limits(self) -> None:
         endpoint_map = self.endpoint_map()
         cases = (
-            ("raw_har_delete_by", "2026-09-22T12:00:01Z", "raw HAR"),
-            ("raw_documents_delete_by", "2026-10-30T12:00:01Z", "raw documents"),
-            ("derived_artifacts_delete_by", "2026-12-29T12:00:01Z", "derived"),
-            ("incident_summary_delete_by", "2027-03-20T12:00:01Z", "incident"),
+            ("raw_har_delete_by", "2026-09-22T12:00:01Z", "captura HAR"),
+            ("raw_documents_delete_by", "2026-10-30T12:00:01Z", "documentos originais"),
+            ("derived_artifacts_delete_by", "2026-12-29T12:00:01Z", "artefatos derivados"),
+            ("incident_summary_delete_by", "2027-03-20T12:00:01Z", "resumo de incidente"),
         )
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
@@ -191,7 +237,7 @@ class PilotPreflightTest(unittest.TestCase):
             output = base / "output"
             workspace.mkdir()
             output.mkdir()
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "raw HAR"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "captura HAR"):
                 self.validate(document, endpoint_map, workspace, output)
 
     def test_runtime_evidence_must_be_passing_and_identical(self) -> None:
@@ -199,10 +245,10 @@ class PilotPreflightTest(unittest.TestCase):
         cases = []
         failed_gate = self.preflight(endpoint_map)
         failed_gate["evidence"]["quality_gate_status"] = "failed"
-        cases.append((failed_gate, "quality gate"))
+        cases.append((failed_gate, "controle de qualidade"))
         drifted = self.preflight(endpoint_map)
         drifted["evidence"]["codex_summary"]["shared_artifact_digest"] = "f" * 64
-        cases.append((drifted, "runtime summaries"))
+        cases.append((drifted, "resumos de execução"))
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             workspace = base / "workspace"
@@ -213,6 +259,57 @@ class PilotPreflightTest(unittest.TestCase):
                 with self.subTest(expected=expected):
                     with self.assertRaisesRegex(self.api().PilotPreflightError, expected):
                         self.validate(document, endpoint_map, workspace, output)
+
+    def test_current_runtime_summaries_pass_the_preflight_contract(self) -> None:
+        self.api()
+        pipeline = importlib.import_module("run_synthetic_pipeline")
+        endpoint_map = self.endpoint_map()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            summaries = {}
+            for runtime in ("claude", "codex"):
+                rehearsal = base / runtime
+                rehearsal.mkdir(mode=0o700)
+                summaries[runtime] = pipeline.run_synthetic_pipeline(
+                    runtime,
+                    ROOT / "tests/fixtures/pipeline/synthetic-first-instance.json",
+                    rehearsal,
+                )
+            self.assertEqual(summaries["claude"]["artifact_count"], 24)
+            preflight = self.preflight(endpoint_map)
+            preflight["evidence"]["claude_summary"] = {
+                key: summaries["claude"][key] for key in self.runtime_summary()
+            }
+            preflight["evidence"]["codex_summary"] = {
+                key: summaries["codex"][key] for key in self.runtime_summary()
+            }
+            workspace = base / "workspace"
+            output = base / "output"
+            workspace.mkdir()
+            output.mkdir()
+
+            try:
+                result = self.validate(preflight, endpoint_map, workspace, output)
+            except self.api().PilotPreflightError as error:
+                self.fail(f"os resumos atuais foram recusados: {error}")
+
+        self.assertEqual(result["status"], "go_controlled_pilot")
+
+    def test_matching_but_stale_runtime_count_or_contract_is_rejected(self) -> None:
+        endpoint_map = self.endpoint_map()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workspace = base / "workspace"
+            output = base / "output"
+            workspace.mkdir()
+            output.mkdir()
+            for field, value in (("artifact_count", 19), ("contract_digest", "d" * 64)):
+                preflight = self.preflight(endpoint_map)
+                for runtime in ("claude_summary", "codex_summary"):
+                    preflight["evidence"][runtime][field] = value
+                with self.subTest(field=field):
+                    with self.assertRaisesRegex(self.api().PilotPreflightError, "execução"):
+                        self.validate(preflight, endpoint_map, workspace, output)
 
     def test_endpoint_map_must_be_review_ready_and_digest_bound(self) -> None:
         endpoint_map = self.endpoint_map()
@@ -236,9 +333,9 @@ class PilotPreflightTest(unittest.TestCase):
             output = base / "output"
             workspace.mkdir()
             output.mkdir()
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "endpoint map digest"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "resumo criptográfico do mapa de endpoints"):
                 self.validate(wrong_digest, endpoint_map, workspace, output)
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "endpoint map gaps"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "lacunas no mapa de endpoints"):
                 self.validate(incomplete, incomplete_map, workspace, output)
 
     def test_unobserved_failures_remain_visible_without_requiring_induced_errors(self) -> None:
@@ -283,10 +380,10 @@ class PilotPreflightTest(unittest.TestCase):
             output.mkdir()
             with self.assertRaisesRegex(self.api().PilotPreflightError, "commit"):
                 self.validate(wrong_commit, endpoint_map, workspace, output)
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "outside the repository"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "fora do repositório"):
                 self.validate(self.preflight(endpoint_map), endpoint_map, ROOT / "workspace", output)
 
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "working tree"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "árvore de trabalho"):
                 self.api().validate_pilot_preflight(
                     preflight=self.preflight(endpoint_map),
                     endpoint_map=endpoint_map,
@@ -310,11 +407,11 @@ class PilotPreflightTest(unittest.TestCase):
             workspace.mkdir()
             output.mkdir()
             (output / "stale.json").write_text("{}", encoding="utf-8")
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "output directory must be empty"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "diretório de saída deve estar vazio"):
                 self.validate(self.preflight(endpoint_map), endpoint_map, workspace, output)
 
             (output / "stale.json").unlink()
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "must be distinct"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "devem ser diferentes"):
                 self.validate(self.preflight(endpoint_map), endpoint_map, workspace, workspace)
 
     def test_schema_rejects_unreviewed_controls(self) -> None:
@@ -329,6 +426,17 @@ class PilotPreflightTest(unittest.TestCase):
             output.mkdir()
             with self.assertRaisesRegex(self.api().PilotPreflightError, "campo desconhecido"):
                 self.validate(document, endpoint_map, workspace, output)
+
+    def test_cli_help_explains_preflight_in_portuguese(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(VALIDATOR), "--help"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Validar a verificação prévia do piloto controlado", result.stdout)
 
     def test_cli_writes_only_a_secret_free_go_summary(self) -> None:
         endpoint_map = self.endpoint_map()
@@ -376,6 +484,21 @@ class PilotPreflightTest(unittest.TestCase):
             summary_path = base / "summary.json"
             preflight = self.preflight(endpoint_map)
             preflight["evidence"]["development_commit"] = commit
+            current = datetime.now(timezone.utc)
+            created = current - timedelta(hours=1)
+            review_close = current + timedelta(days=1)
+            def timestamp(value: datetime) -> str:
+                return value.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+            preflight["created_at"] = timestamp(created)
+            preflight["valid_until"] = timestamp(current + timedelta(hours=1))
+            preflight["retention"].update({
+                "raw_har_captured_at": timestamp(created),
+                "planned_review_close_by": timestamp(review_close),
+                "raw_har_delete_by": timestamp(created + timedelta(hours=24)),
+                "raw_documents_delete_by": timestamp(review_close + timedelta(days=30)),
+                "derived_artifacts_delete_by": timestamp(review_close + timedelta(days=90)),
+                "incident_summary_delete_by": timestamp(created + timedelta(days=180)),
+            })
             preflight_path.write_text(json.dumps(preflight), encoding="utf-8")
             endpoint_map_path.write_text(json.dumps(endpoint_map), encoding="utf-8")
 
@@ -409,6 +532,7 @@ class PilotPreflightTest(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("[GO] verificação prévia do piloto controlado", result.stdout)
             summary = json.loads(summary_path.read_text(encoding="utf-8"))
             self.assertEqual(summary["status"], "go_controlled_pilot")
             serialized = json.dumps(summary)

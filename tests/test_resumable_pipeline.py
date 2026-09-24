@@ -58,6 +58,7 @@ class ResumablePipelineTest(unittest.TestCase):
                         "condition": "always",
                         "outputs": ["{workspace}/artifact-b.json"],
                         "gate": "gate-b",
+                        "agent": "scaffold/agents/analise/triador-processual-trt12.md",
                     },
                     {
                         "id": "stage-c",
@@ -128,6 +129,10 @@ class ResumablePipelineTest(unittest.TestCase):
         self.assertEqual(resume["reused_stages"], ["stage-a"])
         self.assertEqual(resume["pending_stages"], ["stage-b", "stage-c"])
         self.assertEqual(resume["next_stage"], "stage-b")
+        self.assertEqual(
+            resume["next_agent"],
+            "scaffold/agents/analise/triador-processual-trt12.md",
+        )
 
     def test_claude_and_codex_share_resume_state_but_keep_dispatch(self) -> None:
         module = self.api()
@@ -156,6 +161,7 @@ class ResumablePipelineTest(unittest.TestCase):
         self.assertEqual(results["codex"]["reused_stages"], ["stage-a"])
         self.assertEqual(results["claude"]["dispatch"], "Task")
         self.assertEqual(results["codex"]["dispatch"], "agent")
+        self.assertEqual(results["claude"]["next_agent"], results["codex"]["next_agent"])
 
     def test_modified_output_invalidates_the_stage_and_every_dependent_stage(self) -> None:
         module = self.api()
@@ -289,6 +295,18 @@ class ResumablePipelineTest(unittest.TestCase):
 
             self.write(workspace, "artifact-a.json", "rejected: a")
             with self.assertRaisesRegex(module.ResumeContractError, "content gate"):
+                self.accept(module, plan, workspace, state, "stage-a")
+
+    def test_stage_output_symlink_inside_workspace_cannot_be_checkpointed(self) -> None:
+        module = self.api()
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            plan = self.plan("codex")
+            state = module.new_execution_state(plan, SOURCE_FINGERPRINT)
+            target = self.write(workspace, "copy.json", "accepted: content")
+            (workspace / "artifact-a.json").symlink_to(target)
+
+            with self.assertRaisesRegex(module.ResumeContractError, "vínculo simbólico"):
                 self.accept(module, plan, workspace, state, "stage-a")
 
     def test_attempt_must_stay_inside_the_manifest_retry_limit(self) -> None:

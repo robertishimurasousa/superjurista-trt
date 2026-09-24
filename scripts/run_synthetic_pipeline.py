@@ -11,10 +11,13 @@ import stat
 import sys
 from pathlib import Path
 
+from build_superjurista_triage_input import build_triage_input
 from evaluate_final_gate import evaluate_final_gate, require_final_acceptance
+from import_superjurista_triage import import_triage
+from trt12_draft_gate import validate_draft_content
 from resolve_runtime_pipeline import contract_digest, normalize_manifest
 from validate_artifact_contracts import load_catalog, validate_document
-from validate_decision_congruence import validate_decision_congruence
+from validate_superjurista_report import validate_report_narrative
 from verify_runtime_contract import (
     SUPPORTED_RUNTIMES,
     ContractError,
@@ -45,12 +48,16 @@ FIXTURE_ARTIFACTS = {
     "document-classification.json",
     "procedural-timeline.json",
     "labor-report.json",
+    "report-narrative.md",
+    "triage.md",
+    "fontes-triagem.json",
     "claim-matrix.json",
     "evidence-matrix.json",
     "issue-route.json",
     "precedent-corpus.json",
     "evidence-review.json",
     "calculation-review.json",
+    "conditional-work-results.json",
     "claim-analysis.json",
     "disposition-matrix.json",
     "judgment-draft.md",
@@ -69,16 +76,31 @@ def run_synthetic_pipeline(runtime: str, fixture_path: Path, workspace: Path) ->
     plan = _resolve_plan(runtime)
     artifacts = fixture["artifacts"]
     _validate_contract_artifacts(artifacts)
+    triage_input = build_triage_input(
+        artifacts["labor-report.json"], artifacts["claim-matrix.json"]
+    )
+    validate_report_narrative(
+        artifacts["labor-report.json"],
+        artifacts["claim-matrix.json"],
+        triage_input,
+        artifacts["report-narrative.md"],
+    )
 
     case_number = fixture["case_number"]
     if artifacts["case-context.json"]["case_number"] != case_number:
-        raise SyntheticPipelineError("fixture case number does not match case context")
-    claim_ids = tuple(
-        item["claim_id"] for item in artifacts["claim-matrix.json"]["claims"]
+        raise SyntheticPipelineError("número do processo da amostra diverge do contexto")
+    imported_route = import_triage(
+        artifacts["triage.md"],
+        artifacts["claim-matrix.json"],
+        artifacts["fontes-triagem.json"],
+        case_number,
+        hashlib.sha256(triage_input.encode("utf-8")).hexdigest(),
     )
+    if imported_route != artifacts["issue-route.json"]:
+        raise SyntheticPipelineError("a rota derivada da triagem diverge do artefato esperado")
     draft = artifacts["judgment-draft.md"]
-    congruence = validate_decision_congruence(
-        claim_ids,
+    congruence = validate_draft_content(
+        artifacts["claim-matrix.json"],
         artifacts["claim-analysis.json"],
         artifacts["disposition-matrix.json"],
         draft,
@@ -95,7 +117,10 @@ def run_synthetic_pipeline(runtime: str, fixture_path: Path, workspace: Path) ->
     files = {
         name: _serialize_artifact(value)
         for name, value in artifacts.items()
+        if name != "triage.md"
     }
+    files["triage-input.md"] = triage_input.encode("utf-8")
+    files[f"{case_number}-triagem.md"] = artifacts["triage.md"].encode("utf-8")
     files["execution-manifest.json"] = _serialize_artifact(plan)
     files[f"{case_number}-labor-judgment.md"] = draft.encode("utf-8")
     files["global-gate.json"] = _serialize_artifact(global_gate)
@@ -131,27 +156,33 @@ def _load_fixture(path: Path) -> dict:
     try:
         fixture = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as error:
-        raise SyntheticPipelineError(f"fixture not found: {path}") from error
+        raise SyntheticPipelineError("amostra sintética não encontrada") from error
     except json.JSONDecodeError as error:
-        raise SyntheticPipelineError(f"invalid fixture JSON: {error.msg}") from error
+        raise SyntheticPipelineError(
+            f"JSON da amostra sintética inválido na linha {error.lineno}, coluna {error.colno}"
+        ) from error
     if not isinstance(fixture, dict) or set(fixture) != {
         "schema_version",
         "fixture_id",
         "case_number",
         "artifacts",
     }:
-        raise SyntheticPipelineError("fixture root fields are invalid")
+        raise SyntheticPipelineError("campos da raiz da amostra sintética são inválidos")
     if fixture["schema_version"] != 1:
-        raise SyntheticPipelineError("fixture schema_version must be 1")
+        raise SyntheticPipelineError("schema_version da amostra sintética deve ser 1")
     if not isinstance(fixture["fixture_id"], str) or not fixture["fixture_id"]:
-        raise SyntheticPipelineError("fixture_id must be a non-empty string")
+        raise SyntheticPipelineError("fixture_id deve ser texto não vazio")
     if not isinstance(fixture["case_number"], str) or not fixture["case_number"]:
-        raise SyntheticPipelineError("case_number must be a non-empty string")
+        raise SyntheticPipelineError("case_number deve ser texto não vazio")
     artifacts = fixture["artifacts"]
     if not isinstance(artifacts, dict) or set(artifacts) != FIXTURE_ARTIFACTS:
-        raise SyntheticPipelineError("fixture artifacts do not match pipeline inputs")
+        raise SyntheticPipelineError("artefatos da amostra divergem das entradas do fluxo")
     if not isinstance(artifacts["judgment-draft.md"], str):
-        raise SyntheticPipelineError("judgment draft fixture must be text")
+        raise SyntheticPipelineError("minuta da amostra deve ser texto")
+    if not isinstance(artifacts["report-narrative.md"], str):
+        raise SyntheticPipelineError("narrativa do relatório da amostra deve ser texto")
+    if not isinstance(artifacts["triage.md"], str):
+        raise SyntheticPipelineError("triagem da amostra deve ser texto")
     return fixture
 
 
@@ -187,7 +218,7 @@ def _validate_contract_artifacts(artifacts: dict) -> None:
         issues = validate_document(artifacts[filename], schema)
         if issues:
             raise SyntheticPipelineError(
-                f"{contract_id.replace('-', ' ')} contract failed: "
+                f"contrato {contract_id} inválido: "
                 + "; ".join(issues)
             )
 
@@ -210,8 +241,8 @@ def _require_manifest_outputs(contract: dict, files: dict, case_number: str) -> 
     missing = sorted(expected - set(files))
     unexpected = sorted(set(files) - expected)
     if missing or unexpected:
-        detail = f"missing={missing}; unexpected={unexpected}"
-        raise SyntheticPipelineError(f"pipeline output coverage failed: {detail}")
+        detail = f"ausentes={missing}; inesperados={unexpected}"
+        raise SyntheticPipelineError(f"cobertura das saídas do fluxo inválida: {detail}")
 
 
 def _shared_digest(files: dict[str, bytes]) -> str:
@@ -225,7 +256,7 @@ def _shared_digest(files: dict[str, bytes]) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the sanitized pipeline fixture.")
+    parser = argparse.ArgumentParser(description="Executa a amostra sintética do fluxo sanitizado.")
     parser.add_argument("--runtime", required=True, choices=SUPPORTED_RUNTIMES)
     parser.add_argument("--fixture", required=True, type=Path)
     parser.add_argument("--workspace", required=True, type=Path)

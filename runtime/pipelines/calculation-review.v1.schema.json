@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/calculation-review.v1.schema.json",
+  "title": "Custódia dos critérios de cálculo por pedido v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "calculations"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "calculations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "status", "criteria", "unavailability_reason"],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^CLM-[0-9]{3,}$"},
+          "status": {
+            "type": "string",
+            "enum": ["not_required", "pending_human_review", "criteria_reviewed"]
+          },
+          "criteria": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "unavailability_reason": {"type": "string"}
+        }
+      }
+    }
+  }
+}

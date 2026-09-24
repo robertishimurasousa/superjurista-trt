@@ -49,9 +49,21 @@ class LaborDefenseExtractionTest(unittest.TestCase):
             ],
         )
         self.assertTrue(all(item.kind == "defense" for item in result))
+        self.assertEqual(
+            [item.summary for item in result],
+            [
+                "A parte reclamada impugna o pedido de verbas rescisórias.",
+                "A parte reclamada impugna o pedido relativo ao intervalo intrajornada.",
+                "A parte reclamada impugna o alegado dano extrapatrimonial e a indenização requerida.",
+                "A parte reclamada impugna a multa do art. 467 da CLT.",
+                "A parte reclamada impugna a multa do art. 477 da CLT.",
+                "A parte reclamada impugna o pedido de assistência judiciária gratuita.",
+                "A parte reclamada impugna o pedido de honorários advocatícios da parte autora.",
+            ],
+        )
         self.assertEqual(result[3].source.document_id, "DOC-028")
-        self.assertEqual(result[3].source.locator, "page 82, defense section heading")
-        self.assertEqual(result[4].source.locator, "page 82, defense section heading")
+        self.assertEqual(result[3].source.locator, "página 82, título da seção de defesa")
+        self.assertEqual(result[4].source.locator, "página 82, título da seção de defesa")
 
     def test_position_group_keeps_multiple_defense_documents_distinct(self) -> None:
         api = self.api()

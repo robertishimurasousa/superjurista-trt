@@ -178,6 +178,10 @@ class UrllibFalcaoTransport:
                 raise TRT12AdapterError(
                     "official Falcão rate limit is active; retry after its published window"
                 ) from error
+            if isinstance(error, HTTPError) and error.code == 403:
+                raise TRT12AdapterError(
+                    "acesso ao Falcão negado (HTTP 403); não repetir consultas automaticamente"
+                ) from error
             raise TRT12AdapterError("official Falcão source request failed") from error
         if len(body) > max_bytes:
             raise TRT12AdapterError("official Falcão response exceeded the size limit")

@@ -6,20 +6,24 @@ agent: general-purpose
 allowed-tools: Bash Read Write mcp__claude-in-chrome__tabs_context_mcp mcp__claude-in-chrome__tabs_create_mcp mcp__claude-in-chrome__javascript_tool mcp__claude-in-chrome__navigate mcp__claude-in-chrome__form_input mcp__claude-in-chrome__computer mcp__claude-in-chrome__read_page
 ---
 
-# Capturar Sessao PJE
+# Capturar sessão do PJe — fluxo legado do TRF5
 
-> **Legacy boundary:** this fork skill describes the original TRF5 browser workflow and is
-> not the TRT12 runtime adapter. Preserve it as behavioral reference only. TRT12 session
-> probing must use the reviewed provider map and the secret-free classifier in
-> `scripts/pje_session_adapter.py`; no TRT12 endpoint, cookie, MFA, or login behavior may be
-> inferred from the examples below.
+> **Não execute a captura de sessão legada para o TRT12.** Esta instrução do
+> fork descreve o navegador e a autenticação do TRF5; serve apenas como
+> referência de comportamento herdado. Os comandos de sanitização e validação
+> do mapa HAR são auxiliares do TRT12, mas não autenticam nem obtêm processos.
+> A verificação da sessão TRT12 exige o mapa do provedor revisado e o
+> classificador sem segredos em
+> `scripts/pje_session_adapter.py`. Os exemplos abaixo não comprovam endpoints,
+> cookies, MFA nem comportamento de login do TRT12.
 
 <identidade>
 Especialista em automacao de captura de sessao do PJE TRF5 via Chrome MCP.
 </identidade>
 
 <proposito>
-Automatizar o login no PJE e captura de cookies de sessao para uso pelos scripts de listagem e download de processos.
+Automatizar o login no PJe do TRF5 e capturar cookies de sessão para os scripts
+legados de listagem e download de processos desse tribunal.
 </proposito>
 
 ---
@@ -246,8 +250,8 @@ python3 .claude/skills/pje-download/scripts/extrair_cookies_har.py \
   --output pje_session.json
 ```
 
-For adapter discovery evidence, keep the raw HAR outside the repository and generate a
-separate sanitized map:
+Para produzir evidências de descoberta do adaptador, mantenha o HAR bruto fora
+do repositório e gere um mapa sanitizado separado:
 
 ```bash
 python3 scripts/sanitize_pje_har.py \
@@ -258,10 +262,11 @@ python3 scripts/sanitize_pje_har.py \
   --authorized-capture
 ```
 
-The flag is an operator acknowledgement, not an authorization detector. Review the JSON map
-before committing it. Never commit the raw HAR or `pje_session.json`.
+A opção `--authorized-capture` registra uma declaração do operador; ela não
+detecta autorização por conta própria. Revise o mapa JSON antes de incluí-lo
+em um commit. Nunca inclua o HAR bruto nem `pje_session.json` em um commit.
 
-Validate the map before review:
+Valide o mapa antes da revisão:
 
 ```bash
 python3 scripts/validate_pje_har_map.py \

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/conditional-work-results.v1.schema.json",
+  "title": "Custódia das trilhas condicionais v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "results"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "work_id", "claim_id", "track", "custody_status", "source_ids", "limitations"
+        ],
+        "properties": {
+          "work_id": {
+            "type": "string",
+            "pattern": "^WRK-CLM-[0-9]{3,}-(LEGAL|EVIDENCE|CALCULATION|PROCEDURAL)$"
+          },
+          "claim_id": {"type": "string", "pattern": "^CLM-[0-9]{3,}$"},
+          "track": {
+            "type": "string",
+            "enum": [
+              "legal_research", "evidence_analysis", "calculation_review", "procedural_review"
+            ]
+          },
+          "custody_status": {"type": "string", "enum": ["linked", "gap"]},
+          "source_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "limitations": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}

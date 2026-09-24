@@ -43,7 +43,9 @@ ALLOWED_STAGE_FIELDS = {
     "condition",
     "outputs",
     "gate",
+    "agent",
 }
+REQUIRED_STAGE_FIELDS = ALLOWED_STAGE_FIELDS - {"agent"}
 ALLOWED_GATE_KINDS = {"composite", "contract", "deterministic"}
 
 
@@ -111,6 +113,23 @@ def topological_stage_ids(stages: list[dict]) -> list[str]:
     return result
 
 
+def validate_agent_path(value: object, stage_id: str) -> tuple[str, str]:
+    if not isinstance(value, str) or not value:
+        raise ContractError(f"stage {stage_id} agent must be a repository-relative path")
+    path = Path(value)
+    if (
+        path.is_absolute()
+        or path.parts[:2] != ("scaffold", "agents")
+        or ".." in path.parts
+        or path.suffix != ".md"
+    ):
+        raise ContractError(f"stage {stage_id} agent must be under scaffold/agents")
+    resolved = (ROOT / path).resolve()
+    if not resolved.is_relative_to((ROOT / "scaffold" / "agents").resolve()) or not resolved.is_file():
+        raise ContractError(f"stage {stage_id} agent file is missing or unsafe: {value}")
+    return path.as_posix(), hashlib.sha256(resolved.read_bytes()).hexdigest()
+
+
 def validate_stages(stages: object, gates: dict, max_attempts: int) -> list[dict]:
     if not isinstance(stages, list) or not stages:
         raise ContractError("stages must be a non-empty list")
@@ -123,7 +142,7 @@ def validate_stages(stages: object, gates: dict, max_attempts: int) -> list[dict
         unknown = sorted(set(stage).difference(ALLOWED_STAGE_FIELDS))
         if unknown:
             raise ContractError(f"unknown stage field: {unknown[0]}")
-        missing = sorted(ALLOWED_STAGE_FIELDS.difference(stage))
+        missing = sorted(REQUIRED_STAGE_FIELDS.difference(stage))
         if missing:
             raise ContractError(f"missing stage field: {missing[0]}")
         stage_id = stage["id"]
@@ -150,17 +169,20 @@ def validate_stages(stages: object, gates: dict, max_attempts: int) -> list[dict
             seen_outputs.add(output)
         if stage["gate"] not in gates:
             raise ContractError(f"stage {stage_id} references unknown gate: {stage['gate']}")
-        normalized.append(
-            {
-                "id": stage_id,
-                "capability": stage["capability"],
-                "depends_on": stage["depends_on"],
-                "condition": stage["condition"],
-                "outputs": stage["outputs"],
-                "gate": stage["gate"],
-                "max_attempts": max_attempts,
-            }
-        )
+        normalized_stage = {
+            "id": stage_id,
+            "capability": stage["capability"],
+            "depends_on": stage["depends_on"],
+            "condition": stage["condition"],
+            "outputs": stage["outputs"],
+            "gate": stage["gate"],
+            "max_attempts": max_attempts,
+        }
+        if "agent" in stage:
+            normalized_stage["agent"], normalized_stage["agent_digest"] = validate_agent_path(
+                stage["agent"], stage_id
+            )
+        normalized.append(normalized_stage)
 
     known = {stage["id"] for stage in normalized}
     for stage in normalized:

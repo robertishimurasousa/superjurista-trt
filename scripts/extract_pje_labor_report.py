@@ -106,19 +106,19 @@ def _procedure(title: str) -> str:
         return "summary"
     if "RITO ORDINARIO" in normalized:
         return "ordinary"
-    raise PJeLaborReportExtractionError("PJe title procedure is unsupported")
+    raise PJeLaborReportExtractionError("rito informado no título do PJe não é suportado")
 
 
 def _party_names(subject: str, initial_page_text: str) -> tuple[str, tuple[str, ...]]:
     subject_match = SUBJECT_PARTIES.search(_squash(subject))
     if subject_match is None:
-        raise PJeLaborReportExtractionError("PJe subject parties are missing")
+        raise PJeLaborReportExtractionError("partes ausentes nos metadados do PJe")
     claimant = _squash(subject_match.group("claimant")).strip(" ,.;")
     primary_respondent = _squash(subject_match.group("respondent")).strip(" ,.;")
     initial_text = _squash(initial_page_text)
     if _identity(claimant) not in _identity(initial_text):
         raise PJeLaborReportExtractionError(
-            "claimant metadata is not present in the initial pleading"
+            "reclamante dos metadados não consta da petição inicial"
         )
 
     respondents = tuple(
@@ -127,16 +127,16 @@ def _party_names(subject: str, initial_page_text: str) -> tuple[str, tuple[str, 
     )
     if not respondents:
         raise PJeLaborReportExtractionError(
-            "initial pleading respondent qualifications are missing"
+            "qualificações das reclamadas ausentes na petição inicial"
         )
     primary_identity = _identity(primary_respondent)
     if all(_identity(name) != primary_identity for name in respondents):
         raise PJeLaborReportExtractionError(
-            "primary respondent metadata is not present in the initial pleading"
+            "reclamada principal dos metadados não consta da petição inicial"
         )
     if len({_identity(name) for name in respondents}) != len(respondents):
         raise PJeLaborReportExtractionError(
-            "initial pleading respondent qualifications are duplicated"
+            "qualificações das reclamadas estão duplicadas na petição inicial"
         )
     return claimant, respondents
 
@@ -160,23 +160,23 @@ def extract_context_candidates(
     title_text = _squash(title)
     case_match = CASE_NUMBER.search(title_text)
     if case_match is None:
-        raise PJeLaborReportExtractionError("PJe title case number is missing")
+        raise PJeLaborReportExtractionError("número do processo ausente no título do PJe")
     case_number = case_match.group(0)
     region = case_number.split(".")[3]
     expected_tribunal = f"TRT{int(region)}"
     if tribunal != expected_tribunal:
         raise PJeLaborReportExtractionError(
-            "requested tribunal does not match the case number"
+            "tribunal solicitado não corresponde ao número do processo"
         )
 
     court_match = COURT_UNIT.search(_squash(court_page_text))
     if court_match is None:
-        raise PJeLaborReportExtractionError("court unit is missing")
+        raise PJeLaborReportExtractionError("unidade judiciária não identificada")
     court_unit = _squash(court_match.group("unit")).strip(" ,.;")
     claimant, respondents = _party_names(subject, initial_page_text)
     source = SourceReference(
         document_id=initial_document_id,
-        locator=f"page {initial_page}, party qualification",
+        locator=f"página {initial_page}, qualificação das partes",
     )
     parties = (
         PartyCandidate(
@@ -213,7 +213,7 @@ def extract_context_candidates(
             status="identified",
             source=SourceReference(
                 document_id=phase_document_id,
-                locator=f"page {phase_page}, procedural document",
+                locator=f"página {phase_page}, documento processual",
             ),
         ),
     )
@@ -227,15 +227,15 @@ def select_source_documents(segments: dict, classification: dict) -> SourceDocum
     ]
     if len(segment_ids) != len(set(segment_ids)):
         raise PJeLaborReportExtractionError(
-            "segment document identifiers must be unique"
+            "identificadores dos documentos segmentados devem ser únicos"
         )
     if len(classification_ids) != len(set(classification_ids)):
         raise PJeLaborReportExtractionError(
-            "classification document identifiers must be unique"
+            "identificadores dos documentos classificados devem ser únicos"
         )
     if set(segment_ids) != set(classification_ids):
         raise PJeLaborReportExtractionError(
-            "segment and classification document sets must match exactly"
+            "documentos da segmentação e classificação devem corresponder exatamente"
         )
 
     documents_by_id = {
@@ -250,7 +250,7 @@ def select_source_documents(segments: dict, classification: dict) -> SourceDocum
     initial_ids = sorted(ids_by_type.get("initial_pleading", []))
     if len(initial_ids) != 1:
         raise PJeLaborReportExtractionError(
-            "exactly one classified initial pleading is required"
+            "é necessária exatamente uma petição inicial classificada"
         )
     defense_ids = sorted(ids_by_type.get("defense", []))
     hearing_ids = sorted(ids_by_type.get("hearing_record", []))
@@ -308,11 +308,11 @@ def build_partial_labor_report(
         timeline_candidates(timeline),
         positions,
     )
-    schema = load_json(schema_path, "labor report schema")
+    schema = load_json(schema_path, "esquema do relatório trabalhista")
     issues = validate_schema_value(report, schema)
     if issues:
         raise PJeLaborReportExtractionError(
-            "labor report contract failed: " + "; ".join(issues)
+            "contrato do relatório trabalhista inválido: " + "; ".join(issues)
         )
     return report
 
@@ -324,7 +324,7 @@ def _validate_artifact(
     *,
     semantic: bool = False,
 ) -> None:
-    schema = load_json(schema_path, f"{label} schema")
+    schema = load_json(schema_path, f"esquema de {label}")
     issues = (
         validate_document(value, schema)
         if semantic
@@ -332,16 +332,16 @@ def _validate_artifact(
     )
     if issues:
         raise PJeLaborReportExtractionError(
-            f"{label} contract failed: " + "; ".join(issues)
+            f"contrato de {label} inválido: " + "; ".join(issues)
         )
 
 
 def _page_text(reader: PdfReader, page_number: int, label: str) -> str:
     if page_number < 1 or page_number > len(reader.pages):
-        raise PJeLaborReportExtractionError(f"{label} page is outside the PDF")
+        raise PJeLaborReportExtractionError(f"página de {label} fora do PDF")
     text = reader.pages[page_number - 1].extract_text() or ""
     if not text.strip():
-        raise PJeLaborReportExtractionError(f"{label} page has no extractable text")
+        raise PJeLaborReportExtractionError(f"página de {label} sem texto extraível")
     return text
 
 
@@ -372,28 +372,28 @@ def extract_pdf_labor_report(
     labor_report_schema_path: Path,
 ) -> dict:
     """Extract a schema-valid partial report from one custodied PJe PDF."""
-    _validate_artifact(segments, segment_schema_path, "PJe PDF segments")
+    _validate_artifact(segments, segment_schema_path, "segmentos do PDF do PJe")
     _validate_artifact(
         classification,
         classification_schema_path,
-        "document classification",
+        "classificação documental",
     )
     _validate_artifact(
         timeline,
         timeline_schema_path,
-        "procedural timeline",
+        "linha do tempo processual",
         semantic=True,
     )
 
     source = pdf_path.resolve()
     if not source.is_file():
-        raise PJeLaborReportExtractionError(f"PJe PDF not found: {source}")
+        raise PJeLaborReportExtractionError("PDF do PJe não encontrado")
     reader = PdfReader(str(source))
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     source_pdf = segments["source_pdf"]
     if digest != source_pdf["sha256"] or len(reader.pages) != source_pdf["page_count"]:
         raise PJeLaborReportExtractionError(
-            "PDF custody does not match the segment artifact"
+            "custódia do PDF não corresponde ao artefato de segmentação"
         )
 
     selected = select_source_documents(segments, classification)
@@ -401,13 +401,13 @@ def extract_pdf_labor_report(
     title = metadata.get("/Title")
     subject = metadata.get("/Subject")
     if not isinstance(title, str) or not title.strip():
-        raise PJeLaborReportExtractionError("PJe PDF title metadata is missing")
+        raise PJeLaborReportExtractionError("metadado de título ausente no PDF do PJe")
     if not isinstance(subject, str) or not subject.strip():
-        raise PJeLaborReportExtractionError("PJe PDF subject metadata is missing")
+        raise PJeLaborReportExtractionError("metadado de assunto ausente no PDF do PJe")
     initial_pages = _document_page_texts(
         reader,
         selected.initial,
-        "initial pleading",
+        "petição inicial",
     )
     context = extract_context_candidates(
         title=title,
@@ -416,7 +416,7 @@ def extract_pdf_labor_report(
         court_page_text=_page_text(
             reader,
             selected.court["page_start"],
-            "court unit source",
+            "fonte da unidade judiciária",
         ),
         initial_document_id=selected.initial["document_id"],
         initial_page=selected.initial["page_start"],
@@ -436,7 +436,7 @@ def extract_pdf_labor_report(
         for group, document in enumerate(selected.defenses, 1)
         for position in extract_defense_positions(
             defense_document_id=document["document_id"],
-            page_texts=_document_page_texts(reader, document, "defense"),
+            page_texts=_document_page_texts(reader, document, "contestação"),
             position_group=group,
         )
     )
@@ -470,16 +470,16 @@ def write_labor_report_artifact(
     repository = repository_root.resolve()
     if destination == repository or _is_within(destination, repository):
         raise PJeLaborReportExtractionError(
-            "labor report output must stay outside repository"
+            "saída do relatório trabalhista deve ficar fora do repositório"
         )
     if not destination.is_dir():
         raise PJeLaborReportExtractionError(
-            "labor report output directory must already exist"
+            "diretório de saída do relatório trabalhista deve existir previamente"
         )
 
     path = destination / "labor-report.json"
     if path.exists():
-        raise PJeLaborReportExtractionError("labor report output already exists")
+        raise PJeLaborReportExtractionError("saída do relatório trabalhista já existe")
     payload = (json.dumps(report, ensure_ascii=False, indent=2) + "\n").encode(
         "utf-8"
     )
@@ -491,7 +491,7 @@ def write_labor_report_artifact(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Extract a protected source-linked labor report from one PJe PDF.",
+        description="Extrai um relatório trabalhista protegido e vinculado às fontes de um PDF do PJe.",
     )
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--segments", required=True, type=Path)
@@ -531,9 +531,9 @@ def main() -> int:
     try:
         report = extract_pdf_labor_report(
             args.input,
-            load_json(args.segments, "PJe PDF segments"),
-            load_json(args.classification, "document classification"),
-            load_json(args.timeline, "procedural timeline"),
+            load_json(args.segments, "segmentos do PDF do PJe"),
+            load_json(args.classification, "classificação documental"),
+            load_json(args.timeline, "linha do tempo processual"),
             tribunal=args.tribunal,
             instance=args.instance,
             confidentiality=args.confidentiality,
@@ -549,15 +549,15 @@ def main() -> int:
             repository_root=args.repository_root,
         )
     except (KeyError, OSError, PJeLaborReportExtractionError, TypeError, ValueError) as error:
-        print(f"[ERROR] PJe labor report: {error}", file=sys.stderr)
+        print(f"[ERRO] Relatório trabalhista do PJe: {error}", file=sys.stderr)
         return 1
 
     print(
-        "[OK] PJe labor report: "
-        f"parties={len(report['parties'])} "
-        f"events={len(report['timeline'])} "
-        f"positions={len(report['positions'])} "
-        f"gaps={len(report['review_gaps'])}"
+        "[OK] Relatório trabalhista do PJe: "
+        f"partes={len(report['parties'])} "
+        f"eventos={len(report['timeline'])} "
+        f"posições={len(report['positions'])} "
+        f"lacunas={len(report['review_gaps'])}"
     )
     return 0
 

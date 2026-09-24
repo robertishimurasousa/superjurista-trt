@@ -32,8 +32,8 @@ class ReuseLedgerTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             ledger = json.loads(output.read_text(encoding="utf-8"))
             components = ledger["components"]
-            self.assertEqual(len(components), 107)
-            self.assertEqual(len({item["path"] for item in components}), 107)
+            self.assertEqual(len(components), 113)
+            self.assertEqual(len({item["path"] for item in components}), 113)
             self.assertEqual(ledger["unclassified_count"], 0)
             self.assertEqual(
                 {item["disposition"] for item in components},
@@ -70,6 +70,26 @@ class ReuseLedgerTest(unittest.TestCase):
                 components["scaffold/agents/extracao/linha-tempo-processual.md"]["disposition"],
                 "adapt",
             )
+            self.assertEqual(
+                components["scaffold/agents/extracao/relator-marmelstein-trt12.md"]["disposition"],
+                "adapt",
+            )
+            self.assertEqual(
+                components["scaffold/agents/analise/analista-documental-trt12.md"]["disposition"],
+                "adapt",
+            )
+            self.assertEqual(
+                components["scaffold/agents/analise/analisador-marmelstein-trt12.md"]["disposition"],
+                "adapt",
+            )
+            self.assertEqual(
+                components["scaffold/agents/analise/fundamentador-marmelstein-trt12.md"]["disposition"],
+                "adapt",
+            )
+            self.assertEqual(
+                components["scaffold/agents/analise/inventariador-probatica-trt12.md"]["disposition"],
+                "adapt",
+            )
             self.assertEqual(components["scaffold/agents/lista-trf/01-extracao.md"]["disposition"], "retire")
             self.assertEqual(components["scaffold/mcp-servers/bnp-api/server.py"]["disposition"], "adapt")
             self.assertEqual(
@@ -80,6 +100,26 @@ class ReuseLedgerTest(unittest.TestCase):
             self.assertEqual(
                 components["scaffold/scripts/verificar_pipeline.py"]["runtime_dependencies"],
                 [],
+            )
+
+    def test_generated_inventory_explains_decisions_in_portuguese(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "ledger.json"
+            result = subprocess.run(
+                [
+                    sys.executable, str(BUILD_SCRIPT),
+                    "--root", str(ROOT), "--output", str(output),
+                ],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            ledger = json.loads(output.read_text(encoding="utf-8"))
+            components = {item["path"]: item for item in ledger["components"]}
+
+            self.assertEqual(ledger.get("locale"), "pt-BR")
+            self.assertIn(
+                "Justiça do Trabalho",
+                components["scaffold/agents/pesquisa/pesquisador-cjf.md"]["rationale"],
             )
 
 

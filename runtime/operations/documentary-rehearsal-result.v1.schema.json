@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/documentary-rehearsal-result.v1.schema.json",
+  "title": "Resumo protegido do ensaio documental sintético v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "execution_mode", "model_id", "agent_sha256",
+    "source_pdf_sha256", "source_packet_sha256", "observations_sha256",
+    "review_fragment_sha256", "receipt_fragment_sha256", "finished_at"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "status": {"type": "string", "enum": ["pending_human_review", "insufficient"]},
+    "execution_mode": {"type": "string", "enum": ["codex_cli", "simulated"]},
+    "model_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,79}$"},
+    "agent_sha256": {"$ref": "#/$defs/sha256"},
+    "source_pdf_sha256": {"$ref": "#/$defs/sha256"},
+    "source_packet_sha256": {"$ref": "#/$defs/sha256"},
+    "observations_sha256": {"$ref": "#/$defs/sha256"},
+    "review_fragment_sha256": {"$ref": "#/$defs/sha256"},
+    "receipt_fragment_sha256": {"$ref": "#/$defs/sha256"},
+    "finished_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

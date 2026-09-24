@@ -226,7 +226,7 @@ def extract_requested_remedies(
                 "claim_id": claim_id,
                 "remedy_codes": remedies,
                 "source_document_id": document_id,
-                "source_locator": f"page {item['page']}, request {request_id}",
+                "source_locator": f"página {item['page']}, pedido {request_id}",
                 "text": text,
                 "review_gaps": gaps,
             }

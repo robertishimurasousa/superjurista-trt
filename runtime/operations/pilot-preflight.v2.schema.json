@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/pilot-preflight.v2.schema.json",
+  "title": "TRT12 first-instance controlled pilot preflight v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pilot_id",
+    "created_at",
+    "tribunal_code",
+    "instance",
+    "case",
+    "roles",
+    "evidence",
+    "retention",
+    "controls"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 2
+    },
+    "pilot_id": {
+      "type": "string",
+      "pattern": "^PILOT-[A-Z0-9_-]{3,32}$"
+    },
+    "created_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "tribunal_code": {
+      "type": "string",
+      "const": "TRT12"
+    },
+    "instance": {
+      "type": "integer",
+      "const": 1
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference_digest",
+        "authorization_scope_digest",
+        "authorized",
+        "access_classification",
+        "exceptional_access_required"
+      ],
+      "properties": {
+        "reference_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "authorization_scope_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "authorized": {
+          "type": "boolean",
+          "const": true
+        },
+        "access_classification": {
+          "type": "string",
+          "enum": [
+            "public_or_authorized",
+            "restricted_authorized",
+            "sealed_authorized"
+          ]
+        },
+        "exceptional_access_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator_id",
+        "legal_reviewer_id",
+        "incident_owner_id",
+        "data_steward_id"
+      ],
+      "properties": {
+        "operator_id": {
+          "$ref": "#/$defs/actor_id"
+        },
+        "legal_reviewer_id": {
+          "$ref": "#/$defs/actor_id"
+        },
+        "incident_owner_id": {
+          "$ref": "#/$defs/actor_id"
+        },
+        "data_steward_id": {
+          "$ref": "#/$defs/actor_id"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "development_commit",
+        "branch",
+        "host_readiness_status",
+        "host_readiness_digest",
+        "quality_gate_status",
+        "claude_summary",
+        "codex_summary",
+        "endpoint_map_digest",
+        "endpoint_map_reviewed_by",
+        "endpoint_map_review_date"
+      ],
+      "properties": {
+        "development_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "branch": {
+          "type": "string",
+          "const": "development"
+        },
+        "host_readiness_status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "not_ready"
+          ]
+        },
+        "host_readiness_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "quality_gate_status": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed"
+          ]
+        },
+        "claude_summary": {
+          "$ref": "#/$defs/runtime_summary"
+        },
+        "codex_summary": {
+          "$ref": "#/$defs/runtime_summary"
+        },
+        "endpoint_map_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "endpoint_map_reviewed_by": {
+          "$ref": "#/$defs/actor_id"
+        },
+        "endpoint_map_review_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_har_captured_at",
+        "planned_review_close_by",
+        "raw_har_delete_by",
+        "raw_documents_delete_by",
+        "derived_artifacts_delete_by",
+        "incident_summary_delete_by"
+      ],
+      "properties": {
+        "raw_har_captured_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "planned_review_close_by": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "raw_har_delete_by": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "raw_documents_delete_by": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "derived_artifacts_delete_by": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "incident_summary_delete_by": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "one_case_only",
+        "external_actions_allowed",
+        "global_gate_enforced",
+        "requested_operations",
+        "stop_conditions_acknowledged"
+      ],
+      "properties": {
+        "one_case_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "external_actions_allowed": {
+          "type": "boolean",
+          "const": false
+        },
+        "global_gate_enforced": {
+          "type": "boolean",
+          "const": true
+        },
+        "requested_operations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "acquire",
+              "classify",
+              "analyze",
+              "research",
+              "draft",
+              "review"
+            ]
+          }
+        },
+        "stop_conditions_acknowledged": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "actor_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "runtime_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_count",
+        "global_gate_status",
+        "contract_digest",
+        "shared_artifact_digest"
+      ],
+      "properties": {
+        "artifact_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "global_gate_status": {
+          "type": "string",
+          "const": "passed"
+        },
+        "contract_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "shared_artifact_digest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

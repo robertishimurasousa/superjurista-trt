@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare a protected, source-only claim inventory form for independent review."""
+"""Prepara formulário protegido de inventário independente de pedidos."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import os
 import re
+import stat
 import sys
 from pathlib import Path
 
@@ -23,39 +24,39 @@ DOCUMENT_ID = re.compile(r"DOC-[0-9]{3,}")
 
 
 class BlindReviewPacketError(ValueError):
-    """Raised when the source or protected output cannot satisfy review boundaries."""
+    """Indica fonte inválida ou saída incompatível com a revisão protegida."""
 
 
 def prepare_review_packet(
     pdf_path: Path, segments: dict, *, document_id: str, case_id: str
 ) -> str:
-    """Build a review packet without consulting system claim predictions."""
+    """Monta formulário sem consultar pedidos previstos pelo sistema."""
     if not isinstance(case_id, str) or CASE_ID.fullmatch(case_id) is None:
-        raise BlindReviewPacketError("case ID must be pseudonymous")
+        raise BlindReviewPacketError("identificador do caso deve ser pseudônimo")
     if not isinstance(document_id, str) or DOCUMENT_ID.fullmatch(document_id) is None:
-        raise BlindReviewPacketError("source document identifier is invalid")
-    issues = validate_document(segments, load_json(SEGMENT_SCHEMA, "PDF segment schema"))
+        raise BlindReviewPacketError("identificador do documento-fonte inválido")
+    issues = validate_document(segments, load_json(SEGMENT_SCHEMA, "esquema de segmentos do PDF"))
     if issues:
-        raise BlindReviewPacketError(f"PDF segment contract failed: {issues[0]}")
+        raise BlindReviewPacketError("contrato dos segmentos do PDF inválido")
     documents = {item["document_id"]: item for item in segments["documents"]}
     if len(documents) != len(segments["documents"]):
-        raise BlindReviewPacketError("source document identifiers must be unique")
+        raise BlindReviewPacketError("identificadores dos documentos-fonte devem ser únicos")
     document = documents.get(document_id)
     if document is None:
-        raise BlindReviewPacketError("source document is absent from segment map")
+        raise BlindReviewPacketError("documento-fonte ausente do mapa de segmentos")
 
     source = pdf_path.resolve()
     if not source.is_file():
-        raise BlindReviewPacketError("source PDF does not exist")
+        raise BlindReviewPacketError("PDF de origem não encontrado")
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     reader = PdfReader(str(source))
     page_count = len(reader.pages)
     pdf_custody = segments["source_pdf"]
     if digest != pdf_custody["sha256"] or page_count != pdf_custody["page_count"]:
-        raise BlindReviewPacketError("PDF custody does not match segment map")
+        raise BlindReviewPacketError("custódia do PDF diverge do mapa de segmentos")
     start, end = document["page_start"], document["page_end"]
     if start > end or end > page_count:
-        raise BlindReviewPacketError("source document page range is invalid")
+        raise BlindReviewPacketError("intervalo de páginas do documento-fonte inválido")
 
     return f"""# Inventário independente de pedidos - {case_id}
 
@@ -111,16 +112,20 @@ Somente então compare-a com a matriz do sistema; este formulário em branco nã
 def write_review_packet(
     packet: str, *, output_dir: Path, repository_root: Path
 ) -> Path:
-    """Write the protected form without overwriting existing work."""
+    """Grava formulário protegido sem substituir trabalho existente."""
+    if output_dir.is_symlink():
+        raise BlindReviewPacketError("diretório de saída não pode ser vínculo simbólico")
     destination = output_dir.resolve()
     repository = repository_root.resolve()
     if destination == repository or repository in destination.parents:
-        raise BlindReviewPacketError("review output must stay outside repository")
+        raise BlindReviewPacketError("saída da revisão deve ficar fora do repositório")
     if not destination.is_dir():
-        raise BlindReviewPacketError("review output directory must already exist")
+        raise BlindReviewPacketError("diretório de saída deve existir previamente")
+    if stat.S_IMODE(destination.stat().st_mode) & 0o077:
+        raise BlindReviewPacketError("diretório de saída deve ser privado")
     path = destination / "independent-claim-review.md"
-    if path.exists():
-        raise BlindReviewPacketError("review output already exists")
+    if path.exists() or path.is_symlink():
+        raise BlindReviewPacketError("formulário de revisão já existe")
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
         stream.write(packet)
@@ -129,28 +134,28 @@ def write_review_packet(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Prepare a protected, source-only independent claim review form."
+        description="Prepara formulário protegido para revisão cega dos pedidos."
     )
-    parser.add_argument("--input", required=True, type=Path, help="Original consolidated PDF")
-    parser.add_argument("--segments", required=True, type=Path)
-    parser.add_argument("--document-id", required=True)
-    parser.add_argument("--case-id", required=True, help="Pseudonym, never the CNJ case number")
-    parser.add_argument("--output", required=True, type=Path, help="Existing protected directory")
+    parser.add_argument("--input", required=True, type=Path, help="PDF consolidado original")
+    parser.add_argument("--segments", required=True, type=Path, help="Mapa de segmentos do PDF")
+    parser.add_argument("--document-id", required=True, help="Identificador do documento-fonte")
+    parser.add_argument("--case-id", required=True, help="Pseudônimo, nunca o número CNJ")
+    parser.add_argument("--output", required=True, type=Path, help="Diretório protegido existente")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     try:
-        segments = load_json(args.segments, "PDF segments")
+        segments = load_json(args.segments, "segmentos do PDF")
         packet = prepare_review_packet(
             args.input, segments, document_id=args.document_id, case_id=args.case_id
         )
         write_review_packet(packet, output_dir=args.output, repository_root=ROOT)
     except (OSError, KeyError, TypeError, ValueError) as error:
-        print(f"[ERROR] independent claim review: {error}", file=sys.stderr)
+        print(f"[ERRO] Revisão cega de pedidos: {error}", file=sys.stderr)
         return 1
-    print("[OK] independent claim review: blank protected form created")
+    print("[OK] Revisão cega de pedidos: formulário protegido e vazio criado.")
     return 0
 
 

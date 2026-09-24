@@ -1,82 +1,83 @@
-# TRT12 Historical Blind Review Form
+# Formulário de revisão histórica cega do TRT12
 
-Use one form per claim. Complete independent scoring before the reference judgment or the
-origin of the candidate output is revealed. Do not include party names, credentials, or raw
-sealed content in this form.
+Use um formulário por pedido. Conclua a pontuação independente antes de
+revelar a decisão de referência ou a origem da saída avaliada. Não inclua
+nomes das partes, credenciais ou conteúdo sigiloso bruto neste formulário.
 
-## Review identity
+## Identificação da revisão
 
 <!-- field:case_id -->
-- Case ID (pseudonymous):
+- ID pseudonimizado do processo:
 
 <!-- field:reviewer_id -->
-- Reviewer ID:
+- ID do revisor:
 
 <!-- field:blind_output_id -->
-- Blind output ID:
+- ID da saída submetida à revisão cega:
 
 <!-- field:sample_partition -->
-- Sample partition (`development` or `untouched_holdout`):
+- Divisão da amostra (`development` ou `untouched_holdout`):
 
-## Claim scoring
+## Pontuação do pedido
 
 <!-- field:claim_id -->
-- Claim ID:
+- ID do pedido:
 
 <!-- field:claim_category -->
-- Frozen claim category:
+- Categoria congelada do pedido:
 
 <!-- field:claim_present_reference -->
-- Claim present in reference (`yes`, `no`, or `unavailable`):
+- Pedido presente na referência (`yes`, `no` ou `unavailable`):
 
 <!-- field:claim_present_system -->
-- Claim present in system output (`yes` or `no`):
+- Pedido presente na saída do sistema (`yes` ou `no`):
 
 <!-- field:source_locator_correct -->
-- Source locator correct (`yes`, `no`, `not_applicable`, or `unavailable`):
+- Localizador da fonte correto (`yes`, `no`, `not_applicable` ou `unavailable`):
 
 <!-- field:quotation_supported -->
-- Every regulated quotation supported (`yes`, `no`, or `not_applicable`):
+- Todas as citações sujeitas a controle têm suporte (`yes`, `no` ou `not_applicable`):
 
 <!-- field:reasoning_congruent -->
-- Reasoning congruent with facts, evidence, and rules (`yes`, `no`, or `unavailable`):
+- Fundamentação congruente com fatos, provas e normas (`yes`, `no` ou `unavailable`):
 
 <!-- field:disposition_congruent -->
-- Disposition congruent with the analyzed claim (`yes`, `no`, or `unavailable`):
+- Dispositivo congruente com o pedido analisado (`yes`, `no` ou `unavailable`):
 
 <!-- field:calculation_criteria_consistent -->
-- Calculation criteria consistent (`yes`, `no`, `not_applicable`, or `unavailable`):
+- Critérios de cálculo coerentes (`yes`, `no`, `not_applicable` ou `unavailable`):
 
-## Defect record
+## Registro de defeitos
 
 <!-- field:severity -->
-- Severity (`critical`, `high`, `medium`, `low`, or `none`):
+- Gravidade (`critical`, `high`, `medium`, `low` ou `none`):
 
 <!-- operational-field:defect_stage -->
-- Owning stage (`acquisition`, `classification`, `labor_report`, `claim_matrix`,
+- Etapa responsável (`acquisition`, `classification`, `labor_report`, `claim_matrix`,
   `evidence_matrix`, `issue_routing`, `legal_research`, `claim_analysis`, `disposition`,
-  `drafting`, `calculation`, `global_gate`, or `none`):
+  `drafting`, `calculation`, `global_gate` ou `none`):
 
 <!-- field:defect_code -->
-- Defect code:
+- Código do defeito:
 
 <!-- field:defect_description -->
-- Defect description without sensitive case text:
+- Descrição do defeito sem texto sensível do processo:
 
 <!-- field:reviewer_confidence -->
-- Reviewer confidence (`high`, `medium`, or `low`):
+- Confiança do revisor (`high`, `medium` ou `low`):
 
 <!-- field:adjudication_required -->
-- Adjudication required (`yes` or `no`):
+- Arbitragem necessária (`yes` ou `no`):
 
 <!-- operational-field:unavailable_reason -->
-- Unavailable-data reason (required when any value is `unavailable`):
+- Motivo de indisponibilidade (obrigatório se algum valor for `unavailable`):
 
-## Blind-review attestation
+## Atestado de revisão cega
 
 <!-- operational-field:blind_scoring_completed -->
-- [ ] Scoring was completed before the reference outcome was revealed.
+- [ ] A pontuação foi concluída antes de revelar o resultado de referência.
 
 <!-- operational-field:output_origin_withheld -->
-- [ ] The candidate output's runtime or author was not disclosed during scoring.
-- [ ] Every unavailable item has a recorded reason and was not imputed as a pass.
+- [ ] O ambiente de execução ou autor da saída avaliada não foi revelado
+  durante a pontuação.
+- [ ] Todo item indisponível tem motivo registrado e não foi presumido aprovado.

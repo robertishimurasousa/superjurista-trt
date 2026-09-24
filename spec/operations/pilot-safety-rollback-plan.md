@@ -1,189 +1,212 @@
-# TRT12 Controlled Pilot Safety and Rollback Plan
+# Plano de segurança e reversão do piloto controlado do TRT12
 
-**Status:** Approved; case execution remains `NO-GO` until the case-specific preflight passes
-**Scope:** TRT12 first-instance, local and human-supervised pilot  
-**External judicial actions:** Prohibited
+**Situação:** aprovado; a execução do processo permanece `NO-GO` até passar na
+verificação prévia específica do caso
 
-## 1. Safety objective
+**Escopo:** piloto local e supervisionado do primeiro grau do TRT12
 
-The pilot may acquire authorized material, build traceable local artifacts, research official
-sources, and generate an advisory draft. It may not file, sign, publish, move a PJe task, send a
-message, modify a case, or make any other external judicial action.
+**Atos judiciais externos:** proibidos
 
-The operator must be able to stop the run at every stage. A missing source, unavailable provider,
-failed gate, stale checkpoint, integrity mismatch, or unresolved critical/high defect is a valid
-terminal result and must never be converted into a pass.
+## 1. Objetivo de segurança
 
-## 2. Pilot eligibility
+O piloto pode obter material autorizado, produzir artefatos locais rastreáveis,
+pesquisar fontes oficiais e gerar uma minuta para avaliação. Não pode
+protocolar, assinar, publicar, mover tarefa no PJe, enviar mensagem, alterar
+processo ou praticar qualquer outro ato judicial externo.
 
-The first controlled pilot is limited to one authorized TRT12 first-instance case. Until data
-handling is approved for more sensitive material, the initial case must not be sealed and must not
-require exceptional access handling.
+O operador deve poder interromper a execução em qualquer etapa. Fonte ausente,
+provedor indisponível, controle reprovado, checkpoint vencido, divergência de
+integridade ou defeito crítico/alto não resolvido constituem resultados finais
+válidos e nunca podem ser convertidos em aprovação.
 
-Before import, record outside Git:
+## 2. Elegibilidade do piloto
 
-- authorization scope and operator;
-- case access classification;
-- expected document set and local source location;
-- case-specific retention deadline;
-- intended outputs and review owner;
-- explicit confirmation that no filing or PJe task movement is requested.
+O primeiro piloto controlado limita-se a um processo autorizado do primeiro
+grau do TRT12. Enquanto não houver aprovação para dados mais sensíveis, esse
+processo não pode ser sigiloso nem exigir tratamento excepcional de acesso.
 
-The pilot is ineligible if any of these fields is missing.
+Antes da importação, registre fora do Git:
 
-## 3. Roles and separation of duties
+- alcance da autorização e operador;
+- classificação de acesso ao processo;
+- conjunto documental esperado e localização da fonte local;
+- prazo de retenção específico do processo;
+- saídas pretendidas e responsável pela revisão;
+- provedores de modelo autorizados a receber os dados estruturados do processo;
+- identificador exato do modelo aprovado para cada despacho;
+- confirmação explícita de que não se solicita protocolo nem movimentação no PJe.
 
-| Role | Responsibility | Proposed owner |
+O piloto é inelegível se qualquer desses campos estiver ausente.
+
+## 3. Papéis e separação de responsabilidades
+
+| Papel | Responsabilidade | Responsável proposto |
 |---|---|---|
-| Operator | Starts, observes, stops, and records the bounded local run | Repository owner |
-| Legal reviewer | Reviews claim coverage, evidence, authorities, reasoning, calculations, and draft | Named qualified human reviewer |
-| Incident owner | Coordinates containment, evidence preservation, correction, and closure | Repository owner |
-| Data steward | Approves case classification, retention, and secure deletion | Repository owner |
+| Operador | Inicia, observa, interrompe e registra a execução local delimitada | Titular do repositório |
+| Revisor jurídico | Revisa pedidos, provas, autoridades, fundamentação, cálculos e minuta | Profissional qualificado identificado |
+| Responsável por incidentes | Coordena contenção, preservação, correção e encerramento | Titular do repositório |
+| Responsável pelos dados | Aprova classificação, retenção e exclusão segura | Titular do repositório |
 
-One person may hold the operator, incident-owner, and data-steward roles for personal use. The
-legal review remains a distinct human judgment step even when the repository owner is legally
-qualified. No automated gate replaces that review.
+Uma pessoa pode acumular operação, resposta a incidentes e responsabilidade
+pelos dados no uso pessoal. A revisão jurídica continua sendo uma etapa
+distinta de julgamento humano, mesmo que o titular seja profissional do
+Direito. Nenhum controle automático substitui essa revisão.
 
-## 4. Data handling and proposed retention
+## 4. Tratamento dos dados e retenção proposta
 
-The following periods are conservative pilot defaults and require explicit approval before the
-first real case:
+Os prazos abaixo são padrões conservadores do piloto e exigem aprovação
+explícita antes do primeiro processo real:
 
-| Data class | Location | Proposed retention | Disposal |
+| Classe de dados | Local | Retenção proposta | Descarte |
 |---|---|---|---|
-| Credentials, cookies, headers, MFA material | Memory or ignored local session storage only | End of authenticated session | Revoke session and securely remove local state |
-| Raw authorized HAR capture | Outside repository | Delete immediately after the sanitized map is reviewed; maximum 24 hours | Secure local deletion |
-| Sanitized endpoint map | Tracked only after human review | While its endpoint evidence remains current | Remove or replace when invalidated |
-| Raw case documents | Ignored encrypted local storage | Case-specific deadline; proposed maximum 30 days after review closure | Secure local deletion and custody record |
-| Derived case artifacts and draft | Ignored encrypted local storage | Case-specific deadline; proposed maximum 90 days after review closure | Secure local deletion and custody record |
-| Secret-free rehearsal and incident summary | Protected local operations record | Proposed 180 days | Normal protected-record disposal |
-| Synthetic fixtures and reports | Repository | Indefinite while contracts remain supported | Normal version-control lifecycle |
+| Credenciais, cookies, cabeçalhos e MFA | Memória ou armazenamento local de sessão ignorado | Fim da sessão autenticada | Revogar sessão e remover estado local com segurança |
+| Captura HAR bruta autorizada | Fora do repositório | Excluir após revisão do mapa sanitizado; máximo de 24 horas | Exclusão local segura |
+| Mapa sanitizado de endpoints | Versionado somente após revisão humana | Enquanto a evidência estiver atual | Remover ou substituir quando invalidado |
+| Documentos processuais brutos | Armazenamento local criptografado e ignorado | Prazo por processo; máximo proposto de 30 dias após revisão | Exclusão segura e registro de custódia |
+| Artefatos derivados e minuta | Armazenamento local criptografado e ignorado | Prazo por processo; máximo proposto de 90 dias após revisão | Exclusão segura e registro de custódia |
+| Resumo de ensaios e incidentes sem segredos | Registro operacional local protegido | Proposta de 180 dias | Descarte normal do registro protegido |
+| Dados e relatórios sintéticos de teste | Repositório | Enquanto os contratos forem suportados | Ciclo normal de versionamento |
 
-If a legal, institutional, preservation, or audit duty requires a different period, that duty wins
-and must be recorded before processing. A longer period may not be selected merely for
-convenience.
+Se dever legal, institucional, de preservação ou auditoria exigir prazo
+distinto, ele prevalece e deve ser registrado antes do processamento. Não se
+pode ampliar o prazo apenas por conveniência.
 
-## 5. Mandatory preflight
+## 5. Verificação prévia obrigatória
 
-The operator must complete the accepted operator runbook and record:
+O operador deve concluir o manual de operação aceito e registrar:
 
-- exact commit on `development`;
-- target-host readiness status and digest;
-- passing quality gate;
-- identical passing Claude Code and Codex synthetic digests;
-- approved data classification and retention deadline;
-- reviewed sanitized TRT12 endpoint map;
-- local workspace outside tracked paths;
-- named legal reviewer;
-- confirmation that the global gate is enforced.
+- commit exato em `development`;
+- situação de prontidão e resumo criptográfico do host;
+- controle de qualidade aprovado;
+- resumos sintéticos idênticos e aprovados de Claude Code e Codex;
+- classificação dos dados e prazo de retenção aprovados;
+- mapa TRT12 sanitizado e revisado;
+- espaço local de trabalho fora dos caminhos versionados;
+- revisor jurídico identificado;
+- confirmação de que o controle global será aplicado.
 
-Any missing item is a no-go result.
+Qualquer item ausente resulta em `NO-GO`.
 
-## 6. Runtime controls
+## 6. Controles da execução
 
-- Process one case at a time during the pilot.
-- Use bounded page counts, response sizes, retries, and timeouts.
-- Persist only versioned checkpoints bound to the current request, catalog, contracts, and hashes.
-- Verify every downloaded payload against the indexed SHA-256 before use.
-- Preserve unavailable, unknown, conflicting, and abstained states explicitly.
-- Use official HTTPS legal sources and retain source locators and quotation custody.
-- Never retry an expired, unauthorized, or MFA-required session as if it were valid.
-- Never increase a persisted retry ceiling to force completion.
-- Never continue after a non-passing global gate.
-- Never place raw process text, credentials, or authenticated browser state in Git or CI.
+- Processar um processo por vez durante o piloto.
+- Limitar páginas, tamanho das respostas, tentativas e tempo de espera.
+- Persistir apenas checkpoints versionados e vinculados à requisição, ao
+  catálogo, aos contratos e aos resumos criptográficos atuais.
+- Conferir cada conteúdo baixado com o SHA-256 indexado antes de usá-lo.
+- Preservar explicitamente estados indisponíveis, desconhecidos, conflitantes
+  e de abstenção.
+- Usar fontes jurídicas oficiais HTTPS e guardar localizadores e fidelidade
+  das citações.
+- Nunca repetir sessão expirada, não autorizada ou sujeita a MFA como válida.
+- Nunca ampliar o limite de tentativas persistido para forçar conclusão.
+- Nunca continuar após reprovação do controle global.
+- Nunca colocar autos brutos, credenciais ou estado de navegador autenticado
+  no Git ou na CI.
+- Não despachar autos reais ao Codex CLI neste host até comprovar a restrição
+  das ferramentas residuais e do acesso a arquivos locais, ou usar outro
+  transporte de modelo sem ferramentas com autorização específica.
+- Manter a recusa de insumos diferentes da amostra sintética no orquestrador,
+  relator e triador atuais; só substituir esse limite após validar o novo
+  transporte e repetir os testes de segurança com autorização específica.
 
-## 7. Human review gate
+## 7. Controle de revisão humana
 
-The legal reviewer must check the complete artifact set before any draft is considered usable:
+O revisor jurídico deve examinar todos os artefatos antes que a minuta seja
+considerada utilizável:
 
-1. every pleaded claim and requested remedy is represented;
-2. every material defense and absence of defense is explicit;
-3. every material proposition has a correct source locator;
-4. quotations and authorities are supported by official custody;
-5. calculation criteria match the disposition;
-6. analysis, outcome, disposition, and draft are congruent;
-7. limitations, unavailable data, and abstentions are visible;
-8. no critical or high defect remains;
-9. the draft contains no instruction or mechanism for external judicial action.
+1. todos os pedidos e providências requeridas estão representados;
+2. todas as defesas relevantes e suas ausências estão explícitas;
+3. cada alegação relevante tem localizador correto da fonte;
+4. citações e autoridades têm suporte em fontes oficiais custodiadas;
+5. critérios de cálculo correspondem ao dispositivo;
+6. análise, resultado, dispositivo e minuta são congruentes;
+7. limitações, indisponibilidades e abstenções estão visíveis;
+8. nenhum defeito crítico ou alto permanece;
+9. a minuta não contém instrução nem mecanismo para ato judicial externo.
 
-Approval is case-specific. It does not certify future cases or legal adequacy in general.
+A aprovação vale apenas para o processo revisado. Não certifica casos futuros
+nem adequação jurídica geral.
 
-## 8. Incident classification
+## 8. Classificação de incidentes
 
-| Severity | Examples | Immediate response |
+| Gravidade | Exemplos | Resposta imediata |
 |---|---|---|
-| Critical | Credential or sealed-data exposure; unintended external action; fabricated authority; missing dispositive claim with material risk | Stop, isolate, revoke access, preserve secret-free evidence, notify incident owner and legal reviewer |
-| High | Material claim, evidence, law, calculation, or disposition error likely to change the result | Stop, quarantine all outputs, invalidate downstream checkpoints, open corrective review |
-| Medium | Incomplete or imprecise reasoning without independent dispositive effect | Block approval, correct, rerun affected stages and gates |
-| Low | Localized style, clarity, or formatting defect | Record and correct before final review when practical |
+| Crítica | Exposição de credencial ou dados sigilosos; ato externo não previsto; autoridade inventada; pedido material omitido do dispositivo | Parar, isolar, revogar acesso, preservar evidência sem segredos e avisar responsáveis |
+| Alta | Erro material de pedido, prova, norma, cálculo ou dispositivo com potencial de alterar o resultado | Parar, pôr saídas em quarentena, invalidar checkpoints dependentes e abrir revisão corretiva |
+| Média | Fundamentação incompleta ou imprecisa sem efeito decisório independente | Bloquear aprovação, corrigir e repetir etapas e controles afetados |
+| Baixa | Problema localizado de estilo, clareza ou formatação | Registrar e corrigir antes da revisão final, quando viável |
 
-Critical and high incidents have zero acceptance budget.
+Incidentes críticos e altos têm tolerância zero para aceite.
 
-## 9. Containment and rollback
+## 9. Contenção e reversão
 
-When a critical/high incident or integrity failure occurs:
+Em caso de incidente crítico/alto ou falha de integridade:
 
-1. stop the active process and do not retry external access;
-2. disconnect or revoke the affected session and rotate any exposed credential through its owning
-   system;
-3. move the affected local workspace into a protected quarantine location without adding it to
-   Git;
-4. record commit, stage, checkpoint digest, provider status, affected artifact identifiers, and
-   timestamps without copying sensitive content;
-5. invalidate the affected stage and every dependent checkpoint;
-6. restore code only from a known passing commit on `development`; never overwrite unrelated user
-   changes;
-7. correct the narrow owning defect and add regression evidence;
-8. rerun quality, synthetic cross-runtime, and affected case gates from clean outputs;
-9. require legal-review approval before release from quarantine;
-10. close the incident only after containment, correction, verification, retention, and deletion
-    actions are documented.
+1. interromper o processo e não repetir acesso externo;
+2. desconectar ou revogar a sessão e trocar credenciais expostas no sistema
+   responsável;
+3. mover o espaço local para quarentena protegida, sem adicioná-lo ao Git;
+4. registrar commit, etapa, resumo do checkpoint, estado do provedor, IDs dos
+   artefatos afetados e horários, sem copiar dados sensíveis;
+5. invalidar a etapa afetada e todos os checkpoints dependentes;
+6. restaurar código apenas de commit aprovado em `development`, sem sobrescrever
+   alterações de outras pessoas;
+7. corrigir o defeito específico e adicionar evidência de regressão;
+8. repetir controles de qualidade, teste sintético nos dois ambientes e
+   verificações do processo afetado, com saídas limpas;
+9. exigir aprovação jurídica antes de retirar o material da quarentena;
+10. encerrar o incidente apenas após documentar contenção, correção,
+    verificação, retenção e exclusão.
 
-Rollback means returning to the last verified local state. It never means changing or attempting
-to undo a PJe judicial action, because the pilot is not permitted to make one.
+Reversão significa voltar ao último estado local verificado. Nunca significa
+alterar ou desfazer ato judicial no PJe, pois o piloto não pode praticá-lo.
 
-## 10. Recovery decision
+## 10. Decisão de recuperação
 
-Resume is allowed only when all conditions are true:
+A retomada só é permitida quando todas as condições abaixo forem verdadeiras:
 
-- the authorization and session are still valid;
-- the request and catalog are unchanged;
-- accepted payload bytes still match their stored hashes;
-- the retry ceiling is not exhausted;
-- the current contracts and gates accept the checkpoint;
-- the incident owner has released the workspace;
-- no critical/high defect remains.
+- autorização e sessão continuam válidas;
+- requisição e catálogo não mudaram;
+- bytes aceitos ainda correspondem aos resumos armazenados;
+- limite de tentativas não foi esgotado;
+- contratos e controles atuais aceitam o checkpoint;
+- responsável pelo incidente liberou o espaço de trabalho;
+- nenhum defeito crítico/alto permanece.
 
-Otherwise, abandon the checkpoint and begin a new authorized run from clean outputs. Preserve the
-old workspace only for its approved incident-retention period.
+Caso contrário, abandone o checkpoint e inicie nova execução autorizada com
+saídas limpas. Preserve o espaço anterior apenas pelo prazo de retenção
+aprovado para o incidente.
 
-## 11. Go/no-go and support ownership
+## 11. Decisão de seguir/não seguir e responsabilidade pelo suporte
 
-The pilot may start only after the approval record below is complete. During personal use, support
-is best-effort and owned by the repository owner; there is no production SLA. Any planned use by
-another operator or court unit requires a new support, access, training, and incident-escalation
-decision.
+O piloto só pode começar após completar o registro de aprovação abaixo. No uso
+pessoal, o suporte é feito conforme a disponibilidade do titular do repositório;
+não há acordo de nível de serviço de produção. Uso por outro operador ou
+unidade exige nova decisão sobre suporte, acesso, treinamento e escalonamento
+de incidentes.
 
-### Approval record
+### Registro de aprovação
 
 ```text
-Plan version/commit: 0.1 / approval recorded on development
-Approved operator: Repository owner
-Approved legal reviewer: Qualified human reviewer named for each pilot case before GO
-Approved incident owner: Repository owner
-Approved data steward: Repository owner
-Approved raw-HAR retention: Delete after sanitized-map review; maximum 24 hours
-Approved raw-document retention: Case-specific deadline; maximum 30 days after review closure
-Approved derived-artifact retention: Case-specific deadline; maximum 90 days after review closure
-Approved incident-summary retention: Maximum 180 days
-Initial pilot case classification: Authorized, non-sealed TRT12 first-instance case
-Approval date: 2026-09-21
-Approver: Repository owner
-Decision: NO-GO for case execution until the case-specific preflight is complete
-Conditions or exceptions: No external judicial action; legal reviewer and case authorization are mandatory
+Versão/commit do plano: 0.1 / aprovação registrada em development
+Operador aprovado: titular do repositório
+Revisor jurídico aprovado: profissional qualificado identificado antes da liberação de cada caso
+Responsável por incidentes: titular do repositório
+Responsável pelos dados: titular do repositório
+Retenção de HAR bruto: excluir após revisão do mapa; máximo de 24 horas
+Retenção de documentos brutos: prazo por caso; máximo de 30 dias após revisão
+Retenção de artefatos derivados: prazo por caso; máximo de 90 dias após revisão
+Retenção de resumo de incidentes: máximo de 180 dias
+Classificação do primeiro caso: processo autorizado e não sigiloso do primeiro grau TRT12
+Data da aprovação: 2026-09-21
+Aprovador: titular do repositório
+Decisão: NO-GO até concluir a verificação prévia específica do caso
+Condições/exceções: sem atos judiciais externos; autorização e revisor jurídico obrigatórios
 ```
 
-This approval accepts the safety, ownership, retention, and rollback policy. It does not authorize
-an unidentified case. Every real-case pilot remains `NO-GO` until its authorization,
-classification, retention deadline, legal reviewer, and reviewed sanitized endpoint map are
-recorded in the case-specific preflight.
+Esta aprovação aceita políticas de segurança, responsabilidade, retenção e
+reversão; não autoriza processo não identificado. Cada piloto com processo real
+permanece `NO-GO` até que autorização, classificação, prazo de retenção,
+revisor jurídico e mapa sanitizado de endpoints revisado constem da
+verificação prévia específica do caso.

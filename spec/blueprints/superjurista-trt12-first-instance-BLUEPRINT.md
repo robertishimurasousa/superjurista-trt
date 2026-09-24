@@ -1,301 +1,329 @@
-# Blueprint: SuperJurista TRT12 — First Instance
+# Plano arquitetural: SuperJurista TRT12 — primeiro grau
 
-**Status:** Approved
-**Version:** 0.17.0
-**Date:** 2026-09-21
-**Primary target:** TRT12 first-instance labor judgments
-**Future targets:** TRT12 second instance, then additional Regional Labor Courts
-**Progress system:** [`superjurista-trt12-ROADMAP.md`](../roadmaps/superjurista-trt12-ROADMAP.md)
-
----
-
-## 1. Executive Decision
-
-The project will preserve the deterministic SuperJurista execution kernel and replace the
-Federal Justice-specific domain layer with a Labor Justice domain layer.
-
-Claude Code and Codex are both supported execution runtimes. They must consume one shared
-legal domain, artifact contract, tribunal profile, deterministic script set, and acceptance
-suite. Runtime-specific files may orchestrate work, but may not define divergent legal rules.
-
-The first production-shaped target is **TRT12 first instance**. Second instance and other
-TRTs are extension targets, not claims of current compatibility. The architecture must expose
-the required extension points now, while implementation and validation remain sequential:
-
-1. TRT12 first instance;
-2. TRT12 second instance;
-3. one additional TRT as the portability proof;
-4. broader multi-TRT support only after the portability proof passes.
-
-This avoids two failure modes:
-
-- hard-coding TRT12 into reusable legal capabilities;
-- prematurely generalizing behavior that has not been observed in a second tribunal.
+**Situação:** aprovado
+**Versão:** 0.17.0
+**Data:** 2026-09-21
+**Alvo principal:** sentenças trabalhistas do primeiro grau do TRT12
+**Alvos futuros:** segundo grau do TRT12 e, depois, outros Tribunais Regionais do Trabalho
+**Acompanhamento do avanço:** [`superjurista-trt12-ROADMAP.md`](../roadmaps/superjurista-trt12-ROADMAP.md)
 
 ---
 
-## 2. Objective
+## 1. Decisão principal
 
-Build an auditable, resumable, human-supervised system that receives an authorized TRT12
-first-instance PJe-JT case, extracts and structures the record, maps every claim and defense,
-routes legal and evidentiary issues, researches authoritative precedents, drafts a proposed
-labor judgment, and validates the result through deterministic gates on both Claude Code and
-Codex.
+O projeto preservará o núcleo determinístico de execução do SuperJurista e
+substituirá a camada de domínio específica da Justiça Federal por uma camada
+voltada à Justiça do Trabalho.
 
-The final product is a **draft for judicial review**, never an autonomous judicial decision.
+Claude Code e Codex são ambientes de execução previstos. Ambos devem consumir
+o mesmo domínio jurídico, contratos de artefatos, perfil de tribunal, conjunto
+de scripts determinísticos e testes de aceite. Arquivos específicos de cada
+ambiente podem orquestrar o trabalho, mas não criar regras jurídicas divergentes.
 
-### 2.1 Primary input
+O primeiro alvo com formato de produção é o **primeiro grau do TRT12**. O
+segundo grau e outros TRTs são possibilidades de extensão, não afirmações de
+compatibilidade atual. A arquitetura deve prever os pontos de extensão desde
+já, enquanto implementação e validação avançam nesta ordem:
 
-- an authorized PJe-JT case workspace; or
-- a previously downloaded and sanitized case workspace containing the document index and
-  source documents.
+1. primeiro grau do TRT12;
+2. segundo grau do TRT12;
+3. um TRT adicional para comprovar a portabilidade;
+4. suporte mais amplo a outros TRTs somente após essa comprovação.
 
-### 2.2 Primary output
+Isso evita dois erros:
+
+- fixar regras do TRT12 em capacidades jurídicas que devem ser reutilizáveis;
+- generalizar prematuramente comportamentos não observados em outro tribunal.
+
+---
+
+## 2. Objetivo
+
+Construir um sistema auditável, retomável e supervisionado por pessoas que
+receba um processo PJe-JT autorizado do primeiro grau do TRT12, extraia e
+estruture os autos, mapeie cada pedido e defesa, encaminhe questões jurídicas
+e probatórias, pesquise precedentes em fontes de autoridade, redija uma proposta
+de sentença trabalhista e valide o resultado por verificações determinísticas
+em Claude Code e Codex.
+
+O resultado é uma **minuta para revisão judicial**, nunca decisão autônoma.
+
+### 2.1 Entrada principal
+
+- um espaço de trabalho autorizado com processo do PJe-JT; ou
+- um espaço de trabalho de processo previamente baixado e higienizado, com
+  índice de documentos e arquivos de origem.
+
+### 2.2 Saída principal
 
 ```text
 data/judgment/<CNJ_NUMBER>/<CNJ_NUMBER>-labor-judgment.md
 ```
 
-The workspace also retains the intermediate artifacts, evidence provenance, precedent
-provenance, gate results, and execution manifest.
+O espaço de trabalho também preserva artefatos intermediários, a origem das
+evidências e dos precedentes, os resultados das verificações e o manifesto
+de execução.
 
-### 2.3 Success definition
+### 2.3 Critério de sucesso
 
-The first-instance MVP is successful only when it can reproducibly process the approved
-historical validation set while satisfying all critical gates:
+O produto mínimo de primeiro grau só terá sucesso quando processar de forma
+reproduzível a amostra histórica aprovada e satisfizer todos os critérios críticos:
 
-- every pleaded claim is represented in the claim matrix;
-- every contested claim has an evidence and/or legal-issue route;
-- every final disposition maps to a pleaded claim or an explicitly identified matter the
-  court may address;
-- every external verbatim quotation is traceable to an authorized source;
-- no critical legal or factual defect remains in blind review;
-- the pipeline resumes without silently skipping invalid or stale artifacts.
-
----
-
-## 3. Scope
-
-### 3.1 In scope for TRT12 first-instance MVP
-
-- TRT12 first-instance tribunal profile;
-- PJe-JT session, task listing, process discovery, document index, and document download;
-- labor document classification;
-- procedural timeline and labor report;
-- claim, defense, evidence, and requested-remedy matrices;
-- claim-level routing between legal research, evidentiary analysis, calculation review, and
-  procedural review;
-- TST, STF/BNP, TRT12 precedent, and TRT12 jurisprudence research;
-- claim-level legal analysis;
-- labor judgment drafting and deterministic merge;
-- congruence, quotation, source, calculation-criteria, and final-integrity gates;
-- historical blind validation and a controlled pilot-readiness dossier.
-
-### 3.2 Explicitly out of scope for the first MVP
-
-- autonomous filing, signing, publication, or movement of a case in PJe-JT;
-- replacing judicial review;
-- TRT12 second-instance votes or judgments;
-- declaring compatibility with another TRT without tribunal-specific validation;
-- automated monetary liquidation that claims parity with PJe-Calc;
-- model training or fine-tuning;
-- processing sealed cases without an approved data-handling protocol.
-
-### 3.3 Future scope
-
-- TRT12 second-instance appeal analysis and vote drafting;
-- PJe-Calc import/export or independently verified calculation interoperability;
-- additional TRT profiles;
-- reusable adapters where two or more TRTs demonstrate the same technical contract.
+- todo pedido formulado consta da matriz de pedidos;
+- todo pedido controvertido recebe rota de análise probatória e/ou jurídica;
+- todo item do dispositivo corresponde a pedido formulado ou questão
+  expressamente identificada que o juízo possa apreciar;
+- toda citação literal externa tem fonte autorizada rastreável;
+- a revisão cega não encontra defeito jurídico ou fático crítico remanescente;
+- o pipeline retoma sem ignorar silenciosamente artefatos inválidos ou antigos.
 
 ---
 
-## 4. Governing Principles
+## 3. Escopo
 
-1. **One validated target at a time.** TRT12 first instance is the only executable target in
-   the first delivery wave.
-2. **Core versus profile separation.** Reusable agents cannot contain TRT12 URLs, court-unit
-   names, local chamber names, or authentication constants.
-3. **Claim-level reasoning.** A labor case is not one indivisible question. Each claim is a
-   traceable decision unit.
-4. **The file is the state.** Agents write artifacts to disk and return one status line.
-5. **Gates, not confidence prose.** Completion is determined by scripts and review evidence.
-6. **Fail closed.** Missing, unreadable, stale, or inconsistent evidence blocks advancement.
-7. **No citation without custody.** Verbatim quotations require an authorized corpus entry.
-8. **No silent legal substitution.** Persuasive decisions cannot be labeled binding.
-9. **Human adjudication remains mandatory.** The system proposes; the judge decides.
-10. **Expansion is proven, not asserted.** Multi-TRT readiness requires a second-TRT
-    implementation and regression evidence.
-11. **Runtime neutrality.** Claude Code and Codex may have different orchestration syntax,
-    but they must produce the same versioned artifacts and pass the same gates.
+### 3.1 Incluído no produto mínimo do primeiro grau do TRT12
 
-### 4.1 Reuse-first migration policy
+- perfil do primeiro grau do TRT12;
+- sessão do PJe-JT, lista de tarefas, descoberta de processos, índice e download
+  de documentos;
+- classificação de documentos trabalhistas;
+- linha do tempo processual e relatório trabalhista;
+- matrizes de pedidos, defesas, evidências e providências requeridas;
+- encaminhamento por pedido para pesquisa jurídica, análise probatória,
+  revisão de cálculos e revisão processual;
+- pesquisa de precedentes do TST, STF/BNP e TRT12 e de jurisprudência do TRT12;
+- análise jurídica por pedido;
+- redação de minuta de sentença trabalhista e consolidação determinística;
+- verificações de congruência, citações, fontes, critérios de cálculo e
+  integridade final;
+- validação histórica cega e dossiê de preparação do piloto controlado.
 
-This is a brownfield migration of the existing fork, not a greenfield rewrite. The current
-repository is the implementation baseline. Existing components must be inventoried,
-characterized, and assigned one of four explicit dispositions before implementation work may
-replace them:
+### 3.2 Explicitamente fora do primeiro produto mínimo
 
-| Disposition | Meaning | Required evidence |
+- protocolo, assinatura, publicação ou movimentação autônoma no PJe-JT;
+- substituição da revisão judicial;
+- votos ou decisões do segundo grau do TRT12;
+- declaração de compatibilidade com outro TRT sem validação específica;
+- liquidação monetária automatizada apresentada como equivalente ao PJe-Calc;
+- treinamento ou ajuste fino de modelos;
+- processamento de processos sigilosos sem protocolo aprovado de tratamento de dados.
+
+### 3.3 Escopo futuro
+
+- análise de recursos e redação de votos no segundo grau do TRT12;
+- importação/exportação com PJe-Calc ou interoperabilidade de cálculos verificada
+  independentemente;
+- perfis de outros TRTs;
+- adaptadores reutilizáveis quando pelo menos dois TRTs demonstrarem o mesmo
+  contrato técnico.
+
+---
+
+## 4. Princípios orientadores
+
+1. **Um alvo validado por vez.** O primeiro grau do TRT12 é o único alvo
+   executável na primeira etapa de entrega.
+2. **Separação entre núcleo e perfil.** Agentes reutilizáveis não podem conter
+   URLs, unidades judiciárias, órgãos julgadores locais ou constantes de
+   autenticação do TRT12.
+3. **Análise por pedido.** O processo trabalhista não é uma questão indivisível.
+   Cada pedido é uma unidade decisória rastreável.
+4. **O arquivo representa o estado.** Agentes gravam artefatos e retornam uma
+   linha de situação.
+5. **Verificações, não declarações de confiança.** A conclusão depende de scripts
+   e evidências de revisão.
+6. **Rejeição por segurança.** Evidência ausente, ilegível, antiga ou incoerente
+   impede o avanço.
+7. **Sem citação sem origem.** Citações literais exigem entrada em conjunto de
+   fontes autorizado.
+8. **Sem substituição jurídica silenciosa.** Decisão persuasiva não pode receber
+   o rótulo de vinculante.
+9. **A decisão humana é obrigatória.** O sistema propõe; o magistrado decide.
+10. **A expansão deve ser comprovada.** Suporte a múltiplos TRTs exige
+    implementação de um segundo TRT e evidências de regressão.
+11. **Independência do ambiente.** Claude Code e Codex podem usar sintaxes
+    diferentes de orquestração, mas devem produzir os mesmos artefatos
+    versionados e passar nas mesmas verificações.
+
+### 4.1 Política de migração com prioridade ao reuso
+
+Esta é uma migração do fork existente, não uma reescrita do zero. O repositório
+atual é a base de implementação. Antes de substituir componentes, é preciso
+inventariá-los, caracterizá-los e atribuir um dos quatro tratamentos:
+
+| Tratamento | Significado | Evidência exigida |
 |---|---|---|
-| Preserve | Behavior is court-agnostic and remains materially unchanged | Existing behavior passes characterization and regression tests |
-| Adapt | The component has a reusable core but contains Federal Justice assumptions | Tests protect the reusable behavior and TRT12 fixtures prove the adaptation |
-| Replace | The contract or legal behavior is incompatible with Labor Justice | Replacement passes equivalent or stronger gates before the old path is retired |
-| Retire | The capability is outside the TRT12 first-instance scope | Dependency scan proves no accepted TRT12 path still requires it |
+| Preservar | O comportamento independe do tribunal e permanece essencialmente igual | Caracterização e regressão passam para o comportamento existente |
+| Adaptar | O núcleo é reutilizável, mas contém premissas da Justiça Federal | Testes protegem a parte reutilizável e casos TRT12 comprovam a adaptação |
+| Substituir | O contrato ou comportamento jurídico é incompatível com a Justiça do Trabalho | O substituto passa em critérios iguais ou mais fortes antes de retirar o caminho antigo |
+| Retirar | A capacidade está fora do escopo do primeiro grau do TRT12 | Análise de dependências mostra que nenhum fluxo TRT12 aceito ainda a exige |
 
-No component may be rewritten merely to make the architecture look cleaner. Replacement is
-justified only by an incompatible legal rule, provider contract, data contract, security
-requirement, or a demonstrated maintenance defect. The old implementation remains available
-until the adapted or replacement path passes its acceptance gate.
+Nenhum componente deve ser reescrito apenas para deixar a arquitetura mais
+elegante. A substituição requer regra jurídica incompatível, contrato de
+provedor ou de dados incompatível, requisito de segurança ou defeito de
+manutenção demonstrado. A implementação antiga permanece disponível até a
+adaptação ou substituição passar no critério de aceite.
 
-### 4.2 Initial fork disposition map
+### 4.2 Mapa inicial de tratamento do fork
 
-The following map is the planning hypothesis. Roadmap item `FND-04` must confirm it against
-the code and record the final file-level disposition.
+O mapa seguinte é uma hipótese de planejamento. O item `FND-04` do roteiro
+deve confirmá-la no código e registrar o tratamento definitivo por arquivo.
 
-| Existing fork capability | Initial disposition | TRT12 treatment |
+| Capacidade existente no fork | Tratamento inicial | Tratamento no TRT12 |
 |---|---|---|
-| Blind orchestrator, file-as-state, one-line agent status, retry ceiling | Preserve | Keep the execution model and add regression coverage |
-| Resumability and deterministic gate pattern | Preserve and harden | Reuse the pattern in `verificar_sentenca.py` and related gates; version artifact dependencies |
-| Deterministic source and judgment merge | Preserve and adapt | Keep non-LLM merge and custody behavior; change labor artifact contracts |
-| Citation custody and verbatim verification | Preserve and adapt | Keep the fail-closed mechanism; register TST and TRT12 source types |
-| PDF conversion and OCR | Preserve and harden | Characterize digital and scanned fixtures; fix runtime/dependency portability where required |
-| Procedural timeline | Adapt | Preserve chronological extraction; add Labor Justice events and terminology |
-| Case reporter | Adapt | Preserve source-locator discipline; replace federal claim vocabulary with labor claim coverage |
-| Documentary, testimonial, expert, digital, confession, and recognition analysis | Adapt after audit | Retain generic evidentiary reasoning only where fixtures prove no Federal Justice assumptions |
-| Research consolidation and source review | Adapt | Preserve ranking/custody structure; implement Labor Justice authority hierarchy |
-| Current PJe download workflow | Adapt behind an interface | Reuse session/download mechanics only after an authorized TRT12 HAR proves compatible behavior |
-| Federal research agents and providers such as CJF, TNU, JULIA/TRF5, and Federal Justice-specific STJ routing | Retire from the TRT12 executable path | Keep outside the accepted labor pipeline; replace with TST/TRT12 adapters and applicable STF/BNP routes |
-| TRF judgment-list agents and federal-only review rules | Retire from the TRT12 first-instance path | Do not delete until dependency scans confirm they are unreachable from the TRT12 profile |
-| Federal merits analysis, calculation, remessa, fees, and drafting assumptions | Replace or deeply adapt | Implement labor claim analysis, labor calculation criteria, congruence, and judgment drafting |
-| Tribunal profiles, labor claim matrix, issue router, TST/TRT12 research, and labor disposition matrix | Create | These are missing contracts required by the TRT12 target |
+| Orquestrador cego, arquivo como estado, resposta do agente em uma linha e limite de tentativas | Preservar | Manter o modelo de execução e acrescentar cobertura de regressão |
+| Retomada e padrão de verificações determinísticas | Preservar e fortalecer | Reusar o padrão de `verificar_sentenca.py` e verificações relacionadas; versionar dependências dos artefatos |
+| Consolidação determinística de fontes e sentença | Preservar e adaptar | Manter a consolidação sem modelo de linguagem e a rastreabilidade; mudar contratos de artefatos trabalhistas |
+| Rastreabilidade de citações e conferência literal | Preservar e adaptar | Manter a rejeição por segurança; registrar tipos de fonte do TST e TRT12 |
+| Conversão de PDF e OCR | Preservar e fortalecer | Caracterizar casos digitais e digitalizados; corrigir portabilidade de execução e dependências quando necessário |
+| Linha do tempo processual | Adaptar | Preservar a extração cronológica; incluir eventos e vocabulário trabalhistas |
+| Relator do processo | Adaptar | Preservar a referência à fonte; substituir o vocabulário federal por cobertura de pedidos trabalhistas |
+| Análise documental, testemunhal, pericial, digital, confissão e reconhecimento | Adaptar após auditoria | Manter raciocínio probatório genérico apenas onde casos demonstram ausência de premissas federais |
+| Consolidação de pesquisa e revisão de fontes | Adaptar | Preservar hierarquização e rastreabilidade; implementar hierarquia de autoridades trabalhistas |
+| Download atual do PJe | Adaptar por interface | Reusar sessão e download somente após captura HAR autorizada do TRT12 demonstrar compatibilidade |
+| Agentes e provedores federais, como CJF, TNU, JULIA/TRF5 e pesquisa STJ específica da Justiça Federal | Retirar do caminho executável TRT12 | Manter fora do pipeline trabalhista aceito; substituir por adaptadores TST/TRT12 e rotas STF/BNP aplicáveis |
+| Agentes de listas de julgamento dos TRFs e regras de revisão exclusivamente federais | Retirar do primeiro grau do TRT12 | Não apagar antes de comprovar, por dependências, que o perfil TRT12 não os alcança |
+| Premissas federais de mérito, cálculos, remessa, honorários e redação | Substituir ou adaptar profundamente | Implementar análise por pedido, critérios trabalhistas de cálculo, congruência e redação de sentença |
+| Perfis de tribunal, matriz trabalhista, roteador de questões, pesquisa TST/TRT12 e matriz de dispositivo | Criar | São contratos ausentes exigidos pelo alvo TRT12 |
 
-### 4.3 Migration sequence
+### 4.3 Sequência da migração
 
-1. Freeze a representative set of current fork fixtures and outputs.
-2. Add characterization tests for the capabilities marked Preserve or Adapt.
-3. Introduce stable core and provider interfaces around existing behavior.
-4. Adapt one vertical slice for TRT12: acquire, convert, classify, report, analyze, draft, and gate.
-5. Compare old and new outputs where their responsibilities overlap.
-6. Retire an old path only after the TRT12 path is accepted and dependency checks pass.
+1. Congelar um conjunto representativo de casos e saídas do fork atual.
+2. Acrescentar testes de caracterização para capacidades marcadas como preservar ou adaptar.
+3. Introduzir interfaces estáveis de núcleo e provedores em torno do comportamento existente.
+4. Adaptar uma fatia vertical para o TRT12: obter, converter, classificar,
+   relatar, analisar, redigir e verificar.
+5. Comparar saídas antigas e novas onde as responsabilidades se sobrepõem.
+6. Retirar um caminho antigo somente após o caminho TRT12 ser aceito e as
+   verificações de dependências passarem.
 
-This sequence avoids a big-bang rewrite and makes reuse measurable rather than aspirational.
+Essa sequência evita uma reescrita de uma vez só e torna o reuso mensurável.
 
 ---
 
-## 5. Target Architecture
+## 5. Arquitetura pretendida
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                          RUNTIME ADAPTERS                                    │
+│                       ADAPTADORES DE EXECUÇÃO                               │
 │                  Claude Code                 Codex                           │
 └───────────────────────────────┬──────────────────────────────────────────────┘
-                                │ shared execution manifest
+                                │ manifesto de execução compartilhado
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                         DETERMINISTIC CORE                                   │
-│ orchestration · resume · manifests · gates · merge · audit · redaction      │
+│                         NÚCLEO DETERMINÍSTICO                                │
+│ orquestração · retomada · manifestos · verificações · consolidação · auditoria│
 └───────────────────────────────┬──────────────────────────────────────────────┘
-                                │ stable contracts
+                                │ contratos estáveis
 ┌───────────────────────────────▼──────────────────────────────────────────────┐
-│                        LABOR JUSTICE DOMAIN                                  │
-│ claim matrix · evidence matrix · issue routing · labor reasoning · drafting │
+│                      DOMÍNIO TRABALHISTA                                     │
+│ pedidos · evidências · encaminhamento · análise jurídica · minuta           │
 └───────────────────────────────┬──────────────────────────────────────────────┘
-                                │ provider interfaces
+                                │ interfaces de provedores
              ┌──────────────────┼──────────────────┐
              │                  │                  │
 ┌────────────▼───────────┐ ┌────▼────────────┐ ┌──▼───────────────────────────┐
-│ PJe-JT adapter         │ │ Research       │ │ Calculation/review adapters │
-│ auth/index/download    │ │ TST/TRT12/BNP  │ │ PJe-Calc-aware criteria     │
+│ Adaptador PJe-JT       │ │ Pesquisa        │ │ Adaptadores de cálculo      │
+│ sessão/índice/download │ │ TST/TRT12/BNP   │ │ critérios/revisão PJe-Calc  │
 └────────────┬───────────┘ └────┬────────────┘ └──┬───────────────────────────┘
              │                  │                  │
 ┌────────────▼──────────────────▼──────────────────▼───────────────────────────┐
-│                           TRT PROFILE                                       │
-│ TRT12 · first instance · URLs · source policy · signature · local rules     │
+│                           PERFIL DO TRT                                      │
+│ TRT12 · primeiro grau · URLs · fontes · assinatura · regras locais            │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 5.1 Extension rule
+### 5.1 Regra de extensão
 
-An extension may supply configuration and adapter implementations, but it may not fork or
-copy the core claim/evidence contracts. If a new TRT requires a new contract, the contract
-must be generalized in the core and regression-tested against TRT12.
+Uma extensão pode fornecer configurações e implementações de adaptadores, mas
+não pode bifurcar nem copiar os contratos centrais de pedidos e evidências. Se
+um novo TRT exigir outro contrato, ele deve ser generalizado no núcleo e
+testado novamente contra o TRT12.
 
-### 5.2 Dual-runtime contract
+### 5.2 Contrato para dois ambientes de execução
 
-The canonical capability definition is runtime-neutral. Claude Code and Codex adapters may
-translate tool names, task dispatch, progress reporting, and skill discovery, but they must
-not duplicate or alter the legal prompt, artifact schema, tribunal profile, or gate logic.
+A definição canônica das capacidades é independente do ambiente de execução. Os adaptadores
+para Claude Code e Codex podem traduzir nomes de ferramentas, distribuição de tarefas,
+relato de progresso e descoberta de habilidades, mas não podem duplicar nem alterar o
+prompt jurídico, o esquema dos artefatos, o perfil do tribunal ou a lógica dos controles.
 
-| Concern | Shared contract | Claude Code adapter | Codex adapter |
+| Aspecto | Contrato compartilhado | Adaptador Claude Code | Adaptador Codex |
 |---|---|---|---|
-| Project instructions | Legal and engineering policies | `CLAUDE.md` projection | `AGENTS.md` projection |
-| Skills | Canonical skill instructions and resources | Claude-compatible skill location | `.agents/skills` projection |
-| Orchestration | Versioned pipeline manifest and stage dependencies | Claude command/task dispatch | Codex task/tool dispatch |
-| Progress | Artifact manifest and gate status | Runtime-facing progress view | Runtime-facing progress view |
-| Tools | Capability names and input/output schemas | Claude tool bindings | Codex/MCP or local tool bindings |
-| Validation | Shared scripts, fixtures, and acceptance gates | Runs the shared suite | Runs the shared suite |
+| Instruções do projeto | Políticas jurídicas e de engenharia | Projeção em `CLAUDE.md` | Projeção em `AGENTS.md` |
+| Habilidades | Instruções e recursos canônicos | Local compatível com Claude | Projeção em `.agents/skills` |
+| Orquestração | Manifesto versionado do fluxo e dependências entre etapas | Despacho por comandos/tarefas do Claude | Despacho por tarefas/ferramentas do Codex |
+| Progresso | Manifesto de artefatos e estado dos controles | Visão de progresso do ambiente | Visão de progresso do ambiente |
+| Ferramentas | Nomes de capacidades e esquemas de entrada/saída | Vínculos de ferramentas do Claude | Vínculos Codex/MCP ou locais |
+| Validação | Scripts, casos de teste e critérios de aceite compartilhados | Executa a suíte compartilhada | Executa a suíte compartilhada |
 
-The system does not require byte-identical prose from both models. Runtime conformance means
-that both produce schema-valid artifacts, preserve the same source custody, respect the same
-fail-closed conditions, and pass the same deterministic and human-review gates.
+Não se exige que os dois modelos produzam textos idênticos byte a byte. Conformidade entre
+ambientes significa produzir artefatos válidos conforme os esquemas, preservar a custódia das
+fontes, respeitar as mesmas condições de bloqueio seguro e passar pelos mesmos controles
+determinísticos e de revisão humana.
 
-### 5.3 Provider interface contract
+### 5.3 Contrato de interface dos provedores
 
-PJe acquisition and legal research use versioned, capability-based interfaces under
-`runtime/providers/`. The shared core owns immutable requests, responses, pagination safety,
-content-integrity checks, and official-source custody. Concrete adapters own endpoints,
-authentication, provider payload translation, and tribunal-specific behavior.
+A obtenção de dados do PJe e a pesquisa jurídica usam interfaces versionadas por capacidade
+em `runtime/providers/`. O núcleo compartilhado controla requisições e respostas imutáveis,
+segurança da paginação, integridade do conteúdo e custódia das fontes oficiais. Os adaptadores
+concretos controlam endpoints, autenticação, tradução dos dados do provedor e comportamento
+específico do tribunal.
 
-Conformance is exercised against fake providers using a non-target tribunal code. This guards
-the core/profile boundary, but it does not certify real PJe-JT or research-source access.
+A conformidade é exercitada com provedores simulados e código de um tribunal não alvo. Isso
+protege a separação entre núcleo e perfil, mas não certifica acesso real ao PJe-JT nem às
+fontes de pesquisa.
 
-### 5.4 Authorized capture boundary
+### 5.4 Limite da captura autorizada
 
-Raw HAR captures and extracted sessions are local operational inputs and may not become
-repository artifacts. The evidence path produces a deterministic sanitized endpoint map that
-retains methods, endpoint templates, header and cookie names, response status, content type,
-capability classification, and failure states. It removes all header, cookie, and query values,
-all request and response bodies, and recognized dynamic path identifiers.
+Capturas HAR brutas e sessões extraídas são insumos operacionais locais e não podem se tornar
+artefatos do repositório. O processamento da evidência produz um mapa determinístico e
+sanitizado de endpoints. Ele conserva métodos, modelos de endpoint, nomes de cabeçalhos e
+cookies, estado da resposta, tipo de conteúdo, classificação da capacidade e estados de
+falha. Remove valores de cabeçalhos, cookies e parâmetros de consulta, corpos de requisição
+e resposta e identificadores dinâmicos reconhecidos nos caminhos.
 
-Operator acknowledgement is mandatory before processing a capture, but it is not independent
-proof of authorization. `PJE-01` still requires an authorized TRT12 capture and human review of
-the resulting map.
+O reconhecimento pelo operador é obrigatório antes de processar uma captura, mas não constitui
+prova independente de autorização. `PJE-01` ainda exige uma captura autorizada do TRT12 e
+revisão humana do mapa resultante.
 
-The map-review gate verifies the sanitized digest, target tribunal and instance, endpoint and
-coverage counts, failure-state consistency, redacted path templates, authentication artifacts,
-and the minimum capability/failure coverage. Missing evidence is reported as incomplete;
-structural or custody violations fail closed.
+O controle de revisão do mapa confere o resumo criptográfico sanitizado, tribunal e instância
+alvo, contagens de endpoints e cobertura, coerência dos estados de falha, modelos de caminho
+expurgados, artefatos de autenticação e cobertura mínima de capacidades e falhas. A ausência
+de evidência é relatada como pendência; violações estruturais ou de custódia bloqueiam o fluxo.
 
-### 5.5 Session-state boundary
+### 5.5 Limite do estado da sessão
 
-Credential acquisition and session-state classification are separate responsibilities. A
-tribunal adapter may probe an already authorized session, but the shared classifier receives
-only a sanitized HTTP status, recognized semantic markers, and cookie or header names. It
-never receives or emits credential values, MFA material, request bodies, or response bodies.
+A obtenção de credenciais e a classificação do estado da sessão são responsabilidades
+separadas. Um adaptador do tribunal pode verificar uma sessão já autorizada, mas o
+classificador compartilhado recebe apenas um estado HTTP sanitizado, marcadores semânticos
+reconhecidos e nomes de cookies ou cabeçalhos. Ele nunca recebe nem emite valores de
+credenciais, material de MFA ou corpos de requisição ou resposta.
 
-The versioned contract recognizes `valid`, `expired`, `mfa_required`, `unauthorized`, and
-`unknown`. HTTP denial has precedence over optimistic markers. Contradictory markers or an
-authenticated marker without recognized session evidence fail closed as `unknown`. Synthetic
-TRT99 tests prove this shared behavior; they do not prove real TRT12 authentication. A concrete
-TRT12 probe remains dependent on the authorized and reviewed `PJE-01` map.
+O contrato versionado reconhece `valid`, `expired`, `mfa_required`, `unauthorized` e
+`unknown`. Uma negativa HTTP prevalece sobre marcadores otimistas. Marcadores contraditórios
+ou um marcador de autenticação sem evidência reconhecida de sessão resultam em `unknown` por
+segurança. Testes sintéticos com TRT99 comprovam esse comportamento compartilhado; não
+comprovam autenticação real no TRT12. A verificação concreta do TRT12 continua dependente do
+mapa `PJE-01` autorizado e revisado.
 
-### 5.6 Task and case discovery boundary
+### 5.6 Limite da descoberta de tarefas e processos
 
-The shared discovery runner requests only normalized, authorized task and case pages from a
-concrete adapter. It owns bounded pagination, repeated-cursor detection, task and per-task case
-deduplication, CNJ tribunal-region validation, deterministic ordering, and secret-free output.
-An empty authorized queue is complete, not an error.
+O executor compartilhado de descoberta solicita a um adaptador concreto apenas páginas
+normalizadas e autorizadas de tarefas e processos. Ele controla paginação limitada, detecção
+de cursores repetidos, eliminação de duplicatas de tarefas e processos por tarefa, validação
+da região do tribunal no número CNJ, ordenação determinística e saída sem segredos. Uma fila
+autorizada vazia é um resultado completo, não um erro.
 
-Task IDs, task names, endpoints, provider fields, and cursor encodings remain adapter-owned.
-The original TRF5 listing scripts are reuse evidence, not TRT12 truth. Synthetic TRT99 tests
-prove the portable contract while a concrete TRT12 adapter remains dependent on the reviewed
-`PJE-01` map.
+Identificadores e nomes de tarefas, endpoints, campos do provedor e formatos de cursor
+continuam sob responsabilidade do adaptador. Os scripts originais de listagem do TRF5 são
+evidência para reaproveitamento, não uma descrição do TRT12. Os testes sintéticos com TRT99
+comprovam o contrato portável; o adaptador concreto do TRT12 ainda depende do mapa `PJE-01`
+revisado.
 
 ---
 
-## 6. Tribunal Profile Contract
+## 6. Contrato do perfil do tribunal
 
-Canonical paths:
+Caminhos canônicos:
 
 ```text
 runtime/profiles/
@@ -304,49 +332,51 @@ runtime/profiles/
 └── trt12.json
 ```
 
-The schema is a standard, runtime-neutral JSON Schema. The registry maps judicial segments,
-case-system adapter contracts, research sources, and official references without embedding
-TRT12 values in the core schema. The profile carries the tribunal-specific values:
+O esquema é um JSON Schema padrão, independente do ambiente de execução. O registro relaciona
+segmentos judiciários, contratos de adaptadores dos sistemas processuais, fontes de pesquisa
+e referências oficiais sem inserir valores do TRT12 no esquema central. O perfil contém os
+valores específicos do tribunal:
 
-- Labor Justice segment, TRT12, region 12, Santa Catarina, and CNJ branch digit 5;
-- first instance enabled with `labor_judgment` as its final artifact;
-- second instance described for forward compatibility but explicitly disabled;
-- PJe-JT as the case system, with only the first-instance adapter declared;
-- TST, BNP, STF, and TRT12 official research sources;
-- mandatory human review and verbatim custody; and
-- external filing, signing, and publication disabled.
+- segmento da Justiça do Trabalho, TRT12, região 12, Santa Catarina e dígito 5 do ramo CNJ;
+- primeiro grau habilitado, com `labor_judgment` como artefato final;
+- segundo grau descrito para compatibilidade futura, mas expressamente desabilitado;
+- PJe-JT como sistema processual, com apenas o adaptador do primeiro grau declarado;
+- TST, BNP, STF e TRT12 como fontes oficiais de pesquisa;
+- revisão humana obrigatória e preservação literal das fontes; e
+- protocolo externo, assinatura e publicação desabilitados.
 
-Registry entries with `contract_status: declared` define the adapter boundary expected by
-later work packages. They do not assert that an adapter is implemented, authenticated, or
-operationally verified.
+Entradas do registro com `contract_status: declared` definem a interface de adaptador
+esperada pelos próximos pacotes. Não afirmam que o adaptador foi implementado, autenticado ou
+verificado operacionalmente.
 
-Profile validation must reject:
+A validação do perfil deve rejeitar:
 
-- unknown CNJ branch digits;
-- enabled instances without an adapter;
-- empty signature sets;
-- research sources without a registered adapter;
-- any policy that permits filing, signing, or publication in the MVP.
+- dígitos desconhecidos do ramo CNJ;
+- instâncias habilitadas sem adaptador;
+- conjuntos vazios de assinaturas;
+- fontes de pesquisa sem adaptador registrado;
+- qualquer política que permita protocolo, assinatura ou publicação no MVP.
 
 ---
 
-## 7. Stable Data Contracts
+## 7. Contratos estáveis de dados
 
-The contracts below are implemented as versioned JSON Schema files under
-`runtime/contracts/schemas/`. `runtime/contracts/catalog.json` selects the current version,
-and `runtime/contracts/VERSIONING.md` defines the fail-closed migration policy. Agents may
-consume only artifacts that pass the shared validator and the current contract version.
+Os contratos abaixo são implementados como arquivos JSON Schema versionados em
+`runtime/contracts/schemas/`. `runtime/contracts/catalog.json` seleciona a versão vigente;
+`runtime/contracts/VERSIONING.md` define a política de migração com bloqueio seguro. Os
+agentes só podem consumir artefatos que passem no validador compartilhado e estejam na versão
+vigente do contrato.
 
 ### 7.0 `document-classification.json`
 
-Each downloaded document receives a stable labor-domain type or an explicit unknown/conflict
-state. The deterministic baseline records only the rule evidence and never copies source text
-into the classification artifact.
+Cada documento baixado recebe um tipo estável do domínio trabalhista ou um estado explícito
+de desconhecimento/conflito. A base determinística registra apenas a evidência da regra e
+nunca copia o texto-fonte para o artefato de classificação.
 
 ```json
 {
-  "schema_version": 1,
-  "classifier_version": 1,
+  "schema_version": 2,
+  "classifier_version": 2,
   "documents": [
     {
       "document_id": "DOC-001",
@@ -359,14 +389,15 @@ into the classification artifact.
 }
 ```
 
-The original fork's relevance classifier is reuse evidence for deterministic normalization and
-explicit unknown handling. Its Federal Justice labels and priority assumptions are not carried
-into the labor taxonomy without calibration evidence.
+O classificador de relevância do fork original é evidência para reaproveitar a normalização
+determinística e o tratamento explícito de desconhecidos. Seus rótulos e pressupostos de
+prioridade da Justiça Federal não passam à taxonomia trabalhista sem evidência de calibração.
 
 ### 7.1 `labor-report.json`
 
-The procedural report is a structured source-of-truth artifact. Narrative views may be
-rendered from it, but may not replace its source links or review gaps.
+O relatório processual é um artefato estruturado de referência. Podem-se gerar visualizações
+narrativas a partir dele, mas elas não substituem os vínculos com as fontes nem as lacunas
+para revisão.
 
 ```json
 {
@@ -393,9 +424,9 @@ rendered from it, but may not replace its source links or review gaps.
 }
 ```
 
-Deterministic assembly rejects references outside the document manifest, preserves unknown
-phase and missing positions as review gaps, and orders stable identifiers independently of
-runtime or input order.
+A montagem determinística rejeita referências fora do manifesto de documentos, preserva fase
+desconhecida e posições ausentes como lacunas para revisão e ordena os identificadores
+estáveis independentemente do ambiente de execução ou da ordem de entrada.
 
 ### 7.2 `case-context.json`
 
@@ -415,7 +446,7 @@ runtime or input order.
 
 ### 7.3 `claim-matrix.json`
 
-Each pleaded claim receives a stable identifier.
+Cada pedido formulado recebe um identificador estável.
 
 ```json
 {
@@ -449,9 +480,9 @@ Each pleaded claim receives a stable identifier.
 }
 ```
 
-Claim and defense positions retain independent locators so multiple respondents are not
-collapsed. Taxonomy mismatches and missing requested remedies or defenses require review and
-may not be silently normalized.
+As posições do reclamante e de cada defesa mantêm localizadores independentes para que
+múltiplos reclamados não sejam fundidos. Divergências na taxonomia e pedidos, providências
+requeridas ou defesas ausentes exigem revisão; não podem ser normalizados silenciosamente.
 
 ### 7.4 `evidence-matrix.json`
 
@@ -476,8 +507,9 @@ may not be silently normalized.
 }
 ```
 
-Contradiction links are symmetric, self-links and missing targets fail closed, and any claim
-without linked evidence remains explicit in `uncovered_claim_ids`.
+Os vínculos de contradição são simétricos; vínculos a si mesmos ou a destinos inexistentes
+bloqueiam o fluxo. Todo pedido sem prova vinculada permanece explícito em
+`uncovered_claim_ids`.
 
 ### 7.5 `issue-route.json`
 
@@ -501,9 +533,10 @@ without linked evidence remains explicit in `uncovered_claim_ids`.
 }
 ```
 
-Every known claim has exactly one route. A route with no enabled track is valid only as an
-explicit `abstained` result with one or more reasons; routed claims may not carry abstention
-reasons. Legal and evidentiary tracks require concrete questions for their downstream work.
+Cada pedido conhecido possui exatamente um encaminhamento. Um encaminhamento sem trilha
+habilitada só é válido como resultado explícito `abstained`, com um ou mais motivos; pedidos
+encaminhados não podem conter motivos de abstenção. As trilhas jurídica e probatória exigem
+perguntas concretas para o trabalho posterior.
 
 ### 7.6 `precedent-corpus.json`
 
@@ -570,214 +603,215 @@ reasons. Legal and evidentiary tracks require concrete questions for their downs
 }
 ```
 
-Every known claim has exactly one analysis and one disposition. Merits outcomes require facts,
-evidence, evidence assessment, applicable rules, and reasoning. Procedural outcomes require
-facts and rules, while unresolved outcomes require explicit limitations. The disposition
-inherits the analyzed outcome and links through a stable `ANL-*` identifier.
+Cada pedido conhecido possui exatamente uma análise e um dispositivo. Resultados de mérito
+exigem fatos, provas, avaliação das provas, normas aplicáveis e fundamentação. Resultados
+processuais exigem fatos e normas; resultados inconclusivos exigem limitações explícitas. O
+dispositivo herda o resultado analisado e se vincula por um identificador estável `ANL-*`.
 
 ---
 
-## 8. First-Instance Pipeline
+## 8. Fluxo do primeiro grau
 
 ```text
-0. Prepare and validate profile
-   └─ case-context.json + workspace manifest
+0. Preparar e validar o perfil
+   └─ case-context.json + manifesto do espaço de trabalho
 
-1. Acquire case
-   ├─ session validation
-   ├─ task/process discovery
-   ├─ document index
-   └─ authorized document download
+1. Obter o processo
+   ├─ validar a sessão
+   ├─ descobrir tarefas e processos
+   ├─ indexar documentos
+   └─ baixar documentos autorizados
 
-2. Extract procedural record
-   ├─ document classification
-   ├─ procedural timeline
-   └─ labor report
+2. Extrair os autos processuais
+   ├─ classificar documentos
+   ├─ montar a linha do tempo processual
+   └─ elaborar o relatório trabalhista
 
-3. Build decision units
-   ├─ claim matrix
-   ├─ defense mapping
-   ├─ requested-remedy mapping
-   └─ evidence matrix
+3. Montar as unidades de decisão
+   ├─ matriz de pedidos
+   ├─ mapeamento das defesas
+   ├─ mapeamento das providências requeridas
+   └─ matriz de provas
 
-4. Route each claim
-   ├─ legal research
-   ├─ evidence analysis
-   ├─ calculation review
-   └─ procedural review
+4. Encaminhar cada pedido
+   ├─ pesquisa jurídica
+   ├─ análise das provas
+   ├─ revisão de cálculos
+   └─ revisão processual
 
-5. Execute conditional tracks
-   ├─ TST/STF/BNP research
-   ├─ TRT12 precedent and jurisprudence research
-   ├─ specialized evidence review
-   └─ calculation-criteria review
+5. Executar trilhas condicionais
+   ├─ pesquisa TST/STF/BNP
+   ├─ pesquisa de precedentes e jurisprudência do TRT12
+   ├─ revisão probatória especializada
+   └─ revisão dos critérios de cálculo
 
-6. Analyze each claim
+6. Analisar cada pedido
    └─ claim-analysis.json
 
-7. Draft the judgment
-   ├─ reasoning by claim
-   ├─ disposition matrix
-   └─ draft components
+7. Redigir a sentença
+   ├─ fundamentação por pedido
+   ├─ matriz do dispositivo
+   └─ componentes da minuta
 
-8. Merge deterministically
+8. Consolidar deterministicamente
    └─ <CNJ_NUMBER>-labor-judgment.md
 
-9. Review and gate
-   ├─ claim coverage
-   ├─ reasoning/disposition congruence
-   ├─ quotation custody
-   ├─ precedent status and hierarchy
-   ├─ calculation-criteria consistency
-   └─ final global gate
+9. Revisar e aplicar os controles
+   ├─ cobertura dos pedidos
+   ├─ congruência entre fundamentação e dispositivo
+   ├─ fidelidade das citações às fontes
+   ├─ estado e hierarquia dos precedentes
+   ├─ coerência dos critérios de cálculo
+   └─ controle global final
 ```
 
-Every step must be resumable. Re-running a workspace may reuse only artifacts that pass the
-current schema version, content gate, dependency freshness check, and source fingerprint.
+Cada etapa deve permitir retomada. Uma nova execução só pode reutilizar artefatos aprovados
+na versão vigente do esquema, no controle de conteúdo, na conferência de atualização das
+dependências e na impressão digital da fonte.
 
 ---
 
-## 9. Agent Plan
+## 9. Plano dos agentes
 
-| Agent | Atomic capability | Source strategy | MVP action |
+| Agente | Capacidade individual | Estratégia de origem | Ação no MVP |
 |---|---|---|---|
-| `labor-document-classifier` | Classify one indexed document | New | Create |
-| `labor-procedural-timeline` | Extract procedural events | Adapt existing timeline agent | Absorb |
-| `labor-case-reporter` | Report claims, defenses, events, and pending issues | Adapt existing reporter | Absorb |
-| `labor-claim-mapper` | Enumerate claims and requested remedies | New | Create |
-| `labor-evidence-mapper` | Link evidence to contested propositions and claims | New | Create |
-| `labor-issue-router` | Route each claim to required tracks | New | Create |
-| `tst-precedent-researcher` | Research authoritative TST material | New | Create |
-| `trt12-precedent-researcher` | Research TRT12 precedents and jurisprudence | New | Create |
-| `labor-precedent-consolidator` | Rank and reconcile authorities | Adapt research consolidator | Absorb |
-| `labor-claim-analyzer` | Analyze one claim from evidence and authorities | New | Create |
-| `labor-judgment-drafter` | Draft reasoning and disposition from approved analyses | New | Create |
-| `labor-congruence-reviewer` | Verify claim/reasoning/disposition coverage | New | Create |
-| `labor-source-reviewer` | Verify status, hierarchy, wording, and relevance | Adapt source reviewer | Absorb |
-| `labor-calculation-reviewer` | Review criteria, periods, and effects | Replace Federal calculation reviewer | Create |
+| `labor-document-classifier` | Classificar um documento indexado | Novo | Criar |
+| `labor-procedural-timeline` | Extrair eventos processuais | Adaptar agente de linha do tempo existente | Incorporar |
+| `labor-case-reporter` | Relatar pedidos, defesas, eventos e pendências | Adaptar agente de relatório existente | Incorporar |
+| `labor-claim-mapper` | Enumerar pedidos e providências requeridas | Novo | Criar |
+| `labor-evidence-mapper` | Relacionar provas a alegações controvertidas e pedidos | Novo | Criar |
+| `labor-issue-router` | Encaminhar cada pedido às trilhas necessárias | Novo | Criar |
+| `tst-precedent-researcher` | Pesquisar fontes autorizadas do TST | Novo | Criar |
+| `trt12-precedent-researcher` | Pesquisar precedentes e jurisprudência do TRT12 | Novo | Criar |
+| `labor-precedent-consolidator` | Hierarquizar e conciliar autoridades | Adaptar consolidador de pesquisa | Incorporar |
+| `labor-claim-analyzer` | Analisar um pedido com provas e autoridades | Novo | Criar |
+| `labor-judgment-drafter` | Redigir fundamentação e dispositivo a partir de análises aprovadas | Novo | Criar |
+| `labor-congruence-reviewer` | Verificar cobertura entre pedidos, fundamentação e dispositivo | Novo | Criar |
+| `labor-source-reviewer` | Verificar estado, hierarquia, texto e pertinência das fontes | Adaptar revisor de fontes | Incorporar |
+| `labor-calculation-reviewer` | Revisar critérios, períodos e efeitos | Substituir revisor de cálculos federais | Criar |
 
-Existing generic documentary, testimonial, expert, digital, confession, and recognition
-analysis capabilities may be reused only after their examples and contracts are shown not to
-inject Federal Justice assumptions.
+As capacidades genéricas existentes de análise documental, testemunhal, pericial, digital,
+de confissão e de reconhecimento só podem ser reaproveitadas depois de demonstrado que seus
+exemplos e contratos não introduzem pressupostos da Justiça Federal.
 
 ---
 
-## 10. Skill and Adapter Plan
+## 10. Plano de habilidades e adaptadores
 
-| Component | Responsibility | Scope |
+| Componente | Responsabilidade | Escopo |
 |---|---|---|
-| `tribunal-profile` | Load and validate court profiles | Core |
-| `pje-jt` | PJe-JT workflow and adapter contract | Labor Justice |
-| `pje-jt-trt12-first-instance` | TRT12 observed endpoints and session behavior | TRT12 profile |
-| `labor-claim-taxonomy` | Claim and remedy vocabulary | Labor Justice |
-| `labor-precedent-hierarchy` | Binding scope, status, distinction, and overruling rules | Labor Justice |
-| `labor-evidence-review` | Labor-specific evidence guidance | Labor Justice |
-| `labor-calculation-criteria` | Criteria review without claiming independent liquidation | Labor Justice |
-| `tst-jurisprudence` | TST official-source research adapter | National |
-| `trt12-jurisprudence` | TRT12 official-source research adapter | TRT12 profile |
+| `tribunal-profile` | Carregar e validar perfis de tribunais | Núcleo |
+| `pje-jt` | Fluxo do PJe-JT e contrato do adaptador | Justiça do Trabalho |
+| `pje-jt-trt12-first-instance` | Endpoints observados e comportamento de sessão do TRT12 | Perfil TRT12 |
+| `labor-claim-taxonomy` | Vocabulário de pedidos e providências | Justiça do Trabalho |
+| `labor-precedent-hierarchy` | Âmbito vinculante, estado, distinção e superação | Justiça do Trabalho |
+| `labor-evidence-review` | Orientações sobre provas trabalhistas | Justiça do Trabalho |
+| `labor-calculation-criteria` | Revisão de critérios sem alegar liquidação independente | Justiça do Trabalho |
+| `tst-jurisprudence` | Adaptador de pesquisa em fonte oficial do TST | Nacional |
+| `trt12-jurisprudence` | Adaptador de pesquisa em fonte oficial do TRT12 | Perfil TRT12 |
 
-No adapter may log session cookies, MFA material, authorization headers, complete case text,
-or unredacted personal identifiers in diagnostic output.
-
----
-
-## 11. Research Authority Policy
-
-The consolidator must preserve this hierarchy and explicitly record exceptions:
-
-1. STF binding authority applicable to the issue;
-2. TST qualified precedents and other nationally binding labor authority;
-3. current TST summaries, orientations, and normative precedents according to their legal
-   weight;
-4. TRT12 IRDR, IAC, regional theses, and other binding regional authority;
-5. TRT12 jurisprudence, with chamber or panel identified;
-6. other TRT decisions, labeled persuasive only;
-7. doctrine, if human-authorized for a specific workflow, never silently introduced into the
-   automated judgment draft.
-
-Research output must record:
-
-- source and official URL;
-- current status when the source exposes it;
-- binding scope;
-- legal question and holding;
-- verbatim excerpt;
-- retrieval timestamp;
-- any suspension, overruling, cancellation, or unresolved conflict found.
+Nenhum adaptador pode registrar cookies de sessão, material de MFA, cabeçalhos de
+autorização, texto integral do processo ou identificadores pessoais não expurgados em
+saídas de diagnóstico.
 
 ---
 
-## 12. Deterministic Gates
+## 11. Política de autoridade na pesquisa
 
-| Gate | Blocking conditions | Exit evidence |
+O consolidador deve preservar a seguinte hierarquia e registrar expressamente as exceções:
+
+1. autoridade vinculante do STF aplicável à questão;
+2. precedentes qualificados do TST e outras autoridades trabalhistas vinculantes em âmbito nacional;
+3. súmulas, orientações e precedentes normativos vigentes do TST, conforme seu peso jurídico;
+4. IRDR, IAC, teses regionais e outras autoridades regionais vinculantes do TRT12;
+5. jurisprudência do TRT12, com identificação da câmara ou turma;
+6. decisões de outros TRTs, identificadas apenas como persuasivas;
+7. doutrina, somente se autorizada por uma pessoa para o fluxo específico, nunca inserida
+   silenciosamente na minuta automatizada.
+
+A saída da pesquisa deve registrar:
+
+- fonte e URL oficial;
+- estado atual, quando informado pela fonte;
+- âmbito vinculante;
+- questão jurídica e tese;
+- trecho literal;
+- data e hora da consulta;
+- suspensão, superação, cancelamento ou conflito não resolvido que tenha sido identificado.
+
+---
+
+## 12. Controles determinísticos
+
+| Controle | Condições de bloqueio | Evidência de saída |
 |---|---|---|
-| Profile | Invalid or incomplete tribunal configuration | Profile validation report |
-| Input | Invalid TRT12 CNJ number, missing authorization, unreadable source | Input report |
-| Document index | Missing IDs, duplicate identifiers, unexplained download gaps | Index report |
-| Claim coverage | Pleaded claim absent from matrix | Claim reconciliation report |
-| Defense coverage | Contested claim lacks defense mapping or explicit no-defense status | Defense reconciliation report |
-| Evidence custody | Evidence proposition lacks source locator | Evidence report |
-| Route | Claim lacks a valid route and rationale | Route report |
-| Research | Cited authority absent from authorized corpus or status unresolved | Research report |
-| Analysis | Claim lacks facts, rule, reasoning, outcome, or limitation field | Analysis report |
-| Disposition congruence | Missing claim disposition or orphan disposition | Congruence report |
-| Quotation | External quotation does not match authorized corpus | Citation report |
-| Calculation criteria | Period/effect/criterion is inconsistent or unsupported | Calculation report |
-| Final | Any blocking gate fails or an artifact is stale | Global report |
+| Perfil | Configuração inválida ou incompleta do tribunal | Relatório de validação do perfil |
+| Entrada | Número CNJ do TRT12 inválido, autorização ausente ou fonte ilegível | Relatório de entrada |
+| Índice de documentos | IDs ausentes, duplicatas ou lacunas de download sem explicação | Relatório do índice |
+| Cobertura dos pedidos | Pedido formulado ausente da matriz | Relatório de conciliação dos pedidos |
+| Cobertura das defesas | Pedido contestado sem defesa mapeada nem estado explícito de ausência de defesa | Relatório de conciliação das defesas |
+| Custódia das provas | Alegação probatória sem localizador da fonte | Relatório de provas |
+| Encaminhamento | Pedido sem encaminhamento válido e justificado | Relatório de encaminhamento |
+| Pesquisa | Autoridade citada fora do corpus autorizado ou com estado não resolvido | Relatório de pesquisa |
+| Análise | Pedido sem fatos, norma, fundamentação, resultado ou campo de limitação | Relatório de análise |
+| Congruência do dispositivo | Pedido sem dispositivo ou dispositivo sem pedido correspondente | Relatório de congruência |
+| Citações | Citação externa divergente do corpus autorizado | Relatório de citações |
+| Critérios de cálculo | Período, efeito ou critério incoerente ou sem suporte | Relatório de cálculos |
+| Final | Qualquer controle bloqueante falhou ou algum artefato está desatualizado | Relatório global |
 
-Critical gates do not degrade to warnings. A claim may end in an explicit abstention or request
-for human resolution, but it may not silently disappear.
-
----
-
-## 13. Security and Privacy
-
-Before real case ingestion, the project must implement and verify:
-
-- `.env`, session, HAR, cookie, authorization, and case-data ignore rules;
-- sanitized HAR fixtures for tests;
-- log redaction with tests for all credential fields;
-- least-privilege tool access for every agent;
-- no external write or filing tools in the MVP pipeline;
-- a sealed-case policy approved by the responsible human;
-- retention and deletion rules for local case workspaces;
-- explicit confirmation that selected model and infrastructure use comply with the court's
-  data-handling requirements.
+Controles críticos não podem ser rebaixados a avisos. Um pedido pode terminar em abstenção
+explícita ou solicitação de decisão humana, mas não pode desaparecer silenciosamente.
 
 ---
 
-## 14. Validation Strategy
+## 13. Segurança e privacidade
 
-### 14.1 Test layers
+Antes de ingerir um processo real, o projeto deve implementar e verificar:
 
-1. **Schema tests:** valid and invalid examples for every stable contract.
-2. **Unit tests:** gates, normalization, merge, fingerprints, and redaction.
-3. **Adapter contract tests:** recorded and sanitized PJe/research responses.
-4. **Integration tests:** complete pipeline over synthetic and sanitized fixtures.
-5. **Historical blind review:** completed TRT12 first-instance cases whose outcomes are hidden
-   during generation and inspected only in evaluation.
-6. **Regression suite:** all accepted defects become permanent fixtures.
+- regras para ignorar `.env`, sessões, HAR, cookies, autorizações e dados processuais;
+- arquivos HAR sanitizados para testes;
+- expurgo nos registros, com testes para todos os campos de credenciais;
+- acesso a ferramentas com privilégio mínimo para cada agente;
+- ausência de ferramentas de escrita externa ou protocolo no fluxo do MVP;
+- política para processos sigilosos aprovada pela pessoa responsável;
+- regras de retenção e exclusão dos espaços locais de trabalho dos processos;
+- confirmação explícita de que o modelo e a infraestrutura escolhidos atendem aos requisitos
+  do tribunal para tratamento dos dados.
 
-### 14.2 Provisional acceptance targets
+---
 
-Targets are provisional until the first calibration sample establishes a baseline.
+## 14. Estratégia de validação
 
-| Metric | MVP target | Guardrail |
+### 14.1 Camadas de testes
+
+1. **Testes de esquema:** exemplos válidos e inválidos para cada contrato estável.
+2. **Testes unitários:** controles, normalização, consolidação, impressões digitais e expurgo.
+3. **Testes de contrato dos adaptadores:** respostas gravadas e sanitizadas do PJe e da pesquisa.
+4. **Testes de integração:** fluxo completo com dados sintéticos e sanitizados.
+5. **Revisão histórica cega:** processos encerrados do primeiro grau do TRT12 cujos
+   resultados ficam ocultos durante a geração e só são examinados na avaliação.
+6. **Suíte de regressão:** todos os defeitos confirmados tornam-se casos de teste permanentes.
+
+### 14.2 Metas provisórias de aceite
+
+As metas são provisórias até que a primeira amostra de calibração estabeleça uma linha de base.
+
+| Indicador | Meta do MVP | Limite de segurança |
 |---|---:|---|
-| Claim extraction recall | at least 95% | 100% for claims in the acceptance sample before pilot |
-| Claim/disposition coverage | 100% | Any omission is critical |
-| Verbatim quotation custody | 100% | Any unsupported quotation is critical |
-| Orphan disposition rate | 0% | Any orphan is critical |
-| Silent adapter failure rate | 0% | Explicit unavailability is acceptable |
-| Authorized PJe rehearsal success | at least 95% | No credential leakage |
-| Critical defects in final blind review | 0 | Blocks pilot readiness |
+| Sensibilidade na extração de pedidos | pelo menos 95% | 100% dos pedidos na amostra de aceite antes do piloto |
+| Cobertura entre pedidos e dispositivo | 100% | Qualquer omissão é crítica |
+| Fidelidade das citações literais | 100% | Qualquer citação sem suporte é crítica |
+| Dispositivos sem pedido correspondente | 0% | Qualquer ocorrência é crítica |
+| Falhas silenciosas de adaptadores | 0% | Indisponibilidade explícita é aceitável |
+| Êxito do ensaio autorizado no PJe | pelo menos 95% | Nenhum vazamento de credenciais |
+| Defeitos críticos na revisão cega final | 0 | Bloqueia a prontidão para o piloto |
 
-The historical sample protocol must define case selection, claim categories, procedures,
-reviewer instructions, and defect severity before results are observed.
+O protocolo da amostra histórica deve definir seleção de processos, categorias de pedidos,
+ritos, instruções aos revisores e gravidade dos defeitos antes de observar os resultados.
 
 ---
 
-## 15. Target Repository Layout
+## 15. Organização prevista do repositório
 
 ```text
 .
@@ -804,7 +838,7 @@ reviewer instructions, and defect severity before results are observed.
 ├── scaffold/
 │   ├── commands/
 │   │   ├── pipeline-labor-judgment.md
-│   │   └── pipeline-labor-vote.md          # future, disabled
+│   │   └── pipeline-labor-vote.md          # futuro, desabilitado
 │   ├── agents/
 │   │   ├── labor/
 │   │   ├── research/
@@ -848,119 +882,119 @@ reviewer instructions, and defect severity before results are observed.
         └── sanitized/
 ```
 
-The exact physical layout may be adapted to existing project conventions during
-implementation. The logical separation between core, labor domain, and court profile is
-mandatory.
+A organização física exata pode se adaptar às convenções existentes do projeto durante a
+implementação. A separação lógica entre núcleo, domínio trabalhista e perfil do tribunal é
+obrigatória.
 
 ---
 
-## 16. Second-Instance Extension Contract
+## 16. Contrato de extensão para o segundo grau
 
-The first-instance implementation must not implement second-instance behavior, but it must
-avoid blocking it. The future second-instance pipeline will add:
+A implementação do primeiro grau não deve incluir comportamento de segundo grau, mas não pode
+impedir sua inclusão futura. O futuro fluxo do segundo grau acrescentará:
 
-- appeal admissibility;
-- appealed-chapter matrix;
-- scope of appellate review;
-- reasons and counterarguments;
-- maintain/reverse/annul disposition per chapter;
-- regional panel and divergence metadata;
-- prequestioning review where applicable;
-- vote and judgment output contracts.
+- admissibilidade recursal;
+- matriz dos capítulos impugnados;
+- limites da devolução recursal;
+- razões e contrarrazões;
+- manutenção, reforma ou anulação por capítulo;
+- metadados de turma regional e divergência;
+- revisão de prequestionamento, quando aplicável;
+- contratos de saída para voto e acórdão.
 
-The second-instance pipeline will reuse case acquisition, document classification, evidence
-custody, precedent custody, source review, and core execution mechanics.
-
----
-
-## 17. Multi-TRT Extension Contract
-
-A second TRT is considered supported only when it has:
-
-- an approved profile;
-- a verified first-instance PJe adapter or a proven shared adapter;
-- a verified regional research adapter;
-- a local precedent policy;
-- sanitized fixtures;
-- end-to-end regression results;
-- an approved historical validation dossier.
-
-The first additional TRT is the portability test. Until it passes, the project is
-**TRT12-extensible**, not **multi-TRT compatible**.
+O fluxo de segundo grau reaproveitará obtenção do processo, classificação de documentos,
+custódia das provas e dos precedentes, revisão das fontes e mecanismos centrais de execução.
 
 ---
 
-## 18. Architectural Decisions
+## 17. Contrato de extensão para outros TRTs
 
-| ID | Decision | Rationale |
+Um segundo TRT só será considerado suportado quando tiver:
+
+- perfil aprovado;
+- adaptador PJe do primeiro grau verificado ou adaptador compartilhado comprovado;
+- adaptador de pesquisa regional verificado;
+- política local de precedentes;
+- dados de teste sanitizados;
+- resultados de regressão de ponta a ponta;
+- dossiê de validação histórica aprovado.
+
+O primeiro TRT adicional será o teste de portabilidade. Até sua aprovação, o projeto é
+**extensível a partir do TRT12**, não **compatível com múltiplos TRTs**.
+
+---
+
+## 18. Decisões arquiteturais
+
+| ID | Decisão | Justificativa |
 |---|---|---|
-| ADR-001 | TRT12 first instance is the first executable target | Keeps validation bounded |
-| ADR-002 | First and second instance use separate orchestrators | Their legal workflows differ materially |
-| ADR-003 | Claim is the primary decision unit | Prevents omitted or conflated requests |
-| ADR-004 | Court differences live in profiles and adapters | Preserves reusable domain agents |
-| ADR-005 | PJe-Calc awareness does not equal independent liquidation | Avoids overstating calculation correctness |
-| ADR-006 | Progress is earned only by accepted evidence | Prevents false completion metrics |
-| ADR-007 | A second TRT is required to prove portability | Avoids speculative abstraction |
-| ADR-008 | Provider contracts are capability-based and tribunal-neutral | Keeps endpoints and court-specific behavior outside the shared core |
-| ADR-009 | Raw HAR and session files remain local; only reviewed sanitized maps are evidence candidates | Prevents credentials and case content from entering version control |
-| ADR-010 | Session classification is separate from credential acquisition and fails closed on ambiguity | Keeps the shared core secret-free and prevents optimistic authentication decisions |
-| ADR-011 | Task and case discovery uses normalized bounded pages and treats an empty queue as complete | Prevents silent pagination loss without embedding provider payloads or task names in the core |
-| ADR-012 | Labor document classification is versioned, deterministic, and preserves unknown/conflict states | Makes triage auditable without presenting an uncalibrated guess as a fact |
-| ADR-013 | The procedural labor report is structured, source-linked, and preserves review gaps | Prevents narrative summaries from becoming an untraceable source of truth |
-| ADR-014 | Claim and defense positions remain independently source-linked and taxonomy mismatches stay explicit | Prevents multi-respondent defenses or novel claims from being silently collapsed |
-| ADR-015 | Evidence is claim-linked, source-located, limitation-preserving, and contradiction-aware | Prevents unsupported propositions and conflicting evidence from disappearing in narrative synthesis |
-| ADR-016 | Every claim receives one explainable work route or an explicit abstention | Prevents claims from disappearing between structured extraction and downstream legal analysis |
-| ADR-017 | Claim analyses and dispositions form a one-to-one, stable-ID-linked decision chain | Prevents outcome drift between reasoning, operative language, and deterministic draft assembly |
+| ADR-001 | O primeiro grau do TRT12 é o primeiro alvo executável | Mantém a validação delimitada |
+| ADR-002 | Primeiro e segundo graus usam orquestradores separados | Seus fluxos jurídicos diferem substancialmente |
+| ADR-003 | O pedido é a unidade primária de decisão | Evita pedidos omitidos ou confundidos |
+| ADR-004 | Diferenças entre tribunais ficam nos perfis e adaptadores | Preserva agentes de domínio reutilizáveis |
+| ADR-005 | Conhecer o PJe-Calc não equivale a liquidar de forma independente | Evita exagerar a correção dos cálculos |
+| ADR-006 | Progresso só é contabilizado com evidência aceita | Evita indicadores falsos de conclusão |
+| ADR-007 | Um segundo TRT é necessário para comprovar portabilidade | Evita abstração especulativa |
+| ADR-008 | Contratos de provedores são definidos por capacidade e independentes do tribunal | Mantém endpoints e particularidades fora do núcleo compartilhado |
+| ADR-009 | HARs brutos e sessões permanecem locais; apenas mapas sanitizados e revisados podem servir de evidência | Impede credenciais e conteúdo processual no controle de versão |
+| ADR-010 | A classificação da sessão é separada da obtenção de credenciais e bloqueia ambiguidades | Mantém o núcleo sem segredos e evita presumir autenticação |
+| ADR-011 | A descoberta usa páginas normalizadas e limitadas; fila vazia é resultado completo | Evita perda silenciosa na paginação sem embutir dados do provedor no núcleo |
+| ADR-012 | A classificação documental trabalhista é versionada, determinística e preserva estados desconhecidos/conflitantes | Permite auditoria sem apresentar hipótese não calibrada como fato |
+| ADR-013 | O relatório trabalhista é estruturado, vinculado às fontes e preserva lacunas | Evita que narrativas se tornem referência sem rastreabilidade |
+| ADR-014 | Posições sobre pedidos e defesas mantêm fontes independentes; divergências da taxonomia são explícitas | Evita fundir silenciosamente defesas de múltiplos reclamados ou pedidos novos |
+| ADR-015 | Provas são ligadas aos pedidos e às fontes, preservam limitações e registram contradições | Evita que alegações sem suporte ou provas conflitantes desapareçam na síntese |
+| ADR-016 | Cada pedido recebe um encaminhamento explicável ou abstenção explícita | Evita perda de pedidos entre extração estruturada e análise jurídica |
+| ADR-017 | Análises e dispositivos formam uma cadeia individual por pedido, com IDs estáveis | Evita divergência entre fundamentação, comando e montagem determinística |
 
 ---
 
-## 19. Open Decisions Before Implementation
+## 19. Decisões em aberto antes da implementação
 
-These do not block blueprint approval, but they block the indicated work packages:
+Elas não impedem o aceite do blueprint, mas bloqueiam os pacotes de trabalho indicados:
 
-1. authorized TRT12 PJe-JT access context and a sanitized HAR capture;
-2. exact first-instance task names and document types used by the target unit;
-3. approved handling policy for personal data and sealed cases;
-4. minimum historical case sample and reviewer availability;
-5. whether PJe-Calc interoperability is file-based, manual comparison, or deferred;
-6. preferred judgment house style and whether an approved seed document exists.
-
----
-
-## 20. Blueprint Acceptance Record
-
-The user accepted this blueprint on 2026-09-21 and confirmed all of the following:
-
-- TRT12 first instance is the first executable target;
-- second instance remains a separate future pipeline;
-- other TRTs are supported through profiles and adapters after portability proof;
-- claim-level traceability is mandatory;
-- progress is measured by the evidence-weighted roadmap;
-- no filing, signing, or publication automation is included in the MVP.
-
-Roadmap item `ARC-01` therefore earns its allocated three points, and the project proceeds with
-the remaining foundation and contract acceptance gates.
+1. contexto de acesso autorizado ao PJe-JT do TRT12 e captura HAR sanitizada;
+2. nomes exatos das tarefas e tipos de documentos do primeiro grau usados pela unidade alvo;
+3. política aprovada para tratamento de dados pessoais e processos sigilosos;
+4. amostra histórica mínima e disponibilidade de revisores;
+5. escolha entre interoperabilidade com PJe-Calc por arquivo, comparação manual ou adiamento;
+6. estilo preferido de sentença e existência de modelo inicial aprovado.
 
 ---
 
-## 21. Official Domain References
+## 20. Registro de aceite do blueprint
 
-- CNJ unique case numbering and Labor Justice branch digit:
+O usuário aprovou este blueprint em 2026-09-21 e confirmou:
+
+- primeiro grau do TRT12 como primeiro alvo executável;
+- segundo grau como fluxo futuro separado;
+- suporte a outros TRTs por perfis e adaptadores, após comprovar a portabilidade;
+- rastreabilidade obrigatória de cada pedido;
+- progresso medido pelo roadmap ponderado por evidências;
+- nenhuma automação de protocolo, assinatura ou publicação no MVP.
+
+O item `ARC-01` do roadmap recebe, portanto, seus três pontos previstos. O projeto segue
+para os demais critérios de aceite da fundação e dos contratos.
+
+---
+
+## 21. Referências oficiais do domínio
+
+- Numeração única do CNJ e dígito do ramo da Justiça do Trabalho:
   <https://www.cnj.jus.br/programas-e-acoes/numeracao-unica/perguntas-frequentes/>
-- CNJ Banco Nacional de Precedentes:
+- Banco Nacional de Precedentes do CNJ:
   <https://www.cnj.jus.br/tecnologia-da-informacao-e-comunicacao/justica-4-0/banco-nacional-de-precedentes-bnp/>
-- TRT12 service charter, including distinct first- and second-instance PJe access and
-  jurisprudence coverage:
+- Carta de Serviços do TRT12, inclusive acessos distintos ao PJe do primeiro e segundo graus
+  e abrangência da consulta jurisprudencial:
   <https://portal.trt12.jus.br/sites/default/files/2025-08/Carta%20de%20Servi%C3%A7os%20TRT12%20%281%29.pdf>
-- TRT12 jurisprudence search:
+- Consulta à jurisprudência do TRT12:
   <https://portal.trt12.jus.br/consulta-jurisprudencia>
-- TRT12 precedent and jurisprudence uniformization:
+- Uniformização de precedentes e jurisprudência do TRT12:
   <https://portal.trt12.jus.br/uniformizacao-jurisprudencia>
-- TRT12 precedent information:
+- Informativo de precedentes do TRT12:
   <https://portal.trt12.jus.br/informativo-de-precedentes-2024>
-- TST jurisprudence:
+- Jurisprudência do TST:
   <https://www.tst.jus.br/jurisprudencia>
-- TST qualified precedent index:
+- Índice temático de precedentes qualificados do TST:
   <https://www.tst.jus.br/indice-tematico-precedentes-qualificados-tst>
-- STF jurisprudence:
+- Jurisprudência do STF:
   <https://portal.stf.jus.br/jurisprudencia/>

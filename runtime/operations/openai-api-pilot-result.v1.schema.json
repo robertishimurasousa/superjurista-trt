@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/openai-api-pilot-result.v1.schema.json",
+  "title": "Resumo protegido do piloto pela API da OpenAI no TRT12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "pilot_id", "case_reference_digest",
+    "authorization_scope_digest", "api_authorization_digest",
+    "provider_terms_digest", "development_commit", "endpoint_map_digest",
+    "model_provider", "model_id", "passed_handoff_gates",
+    "input_artifact_sha256", "generated_artifact_sha256", "finished_at",
+    "external_actions_allowed"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "status": {"type": "string", "const": "pending_legal_review"},
+    "pilot_id": {"type": "string", "pattern": "^PILOT-[A-Z0-9_-]{3,32}$"},
+    "case_reference_digest": {"$ref": "#/$defs/sha256"},
+    "authorization_scope_digest": {"$ref": "#/$defs/sha256"},
+    "api_authorization_digest": {"$ref": "#/$defs/sha256"},
+    "provider_terms_digest": {"$ref": "#/$defs/sha256"},
+    "development_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "endpoint_map_digest": {"$ref": "#/$defs/sha256"},
+    "model_provider": {"type": "string", "const": "openai_api"},
+    "model_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,79}$"},
+    "passed_handoff_gates": {"type": "integer", "const": 3},
+    "input_artifact_sha256": {
+      "type": "object", "additionalProperties": false,
+      "required": ["report", "matrix", "triage_input"],
+      "properties": {
+        "report": {"$ref": "#/$defs/sha256"},
+        "matrix": {"$ref": "#/$defs/sha256"},
+        "triage_input": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "generated_artifact_sha256": {
+      "type": "object", "additionalProperties": false,
+      "required": ["narrative", "triage", "sources", "routes"],
+      "properties": {
+        "narrative": {"$ref": "#/$defs/sha256"},
+        "triage": {"$ref": "#/$defs/sha256"},
+        "sources": {"$ref": "#/$defs/sha256"},
+        "routes": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "finished_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "external_actions_allowed": {"type": "boolean", "const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

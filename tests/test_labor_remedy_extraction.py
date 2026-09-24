@@ -69,7 +69,7 @@ Fls.: 12"""),
             "recognition_of_indefinite_term", "recognition_of_dismissal_without_cause"
         ])
         self.assertEqual(by_id["C.6"]["remedy_codes"], ["fgts_deposit", "fgts_40_percent_penalty"])
-        self.assertEqual(by_id["C.7"]["source_locator"], "page 12, request C.7")
+        self.assertEqual(by_id["C.7"]["source_locator"], "página 12, pedido C.7")
         self.assertEqual(by_id["C.8"]["review_gaps"], ["conditional_alternative"])
         self.assertEqual(by_id["D"]["remedy_codes"], ["interval_payment", "statutory_effects"])
         self.assertEqual(by_id["E"]["remedy_codes"], ["compensation"])

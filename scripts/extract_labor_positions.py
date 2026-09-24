@@ -29,19 +29,19 @@ CLAIM_SECTION_RULES = (
     ClaimSectionRule(
         position_id="POS-001",
         label="unmapped_legal_aid",
-        summary="Claimant requests legal-aid relief.",
+        summary="A parte autora requer assistência judiciária gratuita.",
         headings=("DO PEDIDO DE ASSISTENCIA JUDICIARIA GRATUITA",),
     ),
     ClaimSectionRule(
         position_id="POS-002",
         label="unmapped_joint_or_subsidiary_liability",
-        summary="Claimant requests joint or subsidiary liability.",
+        summary="A parte autora requer responsabilidade solidária ou subsidiária.",
         headings=("DA RESPONSABILIDADE SOLIDARIA SUBSIDIARIA",),
     ),
     ClaimSectionRule(
         position_id="POS-003",
         label="termination_payments",
-        summary="Claimant requests termination-related payments.",
+        summary="A parte autora requer verbas rescisórias.",
         headings=(
             "DO CONTRATO POR PRAZO DETERMINADO E DAS VERBAS RESCISORIAS",
             "DO CONTRATO POR PRAZO DETERMINADO E DAS VERBAS RECISORIAS",
@@ -51,7 +51,7 @@ CLAIM_SECTION_RULES = (
     ClaimSectionRule(
         position_id="POS-004",
         label="meal_rest_interval",
-        summary="Claimant requests payment for an allegedly suppressed meal interval.",
+        summary="A parte autora requer pagamento pelo intervalo intrajornada alegadamente suprimido.",
         headings=(
             "DO INTERVALO INTRAJORNADA",
             "DO INTERVALOR INTRAJORDNADA",
@@ -60,7 +60,7 @@ CLAIM_SECTION_RULES = (
     ClaimSectionRule(
         position_id="POS-005",
         label="moral_damages",
-        summary="Claimant requests compensation for alleged non-pecuniary harm.",
+        summary="A parte autora requer indenização por alegado dano extrapatrimonial.",
         headings=(
             "DA INDENIZACAO POR DANOS EXTRAPATRIMONIAIS",
             "DA IN DENIZACAO POR DANOS EXTRAPATRIMONIAIS",
@@ -70,13 +70,13 @@ CLAIM_SECTION_RULES = (
     ClaimSectionRule(
         position_id="POS-006",
         label="unmapped_statutory_penalty_article_467",
-        summary="Claimant requests the statutory penalty under CLT article 467.",
+        summary="A parte autora requer multa do art. 467 da CLT.",
         headings=("DA MULTA DO ART 467 DA CLT",),
     ),
     ClaimSectionRule(
         position_id="POS-007",
         label="unmapped_statutory_penalty_article_477",
-        summary="Claimant requests the statutory penalty under CLT article 477.",
+        summary="A parte autora requer multa do art. 477 da CLT.",
         headings=(
             "DA MULTA DO ART 477 8 DA CLT",
             "DA MULTA DO ART 477 PARAGRAFO 8 DA CLT",
@@ -85,7 +85,7 @@ CLAIM_SECTION_RULES = (
     ClaimSectionRule(
         position_id="POS-008",
         label="attorney_fees",
-        summary="Claimant requests an attorney-fee award.",
+        summary="A parte autora requer honorários advocatícios.",
         headings=("DOS HONORARIOS ADVOCATICIOS",),
     ),
 )
@@ -170,7 +170,7 @@ def extract_claim_positions(
                 summary=rule.summary,
                 source=SourceReference(
                     document_id=initial_document_id,
-                    locator=f"page {source_page}, claim section heading",
+                    locator=f"página {source_page}, título da seção de pedido",
                 ),
             )
         )
