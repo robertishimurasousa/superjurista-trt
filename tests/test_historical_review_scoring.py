@@ -293,7 +293,7 @@ class HistoricalReviewScoringTest(unittest.TestCase):
 
         issues = schema_api.validate_schema_value(report, schema)
 
-        self.assertTrue(any("unknown field: unexpected" in issue for issue in issues))
+        self.assertTrue(any("campo desconhecido: unexpected" in issue for issue in issues))
 
 
 if __name__ == "__main__":

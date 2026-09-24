@@ -145,7 +145,7 @@ class TribunalProfileTest(unittest.TestCase):
         result = self.invalid_profile(lambda profile: profile.update(typo=True))
 
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("unknown field: typo", result.stderr)
+        self.assertIn("campo desconhecido: typo", result.stderr)
 
 
 if __name__ == "__main__":

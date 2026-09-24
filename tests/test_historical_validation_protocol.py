@@ -133,7 +133,7 @@ class HistoricalValidationProtocolTest(unittest.TestCase):
         protocol = self.protocol()
         protocol["outcome_results"] = {"claim_recall": 1.0}
 
-        with self.assertRaisesRegex(api.HistoricalProtocolError, "unknown field"):
+        with self.assertRaisesRegex(api.HistoricalProtocolError, "campo desconhecido"):
             self.validate(api, protocol)
 
 

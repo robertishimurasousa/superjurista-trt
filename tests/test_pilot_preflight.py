@@ -327,7 +327,7 @@ class PilotPreflightTest(unittest.TestCase):
             output = base / "output"
             workspace.mkdir()
             output.mkdir()
-            with self.assertRaisesRegex(self.api().PilotPreflightError, "unknown field"):
+            with self.assertRaisesRegex(self.api().PilotPreflightError, "campo desconhecido"):
                 self.validate(document, endpoint_map, workspace, output)
 
     def test_cli_writes_only_a_secret_free_go_summary(self) -> None:
