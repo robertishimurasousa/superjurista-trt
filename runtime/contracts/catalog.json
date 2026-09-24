@@ -30,8 +30,8 @@
       "schema": "schemas/disposition-matrix.v1.schema.json"
     },
     "document-classification": {
-      "current_version": 1,
-      "schema": "schemas/document-classification.v1.schema.json"
+      "current_version": 2,
+      "schema": "schemas/document-classification.v2.schema.json"
     },
     "labor-report": {
       "current_version": 1,

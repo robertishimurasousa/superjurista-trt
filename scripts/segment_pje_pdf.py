@@ -30,7 +30,7 @@ DEFAULT_CLASSIFICATION_CONTRACT = (
 )
 DEFAULT_SEGMENT_SCHEMA = ROOT / "runtime" / "providers" / "pje-pdf-segments.v1.schema.json"
 DEFAULT_CLASSIFICATION_SCHEMA = (
-    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v1.schema.json"
+    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v2.schema.json"
 )
 
 
@@ -62,14 +62,14 @@ def _outline_destinations(items: list) -> Iterator[object]:
 
 def _parse_outline_title(title: object) -> dict:
     if not isinstance(title, str):
-        raise PJePdfSegmentationError("PJe outline title must be text")
+        raise PJePdfSegmentationError("o título do marcador do sumário deve ser texto")
     match = OUTLINE_TITLE.fullmatch(title)
     if match is None:
-        raise PJePdfSegmentationError("PJe outline title is malformed")
+        raise PJePdfSegmentationError("o título do marcador do sumário é inválido")
     try:
         filed_on = datetime.strptime(match.group("filed_on"), "%d/%m/%Y").date()
     except ValueError as error:
-        raise PJePdfSegmentationError("PJe outline date is invalid") from error
+        raise PJePdfSegmentationError("a data do marcador do sumário é inválida") from error
     return {
         "sequence": int(match.group("sequence")),
         "provider_reference": match.group("provider_reference").lower(),
@@ -82,16 +82,16 @@ def segment_pje_pdf(pdf_path: Path) -> dict:
     """Return stable document page ranges without extracting source text."""
     source = pdf_path.resolve()
     if not source.is_file():
-        raise PJePdfSegmentationError(f"PJe PDF not found: {source}")
+        raise PJePdfSegmentationError("PDF do PJe não encontrado")
 
     reader = PdfReader(str(source))
     page_count = len(reader.pages)
     if page_count < 1:
-        raise PJePdfSegmentationError("PJe PDF has no pages")
+        raise PJePdfSegmentationError("o PDF do PJe não contém páginas")
 
     destinations = list(_outline_destinations(reader.outline))
     if not destinations:
-        raise PJePdfSegmentationError("PJe PDF outline is missing")
+        raise PJePdfSegmentationError("o sumário de marcadores do PDF do PJe está ausente")
     parsed = []
     for destination in destinations:
         item = _parse_outline_title(getattr(destination, "title", None))
@@ -101,12 +101,12 @@ def segment_pje_pdf(pdf_path: Path) -> dict:
     starts = [item["page_start"] for item in parsed]
     expected_sequences = list(range(1, len(parsed) + 1))
     if [item["sequence"] for item in parsed] != expected_sequences:
-        raise PJePdfSegmentationError("PJe outline sequence is not contiguous")
+        raise PJePdfSegmentationError("a sequência do sumário de marcadores não é contínua")
     if starts[0] != 1 or any(left >= right for left, right in zip(starts, starts[1:])):
-        raise PJePdfSegmentationError("PJe outline page ranges overlap or are incomplete")
+        raise PJePdfSegmentationError("as páginas do sumário se sobrepõem ou estão incompletas")
     references = [item["provider_reference"] for item in parsed]
     if len(references) != len(set(references)):
-        raise PJePdfSegmentationError("PJe outline provider references must be unique")
+        raise PJePdfSegmentationError("as referências do sumário devem ser únicas")
 
     documents = []
     for index, item in enumerate(parsed):
@@ -134,10 +134,10 @@ def segment_pje_pdf(pdf_path: Path) -> dict:
 
 
 def _validate_artifact(value: dict, schema_path: Path, label: str) -> None:
-    schema = load_json(schema_path, f"{label} schema")
+    schema = load_json(schema_path, f"esquema de {label}")
     issues = validate_schema_value(value, schema)
     if issues:
-        raise PJePdfSegmentationError(f"{label} contract failed: {'; '.join(issues)}")
+        raise PJePdfSegmentationError(f"contrato inválido de {label}: {'; '.join(issues)}")
 
 
 def classify_pje_pdf(
@@ -149,7 +149,7 @@ def classify_pje_pdf(
 ) -> PJePdfClassificationResult:
     """Segment and classify a PJe PDF without copying source metadata into classification."""
     segments = segment_pje_pdf(pdf_path)
-    _validate_artifact(segments, segment_schema_path, "PJe PDF segments")
+    _validate_artifact(segments, segment_schema_path, "segmentos do PDF do PJe")
     contract = load_classification_contract(classification_contract_path)
     candidates = tuple(
         DocumentCandidate(
@@ -164,7 +164,7 @@ def classify_pje_pdf(
     _validate_artifact(
         classification,
         classification_schema_path,
-        "document classification",
+        "classificação documental",
     )
     return PJePdfClassificationResult(
         segments=segments,
@@ -190,30 +190,35 @@ def write_classification_artifacts(
     destination = output_dir.resolve()
     repository = repository_root.resolve()
     if destination == repository or _is_within(destination, repository):
-        raise PJePdfSegmentationError("classification output must stay outside repository")
+        raise PJePdfSegmentationError("a saída da classificação deve ficar fora do repositório")
     if not destination.is_dir():
-        raise PJePdfSegmentationError("classification output directory must already exist")
+        raise PJePdfSegmentationError("o diretório de saída da classificação deve existir")
 
     artifacts = (
         (destination / "document-segments.json", result.segments),
         (destination / "document-classification.json", result.classification),
     )
     if any(path.exists() for path, _ in artifacts):
-        raise PJePdfSegmentationError("classification output already exists")
+        raise PJePdfSegmentationError("a saída da classificação já existe")
 
     written = []
-    for path, value in artifacts:
-        payload = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(descriptor, "wb") as stream:
-            stream.write(payload)
-        written.append(path)
+    try:
+        for path, value in artifacts:
+            payload = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            written.append(path)
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(payload)
+    except (OSError, UnicodeError, TypeError, ValueError):
+        for path in reversed(written):
+            path.unlink(missing_ok=True)
+        raise
     return tuple(written)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Segment and classify one authorized consolidated PJe PDF.",
+        description="Segmenta e classifica um PDF consolidado do PJe autorizado.",
     )
     parser.add_argument("--input", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
@@ -247,7 +252,7 @@ def main() -> int:
             repository_root=args.repository_root,
         )
     except (OSError, PJePdfSegmentationError, ValueError) as error:
-        print(f"[ERROR] PJe PDF classification: {error}", file=sys.stderr)
+        print(f"[ERRO] Classificação do PDF do PJe: {error}", file=sys.stderr)
         return 1
 
     statuses = [
@@ -255,11 +260,11 @@ def main() -> int:
         for item in result.classification["documents"]
     ]
     print(
-        "[OK] PJe PDF classification: "
-        f"documents={len(statuses)} "
-        f"classified={statuses.count('classified')} "
-        f"unknown={statuses.count('unknown')} "
-        f"conflict={statuses.count('conflict')}"
+        "[OK] Classificação do PDF do PJe: "
+        f"documentos={len(statuses)} "
+        f"classificados={statuses.count('classified')} "
+        f"desconhecidos={statuses.count('unknown')} "
+        f"conflitos={statuses.count('conflict')}"
     )
     return 0
 

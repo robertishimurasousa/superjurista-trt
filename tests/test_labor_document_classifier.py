@@ -119,6 +119,67 @@ class LaborDocumentClassifierTest(unittest.TestCase):
             [expected for _, expected in labels],
         )
 
+    def test_classifies_separated_contra_cheque_as_documentary_evidence(self) -> None:
+        api = self.api()
+
+        result = self.classify(
+            api,
+            self.candidate(api, "DOC-001", provider_type="Documento Diverso (Contra cheque)"),
+            self.candidate(api, "DOC-002", provider_type="Documento Diverso"),
+        )
+
+        self.assertEqual(result["documents"][0]["document_type"], "documentary_evidence")
+        self.assertEqual(result["documents"][0]["matched_rule_ids"], ["documentary-evidence"])
+        self.assertEqual(result["documents"][1]["document_type"], "unknown")
+
+    def test_classifies_procedural_metadata_without_treating_it_as_a_decision(self) -> None:
+        api = self.api()
+
+        result = self.classify(
+            api,
+            self.candidate(api, "DOC-001", provider_type="Certidão de Publicação no DJEN"),
+            self.candidate(api, "DOC-002", provider_type="Intimação"),
+            self.candidate(api, "DOC-003", provider_type="Notificação"),
+        )
+
+        self.assertEqual(result["schema_version"], 2)
+        self.assertEqual(
+            [item["document_type"] for item in result["documents"]],
+            ["procedural_certificate", "procedural_communication", "procedural_communication"],
+        )
+
+    def test_procedural_word_only_in_excerpt_does_not_classify_generic_document(self) -> None:
+        api = self.api()
+
+        result = self.classify(
+            api,
+            self.candidate(api, "DOC-001", provider_type="Documento Diverso", text_excerpt="Certidão"),
+        )
+
+        self.assertEqual(result["documents"][0]["document_type"], "unknown")
+
+    def test_certificate_of_a_decision_remains_a_certificate(self) -> None:
+        api = self.api()
+
+        result = self.classify(
+            api,
+            self.candidate(api, "DOC-001", provider_type="Certidão de publicação da decisão"),
+        )
+
+        self.assertEqual(result["documents"][0]["document_type"], "procedural_certificate")
+
+    def test_rejects_malformed_rule_field_selection_as_contract_error(self) -> None:
+        api = self.api()
+        contract = copy.deepcopy(api.load_classification_contract(CONTRACT))
+        contract["rules"][0]["match_fields"] = [{"unsupported": "value"}]
+
+        with self.assertRaisesRegex(api.ContractError, "match_fields"):
+            self.classify(
+                api,
+                self.candidate(api, "DOC-001", provider_type="Petição Inicial"),
+                contract=contract,
+            )
+
     def test_specific_initial_pleading_rule_wins_over_generic_petition(self) -> None:
         api = self.api()
 

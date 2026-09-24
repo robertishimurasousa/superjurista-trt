@@ -17,7 +17,7 @@ SCRIPTS = ROOT / "scripts"
 CLASSIFICATION_CONTRACT = ROOT / "runtime" / "domain" / "labor-document-classification.json"
 SEGMENT_SCHEMA = ROOT / "runtime" / "providers" / "pje-pdf-segments.v1.schema.json"
 CLASSIFICATION_SCHEMA = (
-    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v1.schema.json"
+    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v2.schema.json"
 )
 
 
@@ -102,8 +102,18 @@ class PJePdfSegmentationTest(unittest.TestCase):
             pdf_path = Path(temporary) / "missing-outline.pdf"
             self.synthetic_pdf(pdf_path, outlines=())
 
-            with self.assertRaisesRegex(api.PJePdfSegmentationError, "outline"):
+            with self.assertRaisesRegex(api.PJePdfSegmentationError, "sumário"):
                 api.segment_pje_pdf(pdf_path)
+
+    def test_missing_pdf_error_is_presented_in_portuguese(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            missing = Path(temporary) / "ausente.pdf"
+            with self.assertRaisesRegex(
+                api.PJePdfSegmentationError, "PDF do PJe não encontrado"
+            ) as captured:
+                api.segment_pje_pdf(missing)
+            self.assertNotIn(str(missing), str(captured.exception))
 
     def test_rejects_malformed_or_noncontiguous_pje_outline(self) -> None:
         api = self.api()
@@ -208,12 +218,60 @@ class PJePdfSegmentationTest(unittest.TestCase):
 
             repository_output = repository / "output"
             repository_output.mkdir()
-            with self.assertRaisesRegex(api.PJePdfSegmentationError, "outside repository"):
+            with self.assertRaisesRegex(api.PJePdfSegmentationError, "fora do repositório"):
                 api.write_classification_artifacts(
                     result,
                     output_dir=repository_output,
                     repository_root=repository,
                 )
+
+    def test_second_output_collision_does_not_leave_partial_bundle(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repository = root / "repository"
+            repository.mkdir()
+            output = root / "protected-output"
+            output.mkdir()
+            dangling_link = output / "document-classification.json"
+            dangling_link.symlink_to(output / "missing-target.json")
+            result = api.PJePdfClassificationResult(
+                segments={"schema_version": 1},
+                classification={"schema_version": 1},
+            )
+
+            with self.assertRaises(FileExistsError):
+                api.write_classification_artifacts(
+                    result,
+                    output_dir=output,
+                    repository_root=repository,
+                )
+
+            self.assertFalse((output / "document-segments.json").exists())
+            self.assertTrue(dangling_link.is_symlink())
+
+    def test_second_output_serialization_error_does_not_leave_partial_bundle(self) -> None:
+        api = self.api()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repository = root / "repository"
+            repository.mkdir()
+            output = root / "protected-output"
+            output.mkdir()
+            result = api.PJePdfClassificationResult(
+                segments={"schema_version": 1},
+                classification={"invalid": {1, 2}},
+            )
+
+            with self.assertRaises(TypeError):
+                api.write_classification_artifacts(
+                    result,
+                    output_dir=output,
+                    repository_root=repository,
+                )
+
+            self.assertFalse((output / "document-segments.json").exists())
+            self.assertFalse((output / "document-classification.json").exists())
 
     def test_cli_writes_bounded_artifacts_and_reports_only_counts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -250,7 +308,7 @@ class PJePdfSegmentationTest(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, completed.stderr)
             self.assertEqual(
                 completed.stdout.strip(),
-                "[OK] PJe PDF classification: documents=3 classified=3 unknown=0 conflict=0",
+                "[OK] Classificação do PDF do PJe: documentos=3 classificados=3 desconhecidos=0 conflitos=0",
             )
             self.assertNotIn("Petição Inicial", completed.stdout)
             self.assertTrue((output / "document-segments.json").is_file())

@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "classifier_version": 1,
+  "schema_version": 2,
+  "classifier_version": 2,
   "document_types": [
     "initial_pleading",
     "defense",
@@ -15,6 +15,8 @@
     "judgment",
     "appeal",
     "other_petition",
+    "procedural_certificate",
+    "procedural_communication",
     "unknown"
   ],
   "rules": [
@@ -78,6 +80,7 @@
         "cartão de ponto",
         "controle de frequência",
         "contracheque",
+        "contra cheque",
         "recibo de salário",
         "extrato de fgts",
         "comprovante fgts",
@@ -141,6 +144,20 @@
         "recurso ordinário",
         "contrarrazões"
       ]
+    },
+    {
+      "rule_id": "procedural-certificate",
+      "document_type": "procedural_certificate",
+      "priority": 110,
+      "match_fields": ["provider_type", "title"],
+      "phrases": ["certidão"]
+    },
+    {
+      "rule_id": "procedural-communication",
+      "document_type": "procedural_communication",
+      "priority": 110,
+      "match_fields": ["provider_type", "title"],
+      "phrases": ["intimação", "notificação"]
     },
     {
       "rule_id": "other-petition",

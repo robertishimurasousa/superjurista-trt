@@ -108,6 +108,99 @@ class ArtifactContractsTest(unittest.TestCase):
         self.assertEqual(report["schema_version"], 1)
         self.assertEqual(len(report["contract_digest"]), 64)
 
+    def test_current_classification_contract_accepts_procedural_types(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from validate_artifact_contracts import load_catalog, validate_document
+
+        _, contracts = load_catalog(CATALOG)
+        schema, _ = contracts["document-classification"]
+        document = {
+            "schema_version": 2,
+            "classifier_version": 2,
+            "documents": [{
+                "document_id": "DOC-001",
+                "document_type": "procedural_certificate",
+                "classification_status": "classified",
+                "matched_rule_ids": ["procedural-certificate"],
+                "reason_code": "matched_rule",
+            }],
+        }
+
+        self.assertEqual(validate_document(document, schema), [])
+        document["schema_version"] = 1
+        self.assertTrue(validate_document(document, schema))
+
+    def test_historical_classification_schema_remains_available(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from schema_validation import load_json
+        from validate_artifact_contracts import validate_document
+
+        historical = load_json(
+            ROOT / "runtime/contracts/schemas/document-classification.v1.schema.json",
+            "historical classification schema",
+        )
+        artifact = {
+            "schema_version": 1,
+            "classifier_version": 1,
+            "documents": [{
+                "document_id": "DOC-001",
+                "document_type": "initial_pleading",
+                "classification_status": "classified",
+                "matched_rule_ids": ["initial-pleading"],
+                "reason_code": "matched_rule",
+            }],
+        }
+        self.assertEqual(validate_document(artifact, historical), [])
+        artifact["documents"][0]["document_type"] = "procedural_certificate"
+        self.assertTrue(validate_document(artifact, historical))
+
+    def test_v2_rejects_new_type_claimed_by_old_classifier(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from validate_artifact_contracts import load_catalog, validate_document
+
+        _, contracts = load_catalog(CATALOG)
+        schema, _ = contracts["document-classification"]
+        artifact = json.loads(
+            (FIXTURES / "valid/document-classification.json").read_text(encoding="utf-8")
+        )
+        artifact["classifier_version"] = 1
+
+        self.assertTrue(validate_document(artifact, schema))
+
+    def test_v2_explains_old_classifier_mismatch_in_portuguese(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from validate_artifact_contracts import load_catalog, validate_document
+
+        _, contracts = load_catalog(CATALOG)
+        schema, _ = contracts["document-classification"]
+        artifact = json.loads(
+            (FIXTURES / "valid/document-classification.json").read_text(encoding="utf-8")
+        )
+        artifact["classifier_version"] = 1
+
+        self.assertIn(
+            "classificador v1 não pode atribuir tipo v2",
+            "; ".join(validate_document(artifact, schema)),
+        )
+
+    def test_v2_rejects_classification_status_inconsistent_with_type(self) -> None:
+        if str(ROOT / "scripts") not in sys.path:
+            sys.path.insert(0, str(ROOT / "scripts"))
+        from validate_artifact_contracts import load_catalog, validate_document
+
+        _, contracts = load_catalog(CATALOG)
+        schema, _ = contracts["document-classification"]
+        artifact = json.loads(
+            (FIXTURES / "valid/document-classification.json").read_text(encoding="utf-8")
+        )
+        artifact["documents"][0]["classification_status"] = "unknown"
+
+        self.assertTrue(validate_document(artifact, schema))
+
     def test_unknown_future_schema_version_fails_closed(self) -> None:
         document = json.loads(
             (FIXTURES / "valid" / "claim-matrix.json").read_text(encoding="utf-8")

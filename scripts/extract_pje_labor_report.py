@@ -32,7 +32,7 @@ from validate_artifact_contracts import validate_document
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SEGMENT_SCHEMA = ROOT / "runtime" / "providers" / "pje-pdf-segments.v1.schema.json"
 DEFAULT_CLASSIFICATION_SCHEMA = (
-    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v1.schema.json"
+    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v2.schema.json"
 )
 DEFAULT_TIMELINE_SCHEMA = (
     ROOT / "runtime" / "contracts" / "schemas" / "procedural-timeline.v1.schema.json"

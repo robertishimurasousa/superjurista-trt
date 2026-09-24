@@ -74,6 +74,36 @@ def validate_document(document: object, schema: dict) -> list[str]:
         issues.extend(validate_claim_analysis_semantics(document))
     if schema.get("$id", "").endswith("/procedural-timeline.v1.schema.json"):
         issues.extend(validate_procedural_timeline_semantics(document))
+    if schema.get("$id", "").endswith("/document-classification.v2.schema.json"):
+        issues.extend(validate_document_classification_semantics(document))
+    return issues
+
+
+def validate_document_classification_semantics(document: dict) -> list[str]:
+    """Recusa tipos inventados e evidência de classificação incoerente."""
+    issues: list[str] = []
+    seen_ids = set()
+    new_types = {"procedural_certificate", "procedural_communication"}
+    for index, item in enumerate(document["documents"]):
+        path = f"documents[{index}]"
+        document_id = item["document_id"]
+        if document_id in seen_ids:
+            issues.append(f"{path}.document_id: identificador deve ser único")
+        seen_ids.add(document_id)
+        document_type = item["document_type"]
+        status = item["classification_status"]
+        reason = item["reason_code"]
+        rules = item["matched_rule_ids"]
+        if document["classifier_version"] == 1 and document_type in new_types:
+            issues.append(f"{path}.document_type: classificador v1 não pode atribuir tipo v2")
+        if status == "classified":
+            consistent = document_type != "unknown" and bool(rules) and reason == "matched_rule"
+        elif status == "unknown":
+            consistent = document_type == "unknown" and not rules and reason == "no_matching_rule"
+        else:
+            consistent = document_type == "unknown" and bool(rules) and reason == "conflicting_rules"
+        if not consistent:
+            issues.append(f"{path}.classification_status: evidência de classificação incoerente")
     return issues
 
 

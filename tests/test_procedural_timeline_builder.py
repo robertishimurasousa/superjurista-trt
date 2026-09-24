@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -102,25 +103,25 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
                     "event_id": "EVT-001",
                     "event_date": "2026-02-01",
                     "event_type": "case_filed",
-                    "summary": "Initial pleading filed.",
+                    "summary": "Petição inicial protocolada.",
                     "source_document_id": "DOC-001",
-                    "source_locator": "pages 1-2",
+                    "source_locator": "páginas 1-2",
                 },
                 {
                     "event_id": "EVT-002",
                     "event_date": "2026-02-03",
                     "event_type": "defense_filed",
-                    "summary": "Defense filed.",
+                    "summary": "Contestação protocolada.",
                     "source_document_id": "DOC-002",
-                    "source_locator": "pages 3-4",
+                    "source_locator": "páginas 3-4",
                 },
                 {
                     "event_id": "EVT-003",
                     "event_date": "2026-02-04",
                     "event_type": "unclassified_document_filed",
-                    "summary": "Document event requires human review.",
+                    "summary": "Documento sem classificação; revisão humana necessária.",
                     "source_document_id": "DOC-003",
-                    "source_locator": "page 5",
+                    "source_locator": "página 5",
                 },
             ],
         )
@@ -148,6 +149,8 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
             ("judgment", "judgment_issued"),
             ("appeal", "appeal_filed"),
             ("other_petition", "petition_filed"),
+            ("procedural_certificate", "procedural_certificate_recorded"),
+            ("procedural_communication", "procedural_communication_recorded"),
         )
         segments = {
             "schema_version": 1,
@@ -191,6 +194,26 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
         self.assertEqual(
             [event["event_type"] for event in result["events"]],
             [event_type for _, event_type in mappings],
+        )
+        self.assertEqual(
+            [event["summary"] for event in result["events"]],
+            [
+                "Petição inicial protocolada.",
+                "Contestação protocolada.",
+                "Réplica protocolada.",
+                "Ata de audiência registrada.",
+                "Laudo pericial juntado.",
+                "Documento probatório juntado.",
+                "Cálculos juntados.",
+                "Termo de acordo juntado.",
+                "Despacho registrado.",
+                "Decisão interlocutória registrada.",
+                "Sentença registrada.",
+                "Recurso ou contrarrazões juntados.",
+                "Petição juntada.",
+                "Certidão registrada.",
+                "Comunicação processual registrada.",
+            ],
         )
 
     def test_rejects_missing_extra_or_duplicate_document_custody(self) -> None:
@@ -271,7 +294,7 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
                 )
                 with self.assertRaisesRegex(
                     api.ProceduralTimelineError,
-                    "classification status and document type are inconsistent",
+                    "estado e tipo da classificação são incompatíveis",
                 ):
                     api.build_procedural_timeline(
                         self.segments(),
@@ -291,7 +314,8 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
             repository = root / "repository"
             repository.mkdir()
             protected_output = root / "protected-output"
-            protected_output.mkdir()
+            protected_output.mkdir(mode=0o700)
+            os.chmod(protected_output, 0o700)
 
             written = api.write_timeline_artifact(
                 timeline,
@@ -302,7 +326,7 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
             self.assertEqual(written.name, "procedural-timeline.json")
             self.assertEqual(written.stat().st_mode & 0o777, 0o600)
             self.assertEqual(json.loads(written.read_text()), timeline)
-            with self.assertRaisesRegex(api.ProceduralTimelineError, "already exists"):
+            with self.assertRaisesRegex(api.ProceduralTimelineError, "já existe"):
                 api.write_timeline_artifact(
                     timeline,
                     output_dir=protected_output,
@@ -311,12 +335,40 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
 
             repository_output = repository / "output"
             repository_output.mkdir()
-            with self.assertRaisesRegex(api.ProceduralTimelineError, "outside repository"):
+            with self.assertRaisesRegex(api.ProceduralTimelineError, "fora do repositório"):
                 api.write_timeline_artifact(
                     timeline,
                     output_dir=repository_output,
                     repository_root=repository,
                 )
+
+    def test_refuses_non_private_or_linked_timeline_destination(self) -> None:
+        api = self.api()
+        timeline = api.build_procedural_timeline(
+            self.segments(), self.classification(), schema_path=SCHEMA
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repository = root / "repository"
+            repository.mkdir()
+            public = root / "public"
+            public.mkdir(mode=0o755)
+            os.chmod(public, 0o755)
+            with self.assertRaises(api.ProceduralTimelineError):
+                api.write_timeline_artifact(
+                    timeline, output_dir=public, repository_root=repository
+                )
+            self.assertFalse((public / "procedural-timeline.json").exists())
+
+            private = root / "private"
+            private.mkdir(mode=0o700)
+            alias = root / "alias"
+            alias.symlink_to(private, target_is_directory=True)
+            with self.assertRaises(api.ProceduralTimelineError):
+                api.write_timeline_artifact(
+                    timeline, output_dir=alias, repository_root=repository
+                )
+            self.assertFalse((private / "procedural-timeline.json").exists())
 
     def test_cli_writes_timeline_and_reports_only_counts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -324,7 +376,8 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
             repository = root / "repository"
             repository.mkdir()
             output = root / "protected-output"
-            output.mkdir()
+            output.mkdir(mode=0o700)
+            os.chmod(output, 0o700)
             segments_path = root / "document-segments.json"
             classification_path = root / "document-classification.json"
             segments_path.write_text(json.dumps(self.segments()), encoding="utf-8")
@@ -354,10 +407,9 @@ class ProceduralTimelineBuilderTest(unittest.TestCase):
             )
 
             self.assertEqual(completed.returncode, 0, completed.stderr)
-            self.assertEqual(
-                completed.stdout.strip(),
-                "[OK] procedural timeline: events=3 gaps=1 status=partial",
-            )
+            self.assertIn("3 evento(s)", completed.stdout)
+            self.assertIn("1 lacuna(s)", completed.stdout)
+            self.assertNotIn("procedural timeline", completed.stdout + completed.stderr)
             self.assertNotIn("Petição Inicial", completed.stdout)
             self.assertTrue((output / "procedural-timeline.json").is_file())
 

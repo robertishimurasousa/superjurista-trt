@@ -35,8 +35,8 @@
       "contains_real_case_data": false
     },
     "document-classification.json": {
-      "schema_version": 1,
-      "classifier_version": 1,
+      "schema_version": 2,
+      "classifier_version": 2,
       "documents": [
         {
           "document_id": "DOC-001",

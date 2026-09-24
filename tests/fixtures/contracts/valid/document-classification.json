@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "classifier_version": 1,
+  "schema_version": 2,
+  "classifier_version": 2,
   "documents": [
     {
       "document_id": "DOC-001",
@@ -13,10 +13,10 @@
     },
     {
       "document_id": "DOC-002",
-      "document_type": "unknown",
-      "classification_status": "unknown",
-      "matched_rule_ids": [],
-      "reason_code": "no_matching_rule"
+      "document_type": "procedural_certificate",
+      "classification_status": "classified",
+      "matched_rule_ids": ["procedural-certificate"],
+      "reason_code": "matched_rule"
     }
   ]
 }

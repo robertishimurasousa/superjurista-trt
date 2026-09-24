@@ -52,10 +52,10 @@ def _validate_contract(contract: object) -> Dict[str, object]:
         {"schema_version", "classifier_version", "document_types", "rules"},
         "labor document classification contract",
     )
-    if contract["schema_version"] != 1:
-        raise ContractError("classification schema_version must be 1")
-    if contract["classifier_version"] != 1:
-        raise ContractError("classifier_version must be 1")
+    if contract["schema_version"] != 2:
+        raise ContractError("classification schema_version must be 2")
+    if contract["classifier_version"] != 2:
+        raise ContractError("classifier_version must be 2")
 
     document_types = contract["document_types"]
     if not isinstance(document_types, list) or not document_types:
@@ -79,7 +79,10 @@ def _validate_contract(contract: object) -> Dict[str, object]:
         label = f"rules[{index}]"
         if not isinstance(rule, dict):
             raise ContractError(f"{label} must be an object")
-        _expect_exact_keys(rule, {"rule_id", "document_type", "priority", "phrases"}, label)
+        expected = {"rule_id", "document_type", "priority", "phrases"}
+        if "match_fields" in rule:
+            expected.add("match_fields")
+        _expect_exact_keys(rule, expected, label)
         rule_id = rule["rule_id"]
         if not isinstance(rule_id, str) or RULE_ID_PATTERN.fullmatch(rule_id) is None:
             raise ContractError(f"{label}.rule_id is invalid")
@@ -91,6 +94,20 @@ def _validate_contract(contract: object) -> Dict[str, object]:
         priority = rule["priority"]
         if isinstance(priority, bool) or not isinstance(priority, int) or priority < 1:
             raise ContractError(f"{label}.priority must be a positive integer")
+        match_fields = rule.get(
+            "match_fields", ["provider_type", "title", "text_excerpt"]
+        )
+        if (
+            not isinstance(match_fields, list)
+            or not match_fields
+            or any(
+                not isinstance(field, str)
+                or field not in {"provider_type", "title", "text_excerpt"}
+                for field in match_fields
+            )
+            or len(match_fields) != len(set(match_fields))
+        ):
+            raise ContractError(f"{label}.match_fields is invalid")
         phrases = rule["phrases"]
         if not isinstance(phrases, list) or not phrases:
             raise ContractError(f"{label}.phrases must be a non-empty list")
@@ -125,19 +142,21 @@ def _validate_candidate(candidate: object) -> DocumentCandidate:
 
 
 def _matching_rules(contract: dict, candidate: DocumentCandidate) -> list:
-    fields = tuple(
-        normalized
-        for normalized in (
-            _normalize(candidate.provider_type),
-            _normalize(candidate.title),
-            _normalize(candidate.text_excerpt),
-        )
-        if normalized
-    )
+    fields = {
+        "provider_type": _normalize(candidate.provider_type),
+        "title": _normalize(candidate.title),
+        "text_excerpt": _normalize(candidate.text_excerpt),
+    }
     matches = []
     for rule in contract["rules"]:
         phrases = tuple(_normalize(phrase) for phrase in rule["phrases"])
-        if any(phrase in field for phrase in phrases for field in fields):
+        match_fields = rule.get("match_fields", fields)
+        if any(
+            phrase in fields[name]
+            for phrase in phrases
+            for name in match_fields
+            if fields[name]
+        ):
             matches.append(rule)
     return matches
 

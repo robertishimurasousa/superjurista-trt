@@ -21,7 +21,7 @@ LABOR_REPORT_SCHEMA = (
 )
 SEGMENT_SCHEMA = ROOT / "runtime" / "providers" / "pje-pdf-segments.v1.schema.json"
 CLASSIFICATION_SCHEMA = (
-    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v1.schema.json"
+    ROOT / "runtime" / "contracts" / "schemas" / "document-classification.v2.schema.json"
 )
 TIMELINE_SCHEMA = (
     ROOT / "runtime" / "contracts" / "schemas" / "procedural-timeline.v1.schema.json"
@@ -122,8 +122,8 @@ class PJeLaborReportExtractionTest(unittest.TestCase):
 
     def classification(self):
         return {
-            "schema_version": 1,
-            "classifier_version": 1,
+            "schema_version": 2,
+            "classifier_version": 2,
             "documents": [
                 {
                     "document_id": "DOC-003",

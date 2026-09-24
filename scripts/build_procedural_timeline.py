@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build a source-linked procedural timeline from segmented PJe documents."""
+"""Monta linha do tempo processual com fontes dos documentos do PJe."""
 
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import stat
 import sys
 from pathlib import Path
 
@@ -19,37 +20,45 @@ DEFAULT_SCHEMA = (
 
 
 EVENT_PRESENTATION = {
-    "initial_pleading": ("case_filed", "Initial pleading filed."),
-    "defense": ("defense_filed", "Defense filed."),
-    "reply": ("reply_filed", "Reply filed."),
-    "hearing_record": ("hearing_held", "Hearing recorded."),
-    "expert_report": ("expert_report_filed", "Expert report filed."),
-    "documentary_evidence": ("evidence_filed", "Documentary evidence filed."),
-    "calculations": ("calculations_filed", "Calculations filed."),
-    "settlement": ("settlement_filed", "Settlement document filed."),
-    "procedural_order": ("procedural_order_issued", "Procedural order issued."),
+    "initial_pleading": ("case_filed", "Petição inicial protocolada."),
+    "defense": ("defense_filed", "Contestação protocolada."),
+    "reply": ("reply_filed", "Réplica protocolada."),
+    "hearing_record": ("hearing_held", "Ata de audiência registrada."),
+    "expert_report": ("expert_report_filed", "Laudo pericial juntado."),
+    "documentary_evidence": ("evidence_filed", "Documento probatório juntado."),
+    "calculations": ("calculations_filed", "Cálculos juntados."),
+    "settlement": ("settlement_filed", "Termo de acordo juntado."),
+    "procedural_order": ("procedural_order_issued", "Despacho registrado."),
     "interlocutory_decision": (
         "interlocutory_decision_issued",
-        "Interlocutory decision issued.",
+        "Decisão interlocutória registrada.",
     ),
-    "judgment": ("judgment_issued", "Judgment issued."),
-    "appeal": ("appeal_filed", "Appeal filed."),
-    "other_petition": ("petition_filed", "Petition filed."),
+    "judgment": ("judgment_issued", "Sentença registrada."),
+    "appeal": ("appeal_filed", "Recurso ou contrarrazões juntados."),
+    "other_petition": ("petition_filed", "Petição juntada."),
+    "procedural_certificate": (
+        "procedural_certificate_recorded",
+        "Certidão registrada.",
+    ),
+    "procedural_communication": (
+        "procedural_communication_recorded",
+        "Comunicação processual registrada.",
+    ),
 }
 UNCLASSIFIED_EVENT = (
     "unclassified_document_filed",
-    "Document event requires human review.",
+    "Documento sem classificação; revisão humana necessária.",
 )
 
 
 class ProceduralTimelineError(ValueError):
-    """Raised when segment and classification custody cannot build a timeline."""
+    """Indica segmentos ou classificação incompatíveis com a linha do tempo."""
 
 
 def _source_locator(document: dict) -> str:
     start = document["page_start"]
     end = document["page_end"]
-    return f"page {start}" if start == end else f"pages {start}-{end}"
+    return f"página {start}" if start == end else f"páginas {start}-{end}"
 
 
 def build_procedural_timeline(
@@ -58,19 +67,17 @@ def build_procedural_timeline(
     *,
     schema_path: Path,
 ) -> dict:
-    """Create one deterministic event for every segmented source document."""
+    """Cria um evento determinístico para cada documento segmentado."""
     segment_ids = [item["document_id"] for item in segments["documents"]]
     classification_ids = [
         item["document_id"] for item in classification["documents"]
     ]
     if len(segment_ids) != len(set(segment_ids)):
-        raise ProceduralTimelineError("segment document identifiers must be unique")
+        raise ProceduralTimelineError("identificadores dos documentos segmentados devem ser únicos")
     if len(classification_ids) != len(set(classification_ids)):
-        raise ProceduralTimelineError("classification document identifiers must be unique")
+        raise ProceduralTimelineError("identificadores dos documentos classificados devem ser únicos")
     if set(segment_ids) != set(classification_ids):
-        raise ProceduralTimelineError(
-            "segment and classification document sets must match exactly"
-        )
+        raise ProceduralTimelineError("documentos segmentados e classificados devem coincidir")
     classified_by_id = {
         item["document_id"]: item for item in classification["documents"]
     }
@@ -82,13 +89,11 @@ def build_procedural_timeline(
         classification_status = classified["classification_status"]
         document_type = classified["document_type"]
         if classification_status not in {"classified", "conflict", "unknown"}:
-            raise ProceduralTimelineError("classification status is unsupported")
+            raise ProceduralTimelineError("estado da classificação não suportado")
         if document_type not in {*EVENT_PRESENTATION, "unknown"}:
-            raise ProceduralTimelineError("classified document type is unsupported")
+            raise ProceduralTimelineError("tipo documental não suportado")
         if (classification_status == "classified") != (document_type != "unknown"):
-            raise ProceduralTimelineError(
-                "classification status and document type are inconsistent"
-            )
+            raise ProceduralTimelineError("estado e tipo da classificação são incompatíveis")
         presentation = EVENT_PRESENTATION.get(
             document_type,
             UNCLASSIFIED_EVENT,
@@ -125,12 +130,10 @@ def build_procedural_timeline(
         ),
         "gaps": sorted(gaps, key=lambda item: item["subject_id"]),
     }
-    schema = load_json(schema_path, "procedural timeline schema")
+    schema = load_json(schema_path, "esquema da linha do tempo processual")
     issues = validate_schema_value(result, schema)
     if issues:
-        raise ProceduralTimelineError(
-            "procedural timeline contract failed: " + "; ".join(issues)
-        )
+        raise ProceduralTimelineError("contrato da linha do tempo processual inválido")
     return result
 
 
@@ -148,17 +151,21 @@ def write_timeline_artifact(
     output_dir: Path,
     repository_root: Path,
 ) -> Path:
-    """Write one protected timeline without allowing repository-local case data."""
+    """Grava linha do tempo protegida fora do repositório."""
+    if output_dir.is_symlink():
+        raise ProceduralTimelineError("diretório de saída não pode ser vínculo simbólico")
     destination = output_dir.resolve()
     repository = repository_root.resolve()
     if destination == repository or _is_within(destination, repository):
-        raise ProceduralTimelineError("timeline output must stay outside repository")
+        raise ProceduralTimelineError("saída da linha do tempo deve ficar fora do repositório")
     if not destination.is_dir():
-        raise ProceduralTimelineError("timeline output directory must already exist")
+        raise ProceduralTimelineError("diretório de saída deve existir previamente")
+    if stat.S_IMODE(destination.stat().st_mode) & 0o077:
+        raise ProceduralTimelineError("diretório de saída deve ser privado")
 
     path = destination / "procedural-timeline.json"
-    if path.exists():
-        raise ProceduralTimelineError("timeline output already exists")
+    if path.exists() or path.is_symlink():
+        raise ProceduralTimelineError("linha do tempo já existe; arquivo preservado")
     payload = (json.dumps(timeline, ensure_ascii=False, indent=2) + "\n").encode(
         "utf-8"
     )
@@ -170,23 +177,23 @@ def write_timeline_artifact(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build a protected procedural timeline from classified PJe segments.",
+        description="Monta linha do tempo protegida a partir dos segmentos classificados do PJe.",
     )
-    parser.add_argument("--segments", required=True, type=Path)
-    parser.add_argument("--classification", required=True, type=Path)
-    parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--repository-root", type=Path, default=ROOT)
-    parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
+    parser.add_argument("--segments", required=True, type=Path, help="Mapa de segmentos do PDF")
+    parser.add_argument("--classification", required=True, type=Path, help="Classificação documental")
+    parser.add_argument("--output", required=True, type=Path, help="Diretório privado existente")
+    parser.add_argument("--repository-root", type=Path, default=ROOT, help="Raiz do repositório")
+    parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA, help="Esquema da linha do tempo")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     try:
-        segments = load_json(args.segments, "PJe PDF segments")
+        segments = load_json(args.segments, "segmentos do PDF do PJe")
         classification = load_json(
             args.classification,
-            "document classification",
+            "classificação documental",
         )
         timeline = build_procedural_timeline(
             segments,
@@ -199,14 +206,12 @@ def main() -> int:
             repository_root=args.repository_root,
         )
     except (KeyError, OSError, ProceduralTimelineError, TypeError, ValueError) as error:
-        print(f"[ERROR] procedural timeline: {error}", file=sys.stderr)
+        print(f"[ERRO] Linha do tempo processual: {error}", file=sys.stderr)
         return 1
 
     print(
-        "[OK] procedural timeline: "
-        f"events={len(timeline['events'])} "
-        f"gaps={len(timeline['gaps'])} "
-        f"status={timeline['status']}"
+        f"[OK] Linha do tempo processual: {len(timeline['events'])} evento(s), "
+        f"{len(timeline['gaps'])} lacuna(s), estado {timeline['status']}."
     )
     return 0
 

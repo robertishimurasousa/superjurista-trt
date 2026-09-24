@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://superjurista.local/schemas/document-classification.v2.schema.json",
+  "title": "Classificação documental v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "classifier_version", "documents"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 2},
+    "classifier_version": {"type": "integer", "enum": [1, 2]},
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "document_id",
+          "document_type",
+          "classification_status",
+          "matched_rule_ids",
+          "reason_code"
+        ],
+        "properties": {
+          "document_id": {"type": "string", "pattern": "^DOC-[0-9]{3,}$"},
+          "document_type": {
+            "type": "string",
+            "enum": [
+              "initial_pleading",
+              "defense",
+              "reply",
+              "hearing_record",
+              "expert_report",
+              "documentary_evidence",
+              "calculations",
+              "settlement",
+              "procedural_order",
+              "interlocutory_decision",
+              "judgment",
+              "appeal",
+              "other_petition",
+              "procedural_certificate",
+              "procedural_communication",
+              "unknown"
+            ]
+          },
+          "classification_status": {
+            "type": "string",
+            "enum": ["classified", "unknown", "conflict"]
+          },
+          "matched_rule_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}
+          },
+          "reason_code": {
+            "type": "string",
+            "enum": ["matched_rule", "no_matching_rule", "conflicting_rules"]
+          }
+        }
+      }
+    }
+  }
+}
